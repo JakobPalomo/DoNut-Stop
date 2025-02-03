@@ -3,12 +3,12 @@
 A new Flutter project.
 
 GROUP MEMBERS:
-Del Rosario, Yna
-Esteban, Aliah
-Ji, Ira 
-Manaog, Ashley
-Palomo, Jakob
-Pascua, Julia
+- Del Rosario, Yna
+- Esteban, Aliah
+- Ji, Ira 
+- Manaog, Ashley
+- Palomo, Jakob
+- Pascua, Julia
 
 ## Getting Started
 
