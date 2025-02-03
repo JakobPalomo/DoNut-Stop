@@ -2,6 +2,14 @@
 
 A new Flutter project.
 
+GROUP MEMBERS:
+- Del Rosario, Yna
+- Esteban, Aliah
+- Ji, Ira 
+- Manaog, Ashley
+- Palomo, Jakob
+- Pascua, Julia
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
