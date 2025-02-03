@@ -27,10 +27,7 @@ class MyApp extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              ImgSection(),
-              TxtFieldSection(),
-              BtnFieldSection(),
-
+              HomeTxtFieldSection(),
             ],
           ),
 
@@ -88,6 +85,7 @@ class DrwListView extends StatefulWidget{
   @override
   _DrwListView createState() => _DrwListView();
 }
+
 class _DrwListView extends State<DrwListView>{
   @override
 
@@ -99,7 +97,7 @@ class _DrwListView extends State<DrwListView>{
           ListTile(
             title: Text("Home"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => home_page())) ,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())) ,
           ),
           // Page 1 - Registration
           ListTile(
@@ -132,8 +130,8 @@ class _DrwListView extends State<DrwListView>{
   }
 }
 
-class TxtFieldSection extends StatelessWidget {
-  const TxtFieldSection ({super.key});
+class HomeTxtFieldSection extends StatelessWidget {
+  const HomeTxtFieldSection ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -147,112 +145,16 @@ class TxtFieldSection extends StatelessWidget {
               Expanded(child: TextField(
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    hintText: "This is a hint",
+                    hintText: "HOME PAGE",
                     hintMaxLines: 2, hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
 
                 ),
               )
               ),
-              Expanded(child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Another part",
-                    hintMaxLines: 2,
-                    hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
-                ),
-              ))
             ],
           ),
-          Padding(padding: EdgeInsets.all(30),
-            child: TextField(
-              decoration:  InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Address",
-                  hintMaxLines: 2,
-                  hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
-
-              ),
-            ),
-          ),
-          Padding(padding: EdgeInsets.all(30),
-            child: TextField(
-              decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Work Address",
-                  hintMaxLines: 2,
-                  hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
-
-              ),
-            ),
-          ),
-          Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Mobile No",
-                    hintMaxLines: 2,
-                    hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
-
-                ),
-              )
-              ),
-              Expanded(child: TextField(
-                decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Mobile No",
-                    hintMaxLines: 2,
-                    hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
-
-                ),
-              )
-              )
-            ],)
-
         ],
-
       ),
     );
   }
-}
-
-class BtnFieldSection extends StatelessWidget{
-  const BtnFieldSection ({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(30),
-      child:
-      Row(
-        spacing: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(child: ElevatedButton(onPressed: null, child: Text("Disabled"))),
-          Expanded(child: ElevatedButton(onPressed: () {}, child: Text("Enabled"))),
-          Expanded(child: ElevatedButton.icon(onPressed: () {}, icon: Icon(Icons.add, color: Colors.black), label: Text("Enabled with icon")))
-        ],
-      ),);
-  }
-}
-
-class ImgSection extends StatelessWidget{
-  const ImgSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(30),
-        child:
-        Container(
-          height: 150.0,
-          width: double. maxFinite,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/test.jpg'),
-                  fit: BoxFit.fill
-              )
-          ),
-        )
-    );
-  }
-
 }
