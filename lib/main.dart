@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
-import 'package:itelec_quiz_one/pages/login_page.dart';
-import 'package:itelec_quiz_one/pages/product_page.dart';
-import 'package:itelec_quiz_one/pages/registration_page.dart';
+import 'package:itelec_quiz_one/pages/about_page.dart';
+import 'package:itelec_quiz_one/pages/free_page.dart';
+import 'package:itelec_quiz_one/pages/products_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +11,6 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
-  // Start Page
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -81,40 +79,40 @@ class _DrwListView extends State<DrwListView> {
       padding: EdgeInsets.zero,
       child: Column(
         children: [
-          // Homepage - Start Page
+          // Home Page
           ListTile(
-            title: Text("Get Started"),
+            title: Text("Home"),
             leading: Icon(Icons.add_box_sharp),
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (context) => MyApp())),
-          ),
-          // Page 4 - Free Page/Login
-          ListTile(
-            title: Text("Login"),
-            leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => LoginPage())),
           ),
           // Page 1 - Registration
           ListTile(
             title: Text("Registration"),
             leading: Icon(Icons.add_box_sharp),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RegistrationPage())),
+                MaterialPageRoute(builder: (context) => registration_page())),
           ),
-          // Page 2 - Catalog
+          // Page 2 - Products
           ListTile(
-            title: Text("Catalog"),
+            title: Text("Products"),
             leading: Icon(Icons.add_box_sharp),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CatalogPage())),
+                MaterialPageRoute(builder: (context) => products_page())),
           ),
-          // Page 3 - Product
+          // Page 3 - About
           ListTile(
-            title: Text("Product"),
+            title: Text("About"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProductPage())),
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => about_page())),
+          ),
+          // Page 4 - Free Page/Contact
+          ListTile(
+            title: Text("Contact"),
+            leading: Icon(Icons.add_box_sharp),
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => free_page())),
           ),
         ],
       ),
@@ -212,8 +210,7 @@ class BtnFieldSection extends StatelessWidget {
           children: [
             Expanded(
                 child: ElevatedButton(
-              onPressed: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginPage())),
+              onPressed: () {},
               child: Text("Get Started",
                   style: TextStyle(
                     fontSize: 14,
