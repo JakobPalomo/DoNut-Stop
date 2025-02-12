@@ -18,7 +18,35 @@ class MyApp extends StatelessWidget {
       title: "DoNut Stop",
       home: Scaffold(
         appBar: AppBar(
-          title: Text("DoNut Stop"),
+          backgroundColor: Color(0xFFEDC690), // Background color
+          elevation: 0, // Remove shadow
+          scrolledUnderElevation: 0,
+          title: Row(
+            children: [
+              // Square Image on the Left
+              Container(
+                width: 70,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  image: DecorationImage(
+                    image: AssetImage("assets/mini_logo.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  "Home",
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF462521)),
+                ),
+              ),
+            ],
+          ),
         ),
         body: Container(
           decoration: const BoxDecoration(

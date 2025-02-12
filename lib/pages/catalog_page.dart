@@ -14,8 +14,59 @@ class CatalogPage extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Catalog Page Module'),
-        ), // color #EDC690
+          backgroundColor: Color(0xFFEDC690), // Background color
+          elevation: 0, // Remove shadow
+          scrolledUnderElevation: 0,
+          title: Row(
+            children: [
+              // Square Image on the Left
+              Container(
+                width: 70,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  image: DecorationImage(
+                    image: AssetImage("assets/mini_logo.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+
+              // Search Bar
+              Expanded(
+                child: SizedBox(
+                  height: 38,
+                  child: TextField(
+                    cursorColor: Colors.white,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0xFF2F090B),
+                      hintText: "Search products",
+                      hintStyle: TextStyle(color: Colors.white70),
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(left: 15, right: 10),
+                        child:
+                            Icon(Icons.search, color: Colors.white, size: 18.0),
+                      ), // Search icon
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(30), // Rounded edges
+                        borderSide: BorderSide.none, // No border
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         body: SingleChildScrollView(
           child: Column(
             children: [

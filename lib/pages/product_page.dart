@@ -9,9 +9,40 @@ class ProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Product Page Module",
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xFFFFE0B6), // Set background color
+      ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Product Page Module'),
+          backgroundColor: Color(0xFFEDC690), // Background color
+          elevation: 0, // Remove shadow
+          scrolledUnderElevation: 0,
+          title: Row(
+            children: [
+              // Square Image on the Left
+              Container(
+                width: 70,
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  image: DecorationImage(
+                    image: AssetImage("assets/mini_logo.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  "About Donut",
+                  style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF462521)),
+                ),
+              ),
+            ],
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(
