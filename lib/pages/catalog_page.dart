@@ -15,7 +15,7 @@ class CatalogPage extends StatelessWidget {
       home: Scaffold(
         appBar: AppBar(
           title: Text('Catalog Page Module'),
-        ),
+        ), // color #EDC690
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -578,7 +578,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                         vertical: 18, horizontal: 30), // Bigger padding
                   ),
                   child: Text(
-                    "More Donuts",
+                    "More Today's Offers",
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.w700,

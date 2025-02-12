@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 void main() {
   runApp(const RegistrationPage());
 }
@@ -21,6 +23,9 @@ class RegistrationPage extends StatelessWidget {
         ),
       ),
       home: Scaffold(
+        appBar: AppBar(
+          title: Text('Product Page Module'),
+        ),
         backgroundColor: const Color(0xFFFCE5CD),
         body: SingleChildScrollView(
           child: Column(
@@ -47,6 +52,11 @@ class RegistrationPage extends StatelessWidget {
             ],
           ),
         ),
+        drawer: Drawer(
+          child: ListView(
+            children: [DrwerHeader(), DrwListView()],
+          ),
+        ),
       ),
     );
   }
@@ -59,7 +69,8 @@ class RegPageImgSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(0),
-      child: Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.cover),
+      child:
+          Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.cover),
     );
   }
 }
@@ -76,18 +87,23 @@ class RegPageTxtFieldSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: _buildTextField("First name ", "Your first name", true)),
+              Expanded(
+                  child:
+                      _buildTextField("First name ", "Your first name", true)),
               const SizedBox(width: 10),
-              Expanded(child: _buildTextField("Last name ", "Your last name", true)),
+              Expanded(
+                  child: _buildTextField("Last name ", "Your last name", true)),
             ],
           ),
           _buildTextField("Username ", "Your username", true),
           _buildTextField("Email address ", "Your email address", true),
           _buildPasswordField("Password ", "Your password", true),
-          _buildPasswordField("Confirm password ", "Confirm your password", true),
+          _buildPasswordField(
+              "Confirm password ", "Confirm your password", true),
           Row(
             children: [
-              Expanded(child: _buildTextField("District ", "Your district", true)),
+              Expanded(
+                  child: _buildTextField("District ", "Your district", true)),
               const SizedBox(width: 10),
               Expanded(child: _buildTextField("City ", "Your city", true)),
               const SizedBox(width: 10),
@@ -108,14 +124,18 @@ class RegPageTxtFieldSection extends StatelessWidget {
           RichText(
             text: TextSpan(
               text: label,
-              style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'Inter', fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold),
               children: isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -142,14 +162,18 @@ class RegPageTxtFieldSection extends StatelessWidget {
           RichText(
             text: TextSpan(
               text: label,
-              style: const TextStyle(fontSize: 16, color: Colors.black, fontFamily: 'Inter', fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold),
               children: isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -218,7 +242,8 @@ class RegPageBtnFieldSection extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(String text, Color bgColor, Color textColor, VoidCallback onPressed) {
+  Widget _buildButton(
+      String text, Color bgColor, Color textColor, VoidCallback onPressed) {
     return Expanded(
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -230,7 +255,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
           ),
         ),
         onPressed: onPressed,
-        child: Text(text, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, fontFamily: 'Inter')),
+        child: Text(text,
+            style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Inter')),
       ),
     );
   }

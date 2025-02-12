@@ -43,7 +43,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-
         drawer: Drawer(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
@@ -74,8 +73,8 @@ class _Drwheader extends State<DrwerHeader> {
             child: IconButton(
               icon: Image.asset(
                 'assets/icons/back.png',
-                width: 24,
-                height: 24,
+                width: 20,
+                height: 20,
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -111,64 +110,119 @@ class _DrwListView extends State<DrwListView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, top: 16.0),
+      padding: const EdgeInsets.only(top: 16),
       child: Column(
         children: [
           // Home Page
           ListTile(
-            title: Text("Home"),
-            leading: Image.asset(
-              'assets/icons/home.png',
-              width: 24,
-              height: 24,
+            title: Text(
+              "Home",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF462521),
+                fontSize: 16,
+              ),
+            ),
+            leading: Container(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: Image.asset(
+                'assets/icons/home.png',
+                width: 24,
+                height: 24,
+              ),
             ),
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (context) => MyApp())),
           ),
           // Page 1 - Registration
           ListTile(
-            title: Text("Our Donuts"),
-            leading: Image.asset(
-              'assets/icons/catalog.png',
-              width: 24,
-              height: 24,
+            title: Text(
+              "Our Donuts",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF462521),
+                fontSize: 16,
+              ),
+            ),
+            leading: Container(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: Image.asset(
+                'assets/icons/catalog.png',
+                width: 24,
+                height: 24,
+              ),
             ),
             onTap: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => CatalogPage())),
           ),
           // Page 4 - Free Page/Login
           ListTile(
-            title: Text("About Donut"),
-            leading: Image.asset(
-              'assets/icons/about.png',
-              width: 24,
-              height: 24,
+            title: Text(
+              "About Donut",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF462521),
+                fontSize: 16,
+              ),
             ),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => ProductPage())),
+            leading: Container(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: Image.asset(
+                'assets/icons/about.png',
+                width: 24,
+                height: 24,
+              ),
+            ),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProductPage())),
           ),
 
           // Page 2 - Catalog
           ListTile(
-            title: Text("Register"),
-            leading: Image.asset(
-              'assets/icons/register.png',
-              width: 24,
-              height: 24,
+            title: Text(
+              "Register",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF462521),
+                fontSize: 16,
+              ),
+            ),
+            leading: Container(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: Image.asset(
+                'assets/icons/register.png',
+                width: 24,
+                height: 24,
+              ),
             ),
             onTap: () => Navigator.push(context,
                 MaterialPageRoute(builder: (context) => RegistrationPage())),
           ),
           // Page 3 - Product
           ListTile(
-            title: Text("Login"),
-            leading: Image.asset(
-              'assets/icons/login.png',
-              width: 24,
-              height: 24,
+            title: Text(
+              "Login",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF462521),
+                fontSize: 16,
+              ),
             ),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) =>LoginPage())),
+            leading: Container(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: Image.asset(
+                'assets/icons/login.png',
+                width: 24,
+                height: 24,
+              ),
+            ),
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LoginPage())),
           ),
         ],
       ),
@@ -253,22 +307,22 @@ class MidDonut extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(0),
-        child: Column(
-          children: [
-            Image.asset(
-              'assets/index_donuts.png',
-              width: 500,
-              height: 250,
-              fit: BoxFit.cover,
-            ),
-            Image.asset(
-              'assets/homepage_logo.png',
-              width: 500,
-              height: 200,
-              fit: BoxFit.cover,
-            ),
-          ],
-        ),
+      child: Column(
+        children: [
+          Image.asset(
+            'assets/index_donuts.png',
+            width: 500,
+            height: 250,
+            fit: BoxFit.cover,
+          ),
+          Image.asset(
+            'assets/homepage_logo.png',
+            width: 500,
+            height: 200,
+            fit: BoxFit.cover,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -284,7 +338,8 @@ class TxtCenter extends StatelessWidget {
         child: Column(
           children: [
             Text(
-"At Donut Stop, every bite is a moment of pure joy! Whether you're craving a classic glazed, a chocolate-filled delight, or a unique new flavor. Life is too short to skip dessert, so why stop? Indulge in happiness, one donut at a time!",             style: TextStyle(
+              "At Donut Stop, every bite is a moment of pure joy! Whether you're craving a classic glazed, a chocolate-filled delight, or a unique new flavor. Life is too short to skip dessert, so why stop? Indulge in happiness, one donut at a time!",
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Color.fromRGBO(254, 86, 133, 1),
@@ -304,11 +359,9 @@ class BtnFieldSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.all(30),
-
         child: Row(
           spacing: 10,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
-
           children: [
             Expanded(
               child: ElevatedButton(
@@ -317,16 +370,14 @@ class BtnFieldSection extends StatelessWidget {
                   foregroundColor: Colors.white, // Text color
                   padding: const EdgeInsets.symmetric(vertical: 15),
                 ),
-              onPressed: () {},
+                onPressed: () {},
                 child: Text("Get Started",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-
-                  )
-                ),
-            ),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    )),
+              ),
             ),
           ],
         ));
