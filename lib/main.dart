@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/pages/about_page.dart';
-import 'package:itelec_quiz_one/pages/free_page.dart';
-import 'package:itelec_quiz_one/pages/products_page.dart';
+import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:itelec_quiz_one/pages/login_page.dart';
+import 'package:itelec_quiz_one/pages/product_page.dart';
+import 'package:itelec_quiz_one/pages/registration_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +24,7 @@ class MyApp extends StatelessWidget {
           child: Column(
             children: [
               // HomeTxtFieldSection(),
-              BckgroundCenter(),
+              RightPink(),
               TxtCenter(),
               BtnFieldSection()
             ],
@@ -52,7 +53,7 @@ class _Drwheader extends State<DrwerHeader> {
       child: Column(
         children: [
           CircleAvatar(
-            backgroundImage: AssetImage('assets/test.jpg'),
+            backgroundImage: AssetImage('assets/half_donut.png'),
             radius: 40,
           ),
           SizedBox(height: 20),
@@ -81,7 +82,7 @@ class _DrwListView extends State<DrwListView> {
         children: [
           // Home Page
           ListTile(
-            title: Text("Home"),
+            title: Text("Get Started"),
             leading: Icon(Icons.add_box_sharp),
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (context) => MyApp())),
@@ -91,28 +92,29 @@ class _DrwListView extends State<DrwListView> {
             title: Text("Registration"),
             leading: Icon(Icons.add_box_sharp),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => registration_page())),
+                MaterialPageRoute(builder: (context) => RegistrationPage())),
           ),
-          // Page 2 - Products
+          // Page 4 - Free Page/Login
           ListTile(
-            title: Text("Products"),
+            title: Text("Login"),
+            leading: Icon(Icons.add_box_sharp),
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LoginPage())),
+          ),
+
+          // Page 2 - Catalog
+          ListTile(
+            title: Text("Catalog"),
             leading: Icon(Icons.add_box_sharp),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => products_page())),
+                MaterialPageRoute(builder: (context) => CatalogPage())),
           ),
-          // Page 3 - About
+          // Page 3 - Product
           ListTile(
-            title: Text("About"),
+            title: Text("Product"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => about_page())),
-          ),
-          // Page 4 - Free Page/Contact
-          ListTile(
-            title: Text("Contact"),
-            leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => free_page())),
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProductPage())),
           ),
         ],
       ),
@@ -150,15 +152,42 @@ class HomeTxtFieldSection extends StatelessWidget {
   }
 }
 
-class BckgroundCenter extends StatelessWidget {
-  const BckgroundCenter({super.key});
+class RightPink extends StatelessWidget {
+  const RightPink({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/test.jpg'),
-        ),
+    return SizedBox(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height, // Full height
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space images apart
+        children: [
+          // Left-side image
+          Container(
+            width: 200, // Adjust width
+            height: 150,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                    'assets/index_donut1.png'), // Replace with actual left-side image
+                fit: BoxFit.cover, // Adjust as needed
+              ),
+            ),
+          ),
+
+          // Right-side image
+          Container(
+            width: MediaQuery.of(context).size.width * 0.5, // Adjust width
+            height: 200,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/half_donut.png'), // Right-side image
+                fit: BoxFit.cover, // Adjust as needed
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
