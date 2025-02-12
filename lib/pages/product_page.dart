@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 
-class about_page extends StatelessWidget {
-  const about_page({super.key});
+class ProductPage extends StatelessWidget {
+  const ProductPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "About Page Module",
+      title: "Product Page Module",
       home: Scaffold(
         appBar: AppBar(
-          title: Text('About Page Module'),
+          title: Text('Product Page Module'),
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: [AboutPageBtnFieldSection()],
+            children: [ProductPageBtnFieldSection()],
           ),
         ),
         drawer: Drawer(
@@ -28,8 +28,8 @@ class about_page extends StatelessWidget {
   }
 }
 
-class AboutPageBtnFieldSection extends StatelessWidget {
-  const AboutPageBtnFieldSection({super.key});
+class ProductPageBtnFieldSection extends StatelessWidget {
+  const ProductPageBtnFieldSection({super.key});
 
   @override
   Widget build(BuildContext context) {

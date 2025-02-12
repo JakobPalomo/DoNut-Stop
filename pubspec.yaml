@@ -61,8 +61,33 @@ flutter:
   assets:
     - assets/donut.png
     - assets/test.jpg
-  #   - images/a_dot_burr.jpeg
-  #   - images/a_dot_ham.jpeg
+    - assets/half_donut.png
+    - assets/homepage_logo.png
+    - assets/index_donut1.png
+    - assets/index_donut2.png
+    - assets/index_donut3.png
+    - assets/index_donuts.png
+    - assets/main_logo.png
+    - assets/mini_logo.png
+    - assets/front_donut/fdonut1.png
+    - assets/front_donut/fdonut2.png
+    - assets/front_donut/fdonut3.png
+    - assets/front_donut/fdonut4.png
+    - assets/front_donut/fdonut5.png
+    - assets/front_donut/fdonut6.png
+    - assets/front_donut/fdonut7.png
+    - assets/front_donut/fdonut8.png
+    - assets/front_donut/fdonut9.png
+    - assets/front_donut/fdonut10.png
+    - assets/front_donut/fdonut11.png
+    - assets/side_donut/sdonut1.png
+    - assets/side_donut/sdonut2.png
+    - assets/side_donut/sdonut3.png
+    - assets/side_donut/sdonut4.png
+    - assets/side_donut/sdonut5.png
+    - assets/side_donut/sdonut6.png
+    - assets/side_donut/sdonut7.png
+    - assets/side_donut/sdonut8.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

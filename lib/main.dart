@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/pages/about_page.dart';
-import 'package:itelec_quiz_one/pages/free_page.dart';
-import 'package:itelec_quiz_one/pages/products_page.dart';
+import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:itelec_quiz_one/pages/login_page.dart';
+import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -13,15 +12,14 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   // This widget is the root of your application.
+  // Start Page
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
       title: "DoNut Stop",
       home: Scaffold(
         appBar: AppBar(
           title: Text("DoNut Stop"),
-
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -32,35 +30,27 @@ class MyApp extends StatelessWidget {
               BtnFieldSection()
             ],
           ),
-
         ),
         drawer: Drawer(
           child: ListView(
-            children: [
-              DrwerHeader(),
-              DrwListView()
-            ],
+            children: [DrwerHeader(), DrwListView()],
           ),
         ),
-
       ),
     );
   }
 }
 
-class DrwerHeader extends StatefulWidget{
+class DrwerHeader extends StatefulWidget {
   @override
   _Drwheader createState() => _Drwheader();
 }
 
-class _Drwheader extends State<DrwerHeader>{
+class _Drwheader extends State<DrwerHeader> {
   @override
-  Widget build (BuildContext context){
+  Widget build(BuildContext context) {
     return DrawerHeader(
-      decoration:BoxDecoration(
-          color: Colors.black54
-      ),
-
+      decoration: BoxDecoration(color: Colors.black54),
       child: Column(
         children: [
           CircleAvatar(
@@ -71,11 +61,7 @@ class _Drwheader extends State<DrwerHeader>{
           Text(
             "ITELEC4C",
             style: TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold
-            ),
-
+                color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
           )
         ],
       ),
@@ -83,49 +69,53 @@ class _Drwheader extends State<DrwerHeader>{
   }
 }
 
-class DrwListView extends StatefulWidget{
+class DrwListView extends StatefulWidget {
   @override
   _DrwListView createState() => _DrwListView();
 }
 
-class _DrwListView extends State<DrwListView>{
+class _DrwListView extends State<DrwListView> {
   @override
-
-  Widget build(BuildContext context){
-    return Padding(padding: EdgeInsets.zero,
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.zero,
       child: Column(
         children: [
-          // Home Page
+          // Homepage - Start Page
           ListTile(
-            title: Text("Home"),
+            title: Text("Get Started"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp())) ,
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => MyApp())),
+          ),
+          // Page 4 - Free Page/Login
+          ListTile(
+            title: Text("Login"),
+            leading: Icon(Icons.add_box_sharp),
+            onTap: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => LoginPage())),
           ),
           // Page 1 - Registration
           ListTile(
             title: Text("Registration"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => registration_page())) ,
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => RegistrationPage())),
           ),
-          // Page 2 - Products
+          // Page 2 - Catalog
           ListTile(
-            title: Text("Products"),
+            title: Text("Catalog"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => products_page())) ,
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CatalogPage())),
           ),
-          // Page 3 - About
+          // Page 3 - Product
           ListTile(
-            title: Text("About"),
+            title: Text("Product"),
             leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => about_page())) ,
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProductPage())),
           ),
-          // Page 4 - Free Page/Contact
-          ListTile(
-            title: Text("Contact"),
-            leading: Icon(Icons.add_box_sharp),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => free_page())) ,
-          ),
-
         ],
       ),
     );
@@ -133,26 +123,27 @@ class _DrwListView extends State<DrwListView>{
 }
 
 class HomeTxtFieldSection extends StatelessWidget {
-  const HomeTxtFieldSection ({super.key});
+  const HomeTxtFieldSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(30),
+    return Padding(
+      padding: EdgeInsets.all(30),
       child: Column(
-        crossAxisAlignment:  CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Expanded(child: TextField(
+              Expanded(
+                  child: TextField(
                 decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: "HOME PAGE",
-                    hintMaxLines: 2, hintStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)
-
-                ),
-              )
-              ),
+                    hintMaxLines: 2,
+                    hintStyle: TextStyle(
+                        fontWeight: FontWeight.bold, color: Colors.black)),
+              )),
             ],
           ),
         ],
@@ -161,7 +152,7 @@ class HomeTxtFieldSection extends StatelessWidget {
   }
 }
 
-class BckgroundCenter extends StatelessWidget{
+class BckgroundCenter extends StatelessWidget {
   const BckgroundCenter({super.key});
   @override
   Widget build(BuildContext context) {
@@ -176,33 +167,34 @@ class BckgroundCenter extends StatelessWidget{
 }
 
 class TxtCenter extends StatelessWidget {
-  const TxtCenter ({super.key});
+  const TxtCenter({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(30),
-    child: Container(
-      child: Column(
-        children: [
-          Text(
-            "DoNut Stop",
-            style: TextStyle(
-              fontSize: 84,
-              fontWeight: FontWeight.bold,
-              color: Color.fromRGBO(254,86,133, 1)
-              ,),
-          ),
-          Text(
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqconsequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu um.",
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Color.fromRGBO(254,86,133, 1)
-            ,),
-          ),
-        ],
-          ),
+    return Padding(
+      padding: EdgeInsets.all(30),
+      child: Container(
+        child: Column(
+          children: [
+            Text(
+              "DoNut Stop",
+              style: TextStyle(
+                fontSize: 84,
+                fontWeight: FontWeight.bold,
+                color: Color.fromRGBO(254, 86, 133, 1),
+              ),
+            ),
+            Text(
+              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqconsequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu um.",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Color.fromRGBO(254, 86, 133, 1),
+              ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }
@@ -212,20 +204,25 @@ class BtnFieldSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: EdgeInsets.all(30),
-       child: Row(
+    return Padding(
+        padding: EdgeInsets.all(30),
+        child: Row(
           spacing: 10,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Expanded(child: ElevatedButton(onPressed: (){}, child: Text("Get Started",
-            style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            backgroundColor: Colors.white,
-            color: Color.fromRGBO(254,86,133, 1)
-          ,)),)),
+            Expanded(
+                child: ElevatedButton(
+              onPressed: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LoginPage())),
+              child: Text("Get Started",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    backgroundColor: Colors.white,
+                    color: Color.fromRGBO(254, 86, 133, 1),
+                  )),
+            )),
           ],
-        )
-    );
+        ));
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 
-class registration_page extends StatelessWidget {
-  const registration_page({super.key});
+class RegistrationPage extends StatelessWidget {
+  const RegistrationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +16,9 @@ class registration_page extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              ImgSection(),
-              TxtFieldSection(),
-              BtnFieldSection(),
+              RegPageImgSection(),
+              RegPageTxtFieldSection(),
+              RegPageBtnFieldSection(),
             ],
           ),
         ),
@@ -32,8 +32,8 @@ class registration_page extends StatelessWidget {
   }
 }
 
-class TxtFieldSection extends StatelessWidget {
-  const TxtFieldSection({super.key});
+class RegPageTxtFieldSection extends StatelessWidget {
+  const RegPageTxtFieldSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -116,8 +116,8 @@ class TxtFieldSection extends StatelessWidget {
   }
 }
 
-class BtnFieldSection extends StatelessWidget {
-  const BtnFieldSection({super.key});
+class RegPageBtnFieldSection extends StatelessWidget {
+  const RegPageBtnFieldSection({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -148,8 +148,8 @@ class BtnFieldSection extends StatelessWidget {
   }
 }
 
-class ImgSection extends StatelessWidget {
-  const ImgSection({super.key});
+class RegPageImgSection extends StatelessWidget {
+  const RegPageImgSection({super.key});
 
   @override
   Widget build(BuildContext context) {

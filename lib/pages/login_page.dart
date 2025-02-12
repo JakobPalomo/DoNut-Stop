@@ -2,20 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../main.dart';
 
-class free_page extends StatelessWidget {
-  const free_page({super.key});
+class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Free Page Module",
+      title: "Login Page Module",
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Free Page Module'),
+          title: Text('Login Page Module'),
         ),
         body: SingleChildScrollView(
           child: Column(
-            children: [ContactPageBtnFieldSection()],
+            children: [LoginPageBtnFieldSection()],
           ),
         ),
         drawer: Drawer(
@@ -28,8 +28,8 @@ class free_page extends StatelessWidget {
   }
 }
 
-class ContactPageBtnFieldSection extends StatelessWidget {
-  const ContactPageBtnFieldSection({super.key});
+class LoginPageBtnFieldSection extends StatelessWidget {
+  const LoginPageBtnFieldSection({super.key});
 
   @override
   Widget build(BuildContext context) {
