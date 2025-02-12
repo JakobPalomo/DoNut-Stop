@@ -9,6 +9,9 @@ class CatalogPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Catalog Page Module",
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xFFFFE0B6), // Set background color
+      ),
       home: Scaffold(
         appBar: AppBar(
           title: Text('Catalog Page Module'),
@@ -49,14 +52,19 @@ class CatalogPageTitleContainer extends StatelessWidget {
           Text(
             "Welcome to Donut Stop!",
             style: TextStyle(
+                fontFamily: 'Inter',
                 fontSize: 28,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: Color(0xFF462521)),
           ),
           SizedBox(height: 5),
           Text(
             "Order your favourite donuts from here!",
-            style: TextStyle(fontSize: 14, color: Color(0xFF665A49)),
+            style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Color(0xFF665A49)),
           ),
         ],
       ),
