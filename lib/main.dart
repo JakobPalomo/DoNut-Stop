@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           child: Column(
             children: [
               // HomeTxtFieldSection(),
-              BckgroundCenter(),
+              RightPink(),
               TxtCenter(),
               BtnFieldSection()
             ],
@@ -64,7 +64,7 @@ class _Drwheader extends State<DrwerHeader>{
       child: Column(
         children: [
           CircleAvatar(
-            backgroundImage: AssetImage('assets/test.jpg'),
+            backgroundImage: AssetImage('assets/half_donut.png'),
             radius: 40,
           ),
           SizedBox(height: 20),
@@ -161,19 +161,50 @@ class HomeTxtFieldSection extends StatelessWidget {
   }
 }
 
-class BckgroundCenter extends StatelessWidget{
-  const BckgroundCenter({super.key});
+class RightPink
+
+ extends StatelessWidget {
+  const RightPink({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage('assets/test.jpg'),
-        ),
+    return SizedBox(
+      width: double.infinity,
+      height: MediaQuery.of(context).size.height, // Full height
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space images apart
+        children: [
+          // Left-side image
+          Container(
+            width:200, // Adjust width
+            height: 150,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/index_donut1.png'), // Replace with actual left-side image
+                fit: BoxFit.cover, // Adjust as needed
+              ),
+            ),
+          ),
+
+          // Right-side image
+          Container(
+            width: MediaQuery.of(context).size.width * 0.5, // Adjust width
+            height: 200,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/half_donut.png'), // Right-side image
+                fit: BoxFit.cover, // Adjust as needed
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+
+
 
 class TxtCenter extends StatelessWidget {
   const TxtCenter ({super.key});
