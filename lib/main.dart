@@ -31,6 +31,9 @@ class MyApp extends StatelessWidget {
           ),
         ),
         drawer: Drawer(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.zero,
+          ),
           child: ListView(
             children: [DrwerHeader(), DrwListView()],
           ),
@@ -49,19 +52,36 @@ class _Drwheader extends State<DrwerHeader> {
   @override
   Widget build(BuildContext context) {
     return DrawerHeader(
-      decoration: BoxDecoration(color: Colors.black54),
-      child: Column(
+      decoration: BoxDecoration(color: Color(0xFFFFE1B7)),
+      child: Stack(
         children: [
-          CircleAvatar(
-            backgroundImage: AssetImage('assets/half_donut.png'),
-            radius: 40,
+          Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: Image.asset(
+                'assets/icons/back.png',
+                width: 24,
+                height: 24,
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
           ),
-          SizedBox(height: 20),
-          Text(
-            "ITELEC4C",
-            style: TextStyle(
-                color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-          )
+          Center(
+            child: Image.asset(
+              'assets/main_logo.png',
+              width: 220,
+              height: 220,
+              fit: BoxFit.cover,
+            ),
+          ),
+          // SizedBox(height: 20),
+          // Text(
+          //   "ITELEC4C",
+          //   style: TextStyle(
+          //       color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+          // )
         ],
       ),
     );
@@ -77,44 +97,64 @@ class _DrwListView extends State<DrwListView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.zero,
+      padding: const EdgeInsets.only(left: 16.0, top: 16.0),
       child: Column(
         children: [
           // Home Page
           ListTile(
-            title: Text("Get Started"),
-            leading: Icon(Icons.add_box_sharp),
+            title: Text("Home"),
+            leading: Image.asset(
+              'assets/icons/home.png',
+              width: 24,
+              height: 24,
+            ),
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (context) => MyApp())),
           ),
           // Page 1 - Registration
           ListTile(
-            title: Text("Registration"),
-            leading: Icon(Icons.add_box_sharp),
+            title: Text("Our Donuts"),
+            leading: Image.asset(
+              'assets/icons/catalog.png',
+              width: 24,
+              height: 24,
+            ),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RegistrationPage())),
+                MaterialPageRoute(builder: (context) => CatalogPage())),
           ),
           // Page 4 - Free Page/Login
           ListTile(
-            title: Text("Login"),
-            leading: Icon(Icons.add_box_sharp),
+            title: Text("About Donut"),
+            leading: Image.asset(
+              'assets/icons/about.png',
+              width: 24,
+              height: 24,
+            ),
             onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => LoginPage())),
+                context, MaterialPageRoute(builder: (context) => ProductPage())),
           ),
 
           // Page 2 - Catalog
           ListTile(
-            title: Text("Catalog"),
-            leading: Icon(Icons.add_box_sharp),
+            title: Text("Register"),
+            leading: Image.asset(
+              'assets/icons/register.png',
+              width: 24,
+              height: 24,
+            ),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CatalogPage())),
+                MaterialPageRoute(builder: (context) => RegistrationPage())),
           ),
           // Page 3 - Product
           ListTile(
-            title: Text("Product"),
-            leading: Icon(Icons.add_box_sharp),
+            title: Text("Login"),
+            leading: Image.asset(
+              'assets/icons/login.png',
+              width: 24,
+              height: 24,
+            ),
             onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProductPage())),
+                MaterialPageRoute(builder: (context) =>LoginPage())),
           ),
         ],
       ),
