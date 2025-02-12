@@ -20,16 +20,30 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: Text("DoNut Stop"),
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              // HomeTxtFieldSection(),
-              RightPink(),
-              TxtCenter(),
-              BtnFieldSection()
-            ],
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color.fromRGBO(255, 225, 183, 1.0),
+                Color.fromRGBO(255, 225, 183, 1.0),
+                Colors.white, // Deep Yellow/Orange
+              ],
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                RightPink(),
+                MidDonut(),
+                TxtCenter(),
+                BtnFieldSection(),
+              ],
+            ),
           ),
         ),
+
         drawer: Drawer(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.zero,
@@ -198,14 +212,13 @@ class RightPink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
-      height: MediaQuery.of(context).size.height, // Full height
+      height: 100,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space images apart
         children: [
           // Left-side image
           Container(
-            width: 200, // Adjust width
+            width: 150,
             height: 150,
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -218,7 +231,7 @@ class RightPink extends StatelessWidget {
 
           // Right-side image
           Container(
-            width: MediaQuery.of(context).size.width * 0.5, // Adjust width
+            width: MediaQuery.of(context).size.width * 0.3,
             height: 200,
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -233,27 +246,45 @@ class RightPink extends StatelessWidget {
   }
 }
 
+class MidDonut extends StatelessWidget {
+  const MidDonut({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(0),
+        child: Column(
+          children: [
+            Image.asset(
+              'assets/index_donuts.png',
+              width: 500,
+              height: 250,
+              fit: BoxFit.cover,
+            ),
+            Image.asset(
+              'assets/homepage_logo.png',
+              width: 500,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
+          ],
+        ),
+    );
+  }
+}
+
 class TxtCenter extends StatelessWidget {
   const TxtCenter({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(30),
+      padding: EdgeInsets.all(20),
       child: Container(
         child: Column(
           children: [
             Text(
-              "DoNut Stop",
-              style: TextStyle(
-                fontSize: 84,
-                fontWeight: FontWeight.bold,
-                color: Color.fromRGBO(254, 86, 133, 1),
-              ),
-            ),
-            Text(
-              "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqconsequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu um.",
-              style: TextStyle(
+"At Donut Stop, every bite is a moment of pure joy! Whether you're craving a classic glazed, a chocolate-filled delight, or a unique new flavor. Life is too short to skip dessert, so why stop? Indulge in happiness, one donut at a time!",             style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: Color.fromRGBO(254, 86, 133, 1),
@@ -273,21 +304,30 @@ class BtnFieldSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.all(30),
+
         child: Row(
           spacing: 10,
           mainAxisAlignment: MainAxisAlignment.spaceAround,
+
           children: [
             Expanded(
-                child: ElevatedButton(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromRGBO(254, 86, 133, 1),
+                  foregroundColor: Colors.white, // Text color
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                ),
               onPressed: () {},
-              child: Text("Get Started",
+                child: Text("Get Started",
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    backgroundColor: Colors.white,
-                    color: Color.fromRGBO(254, 86, 133, 1),
-                  )),
-            )),
+                    color: Colors.white,
+
+                  )
+                ),
+            ),
+            ),
           ],
         ));
   }
