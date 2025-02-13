@@ -21,24 +21,27 @@ class ProductPage extends StatelessWidget {
             children: [
               // Square Image on the Left
               Container(
-                width: 70,
-                height: 80,
+                width: 50,
+                height: 50,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
                   image: DecorationImage(
                     image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                 ),
               ),
               Expanded(
-                child: Text(
-                  "About Donut",
-                  style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF462521)),
+                child: Container(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "About Donut",
+                    style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF462521)),
+                  ),
                 ),
               ),
             ],
