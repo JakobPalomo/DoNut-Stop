@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:itelec_quiz_one/pages/login_page.dart';
 import '../main.dart';
 
 void main() {
@@ -24,7 +24,7 @@ class RegistrationPage extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
+          backgroundColor: Color(0xFFFFE0B6), // Background color
           elevation: 0, // Remove shadow
           scrolledUnderElevation: 0,
           title: Row(
@@ -57,7 +57,7 @@ class RegistrationPage extends StatelessWidget {
             ],
           ),
         ),
-        backgroundColor: const Color(0xFFFCE5CD),
+        backgroundColor: const Color(0xFFFFE0B6),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -71,12 +71,19 @@ class RegistrationPage extends StatelessWidget {
                       "Let's Sign Up!",
                       style: TextStyle(
                         fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w900,
                         color: Color(0xFF462521),
                       ),
                     ),
-                    const RegPageTxtFieldSection(),
-                    const RegPageBtnFieldSection(),
+                    Container(
+
+                      child: Column(
+                        children: [
+                          const RegPageTxtFieldSection(),
+                          const RegPageBtnFieldSection(),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -101,7 +108,7 @@ class RegPageImgSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0),
       child:
-          Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.cover),
+      Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.cover),
     );
   }
 }
@@ -111,7 +118,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      constraints: BoxConstraints(maxWidth: 600),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +128,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
             children: [
               Expanded(
                   child:
-                      _buildTextField("First name ", "Your first name", true)),
+                  _buildTextField("First name ", "Your first name", true)),
               const SizedBox(width: 10),
               Expanded(
                   child: _buildTextField("Last name ", "Your last name", true)),
@@ -146,6 +154,10 @@ class RegPageTxtFieldSection extends StatelessWidget {
     );
   }
 
+
+
+
+
   Widget _buildTextField(String label, String hint, bool isRequired) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -162,11 +174,11 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   fontWeight: FontWeight.bold),
               children: isRequired
                   ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
+                TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Color(0xFFEC2023)),
+                ),
+              ]
                   : [],
             ),
           ),
@@ -200,11 +212,11 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   fontWeight: FontWeight.bold),
               children: isRequired
                   ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
+                TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Color(0xFFEC2023)),
+                ),
+              ]
                   : [],
             ),
           ),
@@ -230,22 +242,34 @@ class RegPageBtnFieldSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              _buildButton("Cancel", Colors.white, Color(0xFFDC345E), () {}),
-              const SizedBox(width: 10),
-              _buildButton("Sign Up", Color(0xFFDC345E), Colors.white, () {}),
-            ],
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: _buildCancelButton("Cancel", Colors.white, Color(0xFFDC345E), () {}),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _buildSignUpButton("Sign Up", Color(0xFFDC345E), Colors.white, () {}),
+                ),
+                // Invisible element to keep the container at max width
+
+              ],
+            ),
           ),
           const SizedBox(height: 20),
           GestureDetector(
             onTap: () {
-              // Add navigation to login page here
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
             },
             child: RichText(
               text: const TextSpan(
@@ -257,11 +281,12 @@ class RegPageBtnFieldSection extends StatelessWidget {
                 ),
                 children: [
                   TextSpan(
-                    text: "Sign up",
+                    text: "Login",
                     style: TextStyle(
                       decoration: TextDecoration.underline,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Inter',
+                      color: Color(0xFFCA2E55),
                     ),
                   ),
                 ],
@@ -273,24 +298,68 @@ class RegPageBtnFieldSection extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(
+  Widget _buildCancelButton(
       String text, Color bgColor, Color textColor, VoidCallback onPressed) {
     return Expanded(
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          foregroundColor: textColor,
-          padding: const EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+      child: Container(
+        margin: EdgeInsets.only(right: 30),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor,
+            shadowColor: Colors.transparent, // No shadow effect
+            side: BorderSide(color: Color(0xFFEF4F56)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: EdgeInsets.symmetric(
+                vertical: 18, horizontal: 50), // Bigger padding
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: Color(0xFFCA2E55),
+            ),
           ),
         ),
-        onPressed: onPressed,
-        child: Text(text,
-            style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Inter')),
+      ),
+    );
+  }
+
+  Widget _buildSignUpButton(
+      String text, Color bgColor, Color textColor, VoidCallback onPressed) {
+    return Expanded(
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.transparent, // transparent background
+            shadowColor: Colors.transparent, // No shadow effect
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            padding: EdgeInsets.symmetric(
+                vertical: 18, horizontal: 30), // Bigger padding
+          ),
+          child: Text(
+            text,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: Colors.white,
+            ),
+          ),
+        ),
       ),
     );
   }
