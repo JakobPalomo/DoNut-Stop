@@ -1,84 +1,156 @@
 import 'package:flutter/material.dart';
 
-import '../main.dart';
-
 class ProductPage extends StatelessWidget {
   const ProductPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Product Page Module",
-      theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFFFE0B6), // Set background color
+    return Scaffold(
+      backgroundColor: Color(0xFFFFE0B6), // Background color
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0, // Remove shadow
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              // Square Image on the Left
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
+      body: Column(
+        children: [
+          // Donut Image Section
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                "assets/front_donut/fdonut3.png",
+                width: 250,
+                height: 250,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+
+          // Product Details Section
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Title & Favorite Icon
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Strawberry Sprinkle",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF462521),
+                        ),
+                      ),
+                      Icon(Icons.favorite_border, color: Colors.red, size: 28),
+                    ],
+                  ),
+                  SizedBox(height: 10),
+
+                  // About Donut Description
+                  Text(
                     "About Donut",
                     style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF462521)),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF6D4C41),
+                    ),
                   ),
-                ),
+                  SizedBox(height: 8),
+                  Text(
+                    "Strawberry Sprinkles donut is a treat you can’t resist! With a soft, fluffy base coated in rich strawberry glaze and topped with colorful sprinkles, every bite is a perfect balance of sweetness.",
+                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                  ),
+                  SizedBox(height: 20),
+
+                  // Quantity Selector
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Quantity",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF6D4C41),
+                        ),
+                      ),
+                      SizedBox(width: 20),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black26),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.remove, color: Colors.black),
+                              onPressed: () {},
+                            ),
+                            Text("1",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                            IconButton(
+                              icon: Icon(Icons.add, color: Colors.black),
+                              onPressed: () {},
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+
+                  // Price & Add to Cart Button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "₱50",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF462521),
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFEE4266),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 12),
+                        ),
+                        child: Text(
+                          "Add to Cart",
+                          style: TextStyle(fontSize: 16, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [ProductPageBtnFieldSection()],
-          ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ProductPageBtnFieldSection extends StatelessWidget {
-  const ProductPageBtnFieldSection({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(30),
-      child: Row(
-        spacing: 10,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Expanded(
-              child: ElevatedButton.icon(
-                  onPressed: () => Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => MyApp())),
-                  icon: Icon(Icons.arrow_back_ios_rounded, color: Colors.black),
-                  label: Text("Back Home")))
         ],
       ),
     );
