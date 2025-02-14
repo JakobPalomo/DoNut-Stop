@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Color(0xFFEDC690), // Background color
           elevation: 0, // Remove shadow
           scrolledUnderElevation: 0,
-          title: Row(
+            title: Row(
             children: [
               // Square Image on the Left
               Container(
@@ -120,12 +120,6 @@ class _Drwheader extends State<DrwerHeader> {
               fit: BoxFit.cover,
             ),
           ),
-          // SizedBox(height: 20),
-          // Text(
-          //   "ITELEC4C",
-          //   style: TextStyle(
-          //       color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-          // )
         ],
       ),
     );
@@ -297,14 +291,14 @@ class RightPink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
+      height: 170,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space images apart
         children: [
           // Left-side image
           Container(
-            width: 150,
-            height: 150,
+            width: 250,
+            height: 170,
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
@@ -317,7 +311,7 @@ class RightPink extends StatelessWidget {
           // Right-side image
           Container(
             width: MediaQuery.of(context).size.width * 0.3,
-            height: 200,
+            height: 170,
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/half_donut.png'), // Right-side image
@@ -343,7 +337,7 @@ class MidDonut extends StatelessWidget {
           Image.asset(
             'assets/index_donuts.png',
             width: 500,
-            height: 250,
+            height: 200,
             fit: BoxFit.cover,
           ),
           Image.asset(
@@ -389,28 +383,49 @@ class BtnFieldSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.all(30),
-        child: Row(
-          spacing: 10,
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromRGBO(254, 86, 133, 1),
-                  foregroundColor: Colors.white, // Text color
-                  padding: const EdgeInsets.symmetric(vertical: 15),
+      padding: const EdgeInsets.all(30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                onPressed: () {},
-                child: Text("Get Started",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    )),
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.transparent,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  "Get Started",
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    color: Colors.white, // Text remains visible over gradient
+                  ),
+                ),
               ),
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }
