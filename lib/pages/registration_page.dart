@@ -24,7 +24,7 @@ class RegistrationPage extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFFFFE0B6), // Background color
+          backgroundColor: Color(0xFFEDC690), // Background color
           elevation: 0, // Remove shadow
           scrolledUnderElevation: 0,
           title: Row(
@@ -300,21 +300,23 @@ class RegPageBtnFieldSection extends StatelessWidget {
 
   Widget _buildCancelButton(
       String text, Color bgColor, Color textColor, VoidCallback onPressed) {
-    return Expanded(
-      child: Container(
-        margin: EdgeInsets.only(right: 30),
-        child: ElevatedButton(
-          onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: bgColor,
-            shadowColor: Colors.transparent, // No shadow effect
-            side: BorderSide(color: Color(0xFFEF4F56)),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: EdgeInsets.symmetric(
-                vertical: 18, horizontal: 50), // Bigger padding
+    return Container(
+      margin: EdgeInsets.only(right: 10), // Adjust margin to prevent line break
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bgColor,
+          shadowColor: Colors.transparent, // No shadow effect
+          side: BorderSide(color: Color(0xFFEF4F56)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
+          padding: EdgeInsets.symmetric(
+              vertical: 18, horizontal: 30), // Adjust padding
+          minimumSize: Size(100, 50), // Ensure minimum size to prevent line break
+        ),
+        child: FittedBox( // Ensure text fits within the button
+          fit: BoxFit.scaleDown,
           child: Text(
             text,
             style: TextStyle(

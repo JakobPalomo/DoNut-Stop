@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../main.dart';
+import 'package:itelec_quiz_one/pages/registration_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -11,6 +12,7 @@ class LoginPage extends StatelessWidget {
       title: "Login Page Module",
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFFDE5CC),
+        fontFamily: 'Inter', // Apply Inter font
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -76,7 +78,7 @@ class LoginPage extends StatelessWidget {
                     "Welcome, User!",
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w900,
                       color: Color(0xFF462521),
                     ),
                   ),
@@ -90,7 +92,14 @@ class LoginPage extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Checkbox(value: false, onChanged: (value) {}),
+                          Checkbox(
+                            value: false,
+                            onChanged: (value) {},
+                            activeColor: Colors.white, // Set checkbox color to white when active
+                            checkColor: Colors.black, // Set checkmark color to black
+                            fillColor: MaterialStateProperty.all(Colors.white), // Set box color to white even if not active
+                            side: BorderSide.none, // Remove the black outline
+                          ),
                           Text("Remember me"),
                         ],
                       ),
@@ -103,12 +112,31 @@ class LoginPage extends StatelessWidget {
                   SizedBox(height: 20),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFFE04F5F),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                      minimumSize: Size(double.infinity, 50),
+                      backgroundColor: Colors.transparent, // transparent background
+                      shadowColor: Colors.transparent, // No shadow effect
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 18), // Remove horizontal padding
                     ),
                     onPressed: () {},
-                    child: Text("Log in", style: TextStyle(fontSize: 18, color: Colors.white)),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12), // Remove horizontal padding
+                      child: Center( // Center the text
+                        child: Text(
+                          "Log in",
+                          style: TextStyle(fontSize: 18, color: Colors.white),
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 20),
                   Row(
@@ -154,8 +182,21 @@ class LoginPage extends StatelessWidget {
                     children: [
                       Text("Don't have an account?"),
                       TextButton(
-                        onPressed: () {},
-                        child: Text("Sign Up", style: TextStyle(color: Colors.red)),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RegistrationPage()),
+                          );
+                        },
+                        child: Text(
+                          "Sign Up",
+                          style: TextStyle(
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold, // Make the text bold
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.red, // Underline same color as the font
+                          ),
+                        ),
                       ),
                     ],
                   ),
