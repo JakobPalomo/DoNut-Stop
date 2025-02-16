@@ -146,6 +146,7 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
         child: Row(
           children: [
+            SizedBox(width: 35),
             _buildChip("Strawberry"),
             SizedBox(width: 8),
             _buildChip("Chocolate"),
@@ -157,6 +158,7 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
             _buildChip("Glazed"),
             SizedBox(width: 8),
             _buildChip("Ube"),
+            SizedBox(width: 35),
           ],
         ),
       ),
@@ -461,54 +463,56 @@ class CatalogPageTodaysOffers extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(35, 0, 0, 35),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Today's Offers & See More
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 35, 0),
-            child: Wrap(
-              alignment: WrapAlignment
-                  .start, // Centers buttons inside the full-width container
-              spacing: 20, // Horizontal spacing between buttons
-              runSpacing: 5,
-              children: [
-                Text(
-                  "Today's Offers",
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
+            padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
+            child: Container(
+              width: double.infinity, // Ensures full width
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween, // Ensures spacing works
+                spacing: 20, // Horizontal spacing between buttons
+                runSpacing: 5,
+                children: [
+                  Text(
+                    "Today's Offers",
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                Material(
-                  color: Colors.transparent, // Ensures no background color
-                  borderRadius: BorderRadius.circular(8), // Rounded edges
-                  child: InkWell(
-                    onTap: () {
-                      debugPrint("See More clicked");
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    splashColor:
-                        Colors.white.withOpacity(0.3), // White ripple effect
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      child: Text(
-                        "See More",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFCA2E55),
+                  Material(
+                    color: Colors.transparent, // Ensures no background color
+                    borderRadius: BorderRadius.circular(8), // Rounded edges
+                    child: InkWell(
+                      onTap: () {
+                        debugPrint("See More clicked");
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      splashColor:
+                          Colors.white.withOpacity(0.3), // White ripple effect
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        child: Text(
+                          "See More",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFCA2E55),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(height: 10),
@@ -522,6 +526,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  SizedBox(width: 35),
                   OfferSelectionWidget(
                     image: "assets/front_donut/fdonut5.png",
                     title: "Strawberry Wheel",
@@ -630,6 +635,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
+                  SizedBox(width: 20),
                 ],
               ),
             ),
@@ -637,7 +643,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
           SizedBox(height: 20),
           // Buttons
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 35, 0),
+            padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
             child: Container(
               width: double
                   .infinity, // Ensures it spans the full width of the screen
@@ -718,54 +724,56 @@ class CatalogPageDonuts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.fromLTRB(35, 0, 0, 35),
+      padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Donuts & See More
           Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 35, 0),
-            child: Wrap(
-              alignment: WrapAlignment
-                  .start, // Centers buttons inside the full-width container
-              spacing: 20, // Horizontal spacing between buttons
-              runSpacing: 5,
-              children: [
-                Text(
-                  "Donuts",
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
+            padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
+            child: Container(
+              width: double.infinity, // Ensures full width
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween, // Ensures spacing works
+                spacing: 20, // Horizontal spacing between buttons
+                runSpacing: 5,
+                children: [
+                  Text(
+                    "Donuts",
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
-                Material(
-                  color: Colors.transparent, // Ensures no background color
-                  borderRadius: BorderRadius.circular(8), // Rounded edges
-                  child: InkWell(
-                    onTap: () {
-                      debugPrint("See More clicked");
-                    },
-                    borderRadius: BorderRadius.circular(20),
-                    splashColor:
-                        Colors.white.withOpacity(0.3), // White ripple effect
-                    child: Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      child: Text(
-                        "See More",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFFCA2E55),
+                  Material(
+                    color: Colors.transparent, // Ensures no background color
+                    borderRadius: BorderRadius.circular(8), // Rounded edges
+                    child: InkWell(
+                      onTap: () {
+                        debugPrint("See More clicked");
+                      },
+                      borderRadius: BorderRadius.circular(20),
+                      splashColor:
+                          Colors.white.withOpacity(0.3), // White ripple effect
+                      child: Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        child: Text(
+                          "See More",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFFCA2E55),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           SizedBox(height: 10),
@@ -779,6 +787,7 @@ class CatalogPageDonuts extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
+                  SizedBox(width: 35),
                   DonutSelectionWidget(
                     image: "assets/side_donut/sdonut8.png",
                     title: "Chocolate Cherry",
@@ -819,6 +828,7 @@ class CatalogPageDonuts extends StatelessWidget {
                     title: "Purple Scramble",
                     newPrice: "₱45",
                   ),
+                  SizedBox(width: 20),
                 ],
               ),
             ),
@@ -826,7 +836,7 @@ class CatalogPageDonuts extends StatelessWidget {
           SizedBox(height: 20),
           // Buttons
           Padding(
-            padding: EdgeInsets.fromLTRB(0, 0, 35, 0),
+            padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
             child: Container(
               width: double
                   .infinity, // Ensures it spans the full width of the screen

@@ -180,14 +180,32 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   : [],
             ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           TextField(
             decoration: InputDecoration(
               hintText: hint,
-              border: const OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide:
+                    BorderSide(color: Colors.black26), // Default border color
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                    color: Color(0xFFCA2E55), width: 2.0), // Highlight color
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide:
+                    BorderSide(color: Colors.black26), // Normal border color
+              ),
               filled: true,
               fillColor: Colors.white,
             ),
+            cursorColor: Color(0xFFCA2E55), // Changes the cursor color
+            style: TextStyle(
+                fontFamily: 'Inter',
+                color: Colors.black), // Text color inside the field
           ),
         ],
       ),
@@ -195,43 +213,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
   }
 
   Widget _buildPasswordField(String label, String hint, bool isRequired) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: label,
-              style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold),
-              children: isRequired
-                  ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
-                  : [],
-            ),
-          ),
-          const SizedBox(height: 5),
-          TextField(
-            obscureText: true,
-            decoration: InputDecoration(
-              hintText: hint,
-              border: const OutlineInputBorder(),
-              filled: true,
-              fillColor: Colors.white,
-              suffixIcon: const Icon(Icons.visibility_off),
-            ),
-          ),
-        ],
-      ),
-    );
+    return PasswordField(label: label, hint: hint, isRequired: isRequired);
   }
 }
 
@@ -253,12 +235,22 @@ class RegPageBtnFieldSection extends StatelessWidget {
               children: [
                 Expanded(
                   child: _buildCancelButton(
-                      "Cancel", Colors.white, const Color(0xFFDC345E), () {}),
+                      "Cancel", Colors.white, const Color(0xFFDC345E), () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyApp()),
+                    );
+                  }),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _buildSignUpButton(
-                      "Sign Up", const Color(0xFFDC345E), Colors.white, () {}),
+                      "Sign Up", const Color(0xFFDC345E), Colors.white, () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  }),
                 ),
               ],
             ),
@@ -358,6 +350,97 @@ class RegPageBtnFieldSection extends StatelessWidget {
             color: Colors.white,
           ),
         ),
+      ),
+    );
+  }
+}
+
+class PasswordField extends StatefulWidget {
+  final String label;
+  final String hint;
+  final bool isRequired;
+  final bool isBorderWhite; // New parameter with default value false
+
+  const PasswordField({
+    Key? key,
+    required this.label,
+    required this.hint,
+    required this.isRequired,
+    this.isBorderWhite = false, // Default is false
+  }) : super(key: key);
+
+  @override
+  _PasswordFieldState createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    Color borderColor = widget.isBorderWhite ? Colors.white : Colors.black26;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              text: widget.label,
+              style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.black,
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold),
+              children: widget.isRequired
+                  ? [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
+                  : [],
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            obscureText: _obscureText,
+            decoration: InputDecoration(
+              hintText: widget.hint,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide:
+                    BorderSide(color: borderColor), // Dynamic border color
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                    color: Color(0xFFEF4F56), width: 2.0), // Highlight color
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide:
+                    BorderSide(color: borderColor), // Dynamic enabled border
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText; // Toggle visibility
+                  });
+                },
+              ),
+            ),
+            cursorColor: Color(0xFFCA2E55),
+            style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+          ),
+        ],
       ),
     );
   }
