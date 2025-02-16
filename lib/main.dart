@@ -274,7 +274,9 @@ class HomeTxtFieldSection extends StatelessWidget {
                     hintText: "HOME PAGE",
                     hintMaxLines: 2,
                     hintStyle: TextStyle(
-                        fontWeight: FontWeight.bold, color: Colors.black)),
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black)),
               )),
             ],
           ),
@@ -389,7 +391,7 @@ class TxtCenter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 40, right: 40),
+      padding: EdgeInsets.only(left: 40, right: 40, bottom: 25),
       child: Container(
         width: double.infinity,
         alignment: Alignment.center,
@@ -398,10 +400,10 @@ class TxtCenter extends StatelessWidget {
           child: Text(
             "At Donut Stop, every bite is a moment of pure joy! Whether you're craving a classic glazed, a chocolate-filled delight, or a unique new flavor. Life is too short to skip dessert, so why stop? Indulge in happiness, one donut at a time!",
             style: TextStyle(
+              fontFamily: 'Inter',
               fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: Color(0xFFAD5F25),
-              fontFamily: 'Inter', // Apply Inter font
             ),
             textAlign: TextAlign.justify,
           ),
@@ -427,36 +429,35 @@ class BtnFieldSection extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
+                width: double.infinity, // Take full width if wrapped
+                constraints: BoxConstraints(maxWidth: 200), // Limit max width
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
+                  gradient: LinearGradient(
                     colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(100),
                 ),
                 child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  },
+                  onPressed: () {},
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(100),
                     ),
+                    padding: EdgeInsets.symmetric(vertical: 25),
                   ),
-                  child: const Text(
-                    "Get Started",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
-                      color: Colors.white,
+                  child: Center(
+                    child: Text(
+                      "Get Started",
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
                 ),
