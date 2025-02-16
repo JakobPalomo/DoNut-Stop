@@ -82,7 +82,16 @@ class LoginPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset("main_logo0.png", height: 150),
+                      Container(
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/main_logo0.png"),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
                       SizedBox(height: 20),
                       Text(
                         "Welcome, User!",
