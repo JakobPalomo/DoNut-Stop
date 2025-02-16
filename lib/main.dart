@@ -51,6 +51,8 @@ class MyApp extends StatelessWidget {
           ),
         ),
         body: Container(
+          width: double.infinity,
+          height: double.infinity,
           decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
@@ -69,6 +71,7 @@ class MyApp extends StatelessWidget {
                 MidDonut(),
                 TxtCenter(),
                 BtnFieldSection(),
+                SizedBox(height: 30),
               ],
             ),
           ),
@@ -292,25 +295,31 @@ class RightPink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 170,
+      height: 200,
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: 200,
-                height: 130,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/index_donut1.png'),
-                    fit: BoxFit.cover,
+          Positioned(
+            left: -35,
+            top: -35, // Move the image upwards
+            child: Transform.rotate(
+              angle: 0, // Adjust the angle as needed
+              child: Transform.scale(
+                scale: 1.1, // Adjust the scale as needed
+                child: Container(
+                  width: 250,
+                  height: 200,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/index_donut1.png'),
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
-            ],
+            ),
           ),
+
           // Right-side image
           Positioned(
             right: 10,
@@ -318,15 +327,15 @@ class RightPink extends StatelessWidget {
             child: Transform.rotate(
               angle: -1, // Adjust the angle as needed
               child: Transform.scale(
-                scale: 1.5, // Adjust the scale as needed
+                scale: 1.8, // Adjust the scale as needed
                 child: Container(
-                  width: MediaQuery.of(context).size.width * 0.3,
+                  width: MediaQuery.of(context).size.width * 0.4,
                   height: 250,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage(
                           'assets/half_donut.png'), // Right-side image
-                      fit: BoxFit.cover, // Adjust as needed
+                      fit: BoxFit.contain, // Adjust as needed
                     ),
                   ),
                 ),
@@ -366,15 +375,20 @@ class MidDonut extends StatelessWidget {
           // Positioned image
           Positioned(
             left: 0,
-            child: Transform.rotate(
-              angle: .2, // Adjust the angle as needed
-              child: Transform.scale(
-                scale: 1.2, // Adjust the scale as needed
-                child: Image.asset(
-                  'assets/index_donuts.png',
-                  width: 500,
-                  height: 200,
-                  fit: BoxFit.cover,
+            right: 0,
+            top: -30,
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Transform.rotate(
+                angle: .2, // Adjust the angle as needed
+                child: Transform.scale(
+                  scale: 1.8, // Adjust the scale as needed
+                  child: Image.asset(
+                    'assets/index_donuts.png',
+                    width: 500,
+                    height: 200,
+                    fit: BoxFit.contain,
+                  ),
                 ),
               ),
             ),
