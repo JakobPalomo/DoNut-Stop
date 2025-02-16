@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
+
 import '../main.dart';
 
 void main() {
@@ -77,7 +79,6 @@ class RegistrationPage extends StatelessWidget {
                       ),
                     ),
                     Container(
-
                       child: Column(
                         children: [
                           const RegPageTxtFieldSection(),
@@ -109,7 +110,7 @@ class RegPageImgSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0),
       child:
-      Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.cover),
+          Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.contain),
     );
   }
 }
@@ -120,7 +121,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: BoxConstraints(maxWidth: 600),
+      constraints: BoxConstraints(maxWidth: 800),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -129,7 +130,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
             children: [
               Expanded(
                   child:
-                  _buildTextField("First name ", "Your first name", true)),
+                      _buildTextField("First name ", "Your first name", true)),
               const SizedBox(width: 10),
               Expanded(
                   child: _buildTextField("Last name ", "Your last name", true)),
@@ -155,10 +156,6 @@ class RegPageTxtFieldSection extends StatelessWidget {
     );
   }
 
-
-
-
-
   Widget _buildTextField(String label, String hint, bool isRequired) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -175,11 +172,11 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   fontWeight: FontWeight.bold),
               children: isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -213,11 +210,11 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   fontWeight: FontWeight.bold),
               children: isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -244,87 +241,88 @@ class RegPageBtnFieldSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Container(
-            child: Row(
+      alignment: Alignment.center, // Centers content
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 800), // Max width 800px
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
+        child: Column(
+          children: [
+            Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                  child: _buildCancelButton("Cancel", Colors.white, Color(0xFFDC345E), () {}),
+                  child: _buildCancelButton(
+                      "Cancel", Colors.white, const Color(0xFFDC345E), () {}),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: _buildSignUpButton("Sign Up", Color(0xFFDC345E), Colors.white, () {}),
+                  child: _buildSignUpButton(
+                      "Sign Up", const Color(0xFFDC345E), Colors.white, () {}),
                 ),
-                // Invisible element to keep the container at max width
-
               ],
             ),
-          ),
-          const SizedBox(height: 20),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
-            },
-            child: RichText(
-              text: const TextSpan(
-                text: "Already have an account? ",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
-                  fontFamily: 'Inter',
-                ),
-                children: [
-                  TextSpan(
-                    text: "Login",
-                    style: TextStyle(
-                      decoration: TextDecoration.underline,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
-                      color: Color(0xFFCA2E55),
-                    ),
+            const SizedBox(height: 10),
+            MouseRegion(
+              child: RichText(
+                text: TextSpan(
+                  text: "Already have an account? ",
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    fontFamily: 'Inter',
                   ),
-                ],
+                  children: [
+                    TextSpan(
+                      text: "Login",
+                      style: const TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Inter',
+                        color: Color(0xFFCA2E55),
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
+                          );
+                        },
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            SizedBox(height: 50),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildCancelButton(
       String text, Color bgColor, Color textColor, VoidCallback onPressed) {
-    return Container(
-      margin: EdgeInsets.only(right: 10), // Adjust margin to prevent line break
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          shadowColor: Colors.transparent, // No shadow effect
-          side: BorderSide(color: Color(0xFFEF4F56)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          padding: EdgeInsets.symmetric(
-              vertical: 18, horizontal: 30), // Adjust padding
-          minimumSize: Size(100, 50), // Ensure minimum size to prevent line break
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: bgColor,
+        shadowColor: Colors.transparent,
+        side: const BorderSide(color: Color(0xFFEF4F56)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        child: FittedBox( // Ensure text fits within the button
-          fit: BoxFit.scaleDown,
-          child: Text(
-            text,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-              color: Color(0xFFCA2E55),
-            ),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 30),
+        minimumSize: const Size(100, 50),
+      ),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+            color: Color(0xFFCA2E55),
           ),
         ),
       ),
@@ -333,34 +331,31 @@ class RegPageBtnFieldSection extends StatelessWidget {
 
   Widget _buildSignUpButton(
       String text, Color bgColor, Color textColor, VoidCallback onPressed) {
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(20),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: ElevatedButton(
-          onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent, // transparent background
-            shadowColor: Colors.transparent, // No shadow effect
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: EdgeInsets.symmetric(
-                vertical: 18, horizontal: 30), // Bigger padding
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 30),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
           ),
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itelec_quiz_one/pages/product_page.dart';
 
 import '../main.dart';
 
@@ -9,9 +10,9 @@ class CatalogPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Catalog Page Module",
-      debugShowCheckedModeBanner: false, // Remove debug ribbon
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFFFE0B6), // Set background color
+        scaffoldBackgroundColor: Color(0xFFFFE0B6),
       ),
       home: Scaffold(
         appBar: AppBar(
@@ -231,102 +232,121 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(right: 20),
-      decoration: BoxDecoration(
-        color: Color(0xFFFFEEE1),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      width: 230,
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              Container(
-                padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    widget.image,
-                    width: 180,
-                    height: 180,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click, // Shows pointer cursor on hover
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ProductPage()),
+              );
+            },
+            borderRadius:
+                BorderRadius.circular(16), // Ensures ripple follows shape
+            splashColor: Colors.brown.withOpacity(0.2), // Ripple effect color
+            child: Ink(
+              decoration: BoxDecoration(
+                color: Color(0xFFFFEEE1), // Background color inside Ink
+                borderRadius: BorderRadius.circular(16),
               ),
-              Positioned(
-                top: 10,
-                left: 0,
-                child: IconButton(
-                  icon: Icon(
-                    isFav ? Icons.favorite : Icons.favorite_border,
-                    color: Color(0xFFCA2E55),
+              width: 230,
+              child: Column(
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.asset(
+                            widget.image,
+                            width: 180,
+                            height: 180,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 10,
+                        left: 0,
+                        child: IconButton(
+                          icon: Icon(
+                            isFav ? Icons.favorite : Icons.favorite_border,
+                            color: Color(0xFFCA2E55),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              isFav = !isFav;
+                            });
+                          },
+                          padding: EdgeInsets.all(5),
+                          constraints: BoxConstraints(),
+                        ),
+                      ),
+                    ],
                   ),
-                  onPressed: () {
-                    setState(() {
-                      isFav = !isFav;
-                    });
-                  },
-                  padding: EdgeInsets.all(5),
-                  constraints: BoxConstraints(),
-                ),
+                  SizedBox(width: 12),
+                  Container(
+                    padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: Color(0xFF462521),
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          widget.description,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 12,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Text(
+                              widget.oldPrice,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14,
+                                color: Color(0xFF665A49),
+                                decoration: TextDecoration.lineThrough,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              widget.newPrice,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 22,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          SizedBox(width: 12),
-          Container(
-            padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    color: Color(0xFF462521),
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  widget.description,
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 12,
-                    color: Color(0xFF665A49),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      widget.oldPrice,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
-                        color: Color(0xFF665A49),
-                        decoration: TextDecoration.lineThrough,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      widget.newPrice,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        fontSize: 22,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -349,52 +369,84 @@ class DonutSelectionWidget extends StatelessWidget {
       child: Stack(
         clipBehavior: Clip.none, // Allows image to extend outside the container
         children: [
-          // Donut Info Container
-          Container(
-            width: 200,
-            margin: EdgeInsets.only(top: 40), // Ensures image extends outside
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Color(0xFFFFEEE1),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Column(
-              children: [
-                SizedBox(height: 100), // Space for donut image
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
-                    color: Color(0xFF462521),
+          // Donut Info Container (with ripple effect)
+          Padding(
+            padding: const EdgeInsets.only(top: 70),
+            child: Material(
+              color: Colors.transparent, // Prevents ripple from being hidden
+              child: InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProductPage()),
+                  );
+                },
+                borderRadius:
+                    BorderRadius.circular(16), // Ensures ripple follows shape
+                splashColor:
+                    Colors.brown.withOpacity(0.2), // Ripple effect color
+                child: Ink(
+                  decoration: BoxDecoration(
+                    color: Color(0xFFFFEEE1), // Background color inside Ink
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  newPrice,
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.w700,
-                    fontSize: 22,
-                    color: Color(0xFFCA2E55),
+                  child: Container(
+                    width: 200,
+                    margin: EdgeInsets.only(
+                        top: 40), // Ensures image extends outside
+                    padding: EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+                        SizedBox(height: 30), // Space for donut image
+                        Text(
+                          title,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16,
+                            color: Color(0xFF462521),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          newPrice,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w700,
+                            fontSize: 22,
+                            color: Color(0xFFCA2E55),
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ],
+              ),
             ),
           ),
 
-          // Donut Image (positioned on top)
+          // Donut Image (Clickable but no ripple effect)
           Positioned(
             top: -15, // Moves the image slightly upwards
             left: 20,
             right: 20,
-            child: Image.asset(
-              image,
-              width: 180,
-              height: 180,
-              fit: BoxFit.contain,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click, // Shows pointer cursor
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ProductPage()),
+                  );
+                },
+                child: Image.asset(
+                  image,
+                  width: 180,
+                  height: 180,
+                  fit: BoxFit.contain,
+                ),
+              ),
             ),
           ),
         ],
@@ -416,8 +468,11 @@ class CatalogPageTodaysOffers extends StatelessWidget {
           // Today's Offers & See More
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 35, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+              alignment: WrapAlignment
+                  .start, // Centers buttons inside the full-width container
+              spacing: 20, // Horizontal spacing between buttons
+              runSpacing: 5,
               children: [
                 Text(
                   "Today's Offers",
@@ -581,68 +636,75 @@ class CatalogPageTodaysOffers extends StatelessWidget {
           ),
           SizedBox(height: 20),
           // Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Back to Top Button
-              Container(
-                margin: EdgeInsets.only(right: 30),
-                child: ElevatedButton(
-                  onPressed: () => () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shadowColor: Colors.transparent, // No shadow effect
-                    side: BorderSide(color: Color(0xFFEF4F56)),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 35, 0),
+            child: Container(
+              width: double
+                  .infinity, // Ensures it spans the full width of the screen
+              alignment: Alignment.center, // Centers content inside
+              child: Wrap(
+                alignment: WrapAlignment
+                    .center, // Centers buttons inside the full-width container
+                spacing: 20, // Horizontal spacing between buttons
+                runSpacing: 10, // Vertical spacing when wrapped
+                children: [
+                  // Back to Top Button
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shadowColor: Colors.transparent,
+                      side: BorderSide(color: Color(0xFFEF4F56)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding:
+                          EdgeInsets.symmetric(vertical: 18, horizontal: 50),
                     ),
-                    padding: EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 50), // Bigger padding
-                  ),
-                  child: Text(
-                    "Back to Top",
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFFCA2E55),
+                    child: Text(
+                      "Back to Top",
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFCA2E55),
+                      ),
                     ),
                   ),
-                ),
-              ),
 
-              // More Today's Offers Button with Gradient
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.transparent, // transparent background
-                    shadowColor: Colors.transparent, // No shadow effect
-                    shape: RoundedRectangleBorder(
+                  // More Today's Offers Button with Gradient
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 30), // Bigger padding
-                  ),
-                  child: Text(
-                    "More Today's Offers",
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 18, horizontal: 30),
+                      ),
+                      child: Text(
+                        "More Today's Offers",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           )
         ],
       ),
@@ -663,8 +725,11 @@ class CatalogPageDonuts extends StatelessWidget {
           // Donuts & See More
           Padding(
             padding: const EdgeInsets.fromLTRB(0, 0, 35, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Wrap(
+              alignment: WrapAlignment
+                  .start, // Centers buttons inside the full-width container
+              spacing: 20, // Horizontal spacing between buttons
+              runSpacing: 5,
               children: [
                 Text(
                   "Donuts",
@@ -760,67 +825,75 @@ class CatalogPageDonuts extends StatelessWidget {
           ),
           SizedBox(height: 20),
           // Buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Back to Top Button
-              Container(
-                margin: EdgeInsets.only(right: 30),
-                child: ElevatedButton(
-                  onPressed: () => () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    shadowColor: Colors.transparent, // No shadow effect
-                    side: BorderSide(color: Color(0xFFEF4F56)),
-                    shape: RoundedRectangleBorder(
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 35, 0),
+            child: Container(
+              width: double
+                  .infinity, // Ensures it spans the full width of the screen
+              alignment: Alignment.center,
+              child: Wrap(
+                alignment: WrapAlignment
+                    .center, // Centers buttons inside the full-width container
+                spacing: 20, // Horizontal spacing between buttons
+                runSpacing: 10,
+                children: [
+                  // Back to Top Button
+                  ElevatedButton(
+                    onPressed: () => () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shadowColor: Colors.transparent, // No shadow effect
+                      side: BorderSide(color: Color(0xFFEF4F56)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 18, horizontal: 50), // Bigger padding
+                    ),
+                    child: Text(
+                      "Back to Top",
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFFCA2E55),
+                      ),
+                    ),
+                  ),
+                  // More Donuts Button with Gradient
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 50), // Bigger padding
-                  ),
-                  child: Text(
-                    "Back to Top",
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: Color(0xFFCA2E55),
+                    child: ElevatedButton(
+                      onPressed: () {},
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            Colors.transparent, // transparent background
+                        shadowColor: Colors.transparent, // No shadow effect
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 18, horizontal: 30), // Bigger padding
+                      ),
+                      child: Text(
+                        "More Donuts",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-              // More Donuts Button with Gradient
-              Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.transparent, // transparent background
-                    shadowColor: Colors.transparent, // No shadow effect
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                        vertical: 18, horizontal: 30), // Bigger padding
-                  ),
-                  child: Text(
-                    "More Donuts",
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+            ),
           )
         ],
       ),
