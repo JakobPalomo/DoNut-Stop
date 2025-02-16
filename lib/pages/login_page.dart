@@ -10,6 +10,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Login Page Module",
+      debugShowCheckedModeBanner: false, // Remove debug ribbon
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFFDE5CC),
         fontFamily: 'Inter', // Apply Inter font
@@ -191,7 +192,7 @@ class LoginPage extends StatelessWidget {
                         child: Text(
                           "Sign Up",
                           style: TextStyle(
-                            color: Colors.red,
+                            color: Color(0xFFCA2E55),
                             fontWeight: FontWeight.bold, // Make the text bold
                             decoration: TextDecoration.underline,
                             decorationColor: Colors.red, // Underline same color as the font

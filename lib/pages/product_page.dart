@@ -7,6 +7,7 @@ class ProductPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Product Page Module",
+      debugShowCheckedModeBanner: false, // Remove debug ribbon
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFFFE0B6),
         fontFamily: 'Inter', // Apply Inter font
