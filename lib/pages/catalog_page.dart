@@ -9,6 +9,7 @@ class CatalogPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Catalog Page Module",
+      debugShowCheckedModeBanner: false, // Remove debug ribbon
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFFFE0B6), // Set background color
       ),

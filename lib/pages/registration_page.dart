@@ -13,6 +13,7 @@ class RegistrationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "Donut Stop Registration",
+      debugShowCheckedModeBanner: false, // Remove debug ribbon
       theme: ThemeData(
         primarySwatch: Colors.pink,
         fontFamily: 'Inter',

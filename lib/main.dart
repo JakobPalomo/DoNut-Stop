@@ -11,19 +11,19 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "DoNut Stop",
+      debugShowCheckedModeBanner: false, // Remove debug ribbon
       home: Scaffold(
         appBar: AppBar(
           backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0, // Remove shadow
+          elevation: 0,
           scrolledUnderElevation: 0,
             title: Row(
             children: [
-              // Square Image on the Left
               Container(
                 width: 50,
                 height: 50,
@@ -292,30 +292,43 @@ class RightPink extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 170,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space images apart
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          // Left-side image
-          Container(
-            width: 250,
-            height: 170,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(
-                    'assets/index_donut1.png'), // Replace with actual left-side image
-                fit: BoxFit.cover, // Adjust as needed
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 200,
+                height: 130,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(
+                        'assets/index_donut1.png'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-
           // Right-side image
-          Container(
-            width: MediaQuery.of(context).size.width * 0.3,
-            height: 170,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/half_donut.png'), // Right-side image
-                fit: BoxFit.cover, // Adjust as needed
+          Positioned(
+            right: 10,
+            top: -30, // Move the image upwards
+            child: Transform.rotate(
+              angle: -1, // Adjust the angle as needed
+              child: Transform.scale(
+                scale: 1.5, // Adjust the scale as needed
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 0.3,
+                  height: 250,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('assets/half_donut.png'), // Right-side image
+                      fit: BoxFit.cover, // Adjust as needed
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
@@ -332,19 +345,38 @@ class MidDonut extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(0),
-      child: Column(
+      child: Stack(
+         clipBehavior: Clip.none, // Allow overflow
         children: [
-          Image.asset(
-            'assets/index_donuts.png',
-            width: 500,
-            height: 200,
-            fit: BoxFit.cover,
+          // Other elements
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 180),
+                child: Image.asset(
+                  'assets/homepage_logo.png',
+                  width: 500,
+                  height: 350,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ],
           ),
-          Image.asset(
-            'assets/homepage_logo.png',
-            width: 500,
-            height: 200,
-            fit: BoxFit.cover,
+          // Positioned image
+          Positioned(
+            left: 0,
+            child: Transform.rotate(
+              angle: .2, // Adjust the angle as needed
+              child: Transform.scale(
+                scale: 1.2, // Adjust the scale as needed
+                child: Image.asset(
+                  'assets/index_donuts.png',
+                  width: 500,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -358,7 +390,7 @@ class TxtCenter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: EdgeInsets.only(left: 40, right: 40), // Remove top padding
       child: Container(
         child: Column(
           children: [
@@ -367,8 +399,10 @@ class TxtCenter extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
-                color: Color.fromRGBO(254, 86, 133, 1),
+                color: Color(0xFFAD5F25),
+                fontFamily: 'Inter', // Apply Inter font
               ),
+              textAlign: TextAlign.justify,
             ),
           ],
         ),
@@ -418,7 +452,7 @@ class BtnFieldSection extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Inter',
-                    color: Colors.white, // Text remains visible over gradient
+                    color: Colors.white,
                   ),
                 ),
               ),
