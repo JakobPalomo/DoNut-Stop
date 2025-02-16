@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
@@ -79,6 +80,7 @@ class LoginPage extends StatelessWidget {
                   constraints: BoxConstraints(maxWidth: 800),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Image.asset("main_logo0.png", height: 150),
                       SizedBox(height: 20),
@@ -89,30 +91,63 @@ class LoginPage extends StatelessWidget {
                           fontWeight: FontWeight.w900,
                           color: Color(0xFF462521),
                         ),
+                        textAlign: TextAlign.center,
                       ),
                       SizedBox(height: 20),
                       _buildTextField("Username ", "Your username", true),
                       SizedBox(height: 10),
                       _buildPasswordField("Password ", "Your password", true),
                       SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          MyCheckbox(),
-                          TextButton(
-                            onPressed: () {},
-                            child: Text(
-                              "Forgot password?",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: Color(0xFF686868),
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                      Container(
+                        width: double.infinity,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            if (constraints.maxWidth < 300) {
+                              // Small screen: Wrap items to prevent overflow
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  MyCheckbox(),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      "Forgot password?",
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        color: Color(0xFF686868),
+                                      ),
+                                      softWrap: true, // Allow wrapping
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              // Larger screen: Maintain spaceBetween
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  MyCheckbox(),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      "Forgot password?",
+                                      style: TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                        color: Color(0xFF686868),
+                                      ),
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
+                          },
+                        ),
                       ),
                       SizedBox(height: 20),
                       Container(
@@ -174,102 +209,112 @@ class LoginPage extends StatelessWidget {
                         ],
                       ),
                       SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shadowColor: Colors.transparent,
-                              iconSize: 22,
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              side: BorderSide(color: Colors.grey.shade300),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 18, horizontal: 20),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CatalogPage()),
-                              );
-                            },
-                            icon: Icon(FontAwesomeIcons.facebook,
-                                color: Colors.blue),
-                            label: Text(
-                              "Facebook",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: Color(0xFF686868),
+                      Container(
+                          width: double.infinity,
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            spacing: 20,
+                            runSpacing: 10,
+                            children: [
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  shadowColor: Colors.transparent,
+                                  iconSize: 22,
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15)),
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 18, horizontal: 20),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CatalogPage()),
+                                  );
+                                },
+                                icon: Icon(FontAwesomeIcons.facebook,
+                                    color: Colors.blue),
+                                label: Text(
+                                  "Facebook",
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: Color(0xFF686868),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(width: 20),
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              elevation: 0,
-                              shadowColor: Colors.transparent,
-                              iconSize: 22,
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              side: BorderSide(color: Colors.grey.shade300),
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 18, horizontal: 20),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CatalogPage()),
-                              );
-                            },
-                            icon: Icon(FontAwesomeIcons.google,
-                                color: Colors.red),
-                            label: Text(
-                              "Google",
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: Color(0xFF686868),
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  elevation: 0,
+                                  shadowColor: Colors.transparent,
+                                  iconSize: 22,
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15)),
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 18, horizontal: 20),
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CatalogPage()),
+                                  );
+                                },
+                                icon: Icon(FontAwesomeIcons.google,
+                                    color: Colors.red),
+                                label: Text(
+                                  "Google",
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    color: Color(0xFF686868),
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                            ],
+                          )),
                       SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Don't have an account?"),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegistrationPage()),
-                              );
-                            },
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                color: Color(0xFFCA2E55),
-                                fontWeight:
-                                    FontWeight.bold, // Make the text bold
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors
-                                    .red, // Underline same color as the font
-                              ),
+                      MouseRegion(
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Don't have an account? ",
+                            style: const TextStyle(
+                              color: Color(0xFF686868),
+                              fontSize: 14,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w500,
                             ),
+                            children: [
+                              TextSpan(
+                                text: "Sign up",
+                                style: const TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Inter',
+                                  color: Color(0xFFCA2E55),
+                                ),
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              RegistrationPage()),
+                                    );
+                                  },
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),

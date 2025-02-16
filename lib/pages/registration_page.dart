@@ -126,31 +126,74 @@ class RegPageTxtFieldSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                  child:
-                      _buildTextField("First name ", "Your first name", true)),
-              const SizedBox(width: 10),
-              Expanded(
-                  child: _buildTextField("Last name ", "Your last name", true)),
-            ],
+          Container(
+            width: double.infinity,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 320) {
+                  // Large screen: Use Row for two fields side by side
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _buildTextField(
+                            "First name", "Your first name", true),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: _buildTextField(
+                            "Last name", "Your last name", true),
+                      ),
+                    ],
+                  );
+                } else {
+                  // Small screen: Use Column to stack fields
+                  return Column(
+                    children: [
+                      _buildTextField("First name", "Your first name", true),
+                      _buildTextField("Last name", "Your last name", true),
+                    ],
+                  );
+                }
+              },
+            ),
           ),
           _buildTextField("Username ", "Your username", true),
           _buildTextField("Email address ", "Your email address", true),
           _buildPasswordField("Password ", "Your password", true),
           _buildPasswordField(
               "Confirm password ", "Confirm your password", true),
-          Row(
-            children: [
-              Expanded(
-                  child: _buildTextField("District ", "Your district", true)),
-              const SizedBox(width: 10),
-              Expanded(child: _buildTextField("City ", "Your city", true)),
-              const SizedBox(width: 10),
-              Expanded(child: _buildTextField("ZIP ", "Your ZIP", true)),
-            ],
-          ),
+          Container(
+            width: double.infinity,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                if (constraints.maxWidth > 400) {
+                  // Large screen: Use Row for two fields side by side
+                  return Row(
+                    children: [
+                      Expanded(
+                          child: _buildTextField(
+                              "District ", "Your district", true)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: _buildTextField("City ", "Your city", true)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: _buildTextField("ZIP ", "Your ZIP", true)),
+                    ],
+                  );
+                } else {
+                  // Small screen: Use Column to stack fields
+                  return Column(
+                    children: [
+                      _buildTextField("District ", "Your district", true),
+                      _buildTextField("City ", "Your city", true),
+                      _buildTextField("ZIP ", "Your ZIP", true)
+                    ],
+                  );
+                }
+              },
+            ),
+          )
         ],
       ),
     );
@@ -227,33 +270,35 @@ class RegPageBtnFieldSection extends StatelessWidget {
       alignment: Alignment.center, // Centers content
       child: Container(
         constraints: const BoxConstraints(maxWidth: 800), // Max width 800px
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 0),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: _buildCancelButton(
-                      "Cancel", Colors.white, const Color(0xFFDC345E), () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MyApp()),
-                    );
-                  }),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: _buildSignUpButton(
-                      "Sign Up", const Color(0xFFDC345E), Colors.white, () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
-                  }),
-                ),
-              ],
-            ),
+            Container(
+                width: double.infinity, // Ensures full width
+                child: Wrap(
+                  alignment: WrapAlignment.center, // Ensures spacing works
+                  spacing: 20, // Horizontal spacing between buttons
+                  runSpacing: 10,
+                  children: [
+                    Expanded(
+                      child: _buildCancelButton(
+                          "Cancel", Colors.white, const Color(0xFFDC345E), () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyApp()),
+                        );
+                      }),
+                    ),
+                    Expanded(
+                      child: _buildSignUpButton(
+                          "Sign Up", const Color(0xFFDC345E), Colors.white, () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      }),
+                    ),
+                  ],
+                )),
             const SizedBox(height: 10),
             MouseRegion(
               child: RichText(
@@ -304,8 +349,8 @@ class RegPageBtnFieldSection extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 30),
-        minimumSize: const Size(100, 50),
+        padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 53),
+        minimumSize: const Size(200, 50),
       ),
       child: FittedBox(
         fit: BoxFit.scaleDown,
@@ -340,7 +385,8 @@ class RegPageBtnFieldSection extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 30),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 50),
+          minimumSize: const Size(200, 50),
         ),
         child: Text(
           text,
