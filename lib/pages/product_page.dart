@@ -61,7 +61,7 @@ class _ProductPageState extends State<ProductPage> {
                   "assets/front_donut/fdonut3.png",
                   width: 250,
                   height: 250,
-                  fit: BoxFit.cover,
+                  fit: BoxFit.contain,
                 ),
               ),
             ),
@@ -138,27 +138,34 @@ class _ProductPageState extends State<ProductPage> {
                         SizedBox(height: 20),
 
                         // Quantity Selector
-                        Row(
-                          children: [
-                            Text(
-                              "Quantity",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(width: 20),
-                            QuantitySelector(),
-                          ],
-                        ),
+                        SizedBox(
+                            width: double.infinity,
+                            child: Wrap(
+                              alignment: WrapAlignment.start,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              spacing: 20,
+                              runSpacing: 5,
+                              children: [
+                                Text(
+                                  "Quantity",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                QuantitySelector(),
+                              ],
+                            )),
                         SizedBox(height: 20),
 
                         // Price & Add to Cart Button
                         SizedBox(
                           width: double.infinity,
+                          height: 50,
                           child: Wrap(
                             alignment: WrapAlignment.spaceBetween,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             spacing: 30,
                             runSpacing: 30,
                             children: [
