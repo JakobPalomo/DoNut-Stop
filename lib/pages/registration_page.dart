@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
+import 'package:flutter/services.dart'; 
 
 import '../main.dart';
 
@@ -15,16 +16,25 @@ final TextEditingController passwordController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
 final _formKey = GlobalKey<FormState>();
   
-  String? _validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Confirm password is required';
-    }
-    if (value != passwordController.text) {
-      return 'Passwords do not match';
-    }
-    return null;
+  // String? _validateConfirmPassword(String? value) {
+  //   if (value == null || value.isEmpty) {
+  //     return 'Confirm password is required';
+  //   }
+  //   if (value != passwordController.text) {
+  //     return 'Passwords do not match';
+  //   }
+  //   return null;
+  // }
+  String? _validateEmail(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Email is required';
   }
-
+  final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+  if (!emailRegex.hasMatch(value)) {
+    return 'Enter a valid email address';
+  }
+  return null;
+}
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
@@ -179,7 +189,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
             ),
           ),
           _buildTextField("Username ", "Your username", true, usernameController),
-          _buildTextField("Email address ", "Your email address", true, emailController),
+          _buildTextField("Email address ", "Your email address", true, emailController, validator: _validateEmail),
           _buildPasswordField("Password ", "Your password", true, passwordController),
           _buildPasswordField(
               "Confirm password ", "Confirm your password", true, confirmPasswordController),
@@ -221,7 +231,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
     );
   }
 
-Widget _buildTextField(String label, String hint, bool isRequired, TextEditingController? controller) {
+  Widget _buildTextField(String label, String hint, bool isRequired, TextEditingController? controller, {String? Function(String?)? validator}) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 12),
     child: Column(
@@ -264,12 +274,7 @@ Widget _buildTextField(String label, String hint, bool isRequired, TextEditingCo
           ),
           cursorColor: Color(0xFFCA2E55),
           style: TextStyle(fontFamily: 'Inter', color: Colors.black),
-          validator: (value) {
-            if (isRequired && (value == null || value.isEmpty)) {
-              return '$label is required';
-            }
-            return null;
-          },
+          validator: validator,
         ),
       ],
     ),
@@ -278,8 +283,9 @@ Widget _buildTextField(String label, String hint, bool isRequired, TextEditingCo
 
 
   Widget _buildPasswordField(String label, String hint, bool isRequired, TextEditingController passwordController) {
-    return PasswordField(label: label, hint: hint, isRequired: isRequired);
-  }
+    return PasswordField(label: label, hint: hint, isRequired: isRequired,);
+      // validator: _validateConfirmPassword,);
+ }
 }
 
 class RegPageBtnFieldSection extends StatelessWidget {
@@ -429,13 +435,15 @@ class PasswordField extends StatefulWidget {
   final String hint;
   final bool isRequired;
   final bool isBorderWhite; // New parameter with default value false
+  final String? Function(String?)? validator; 
 
   const PasswordField({
     Key? key,
     required this.label,
     required this.hint,
     required this.isRequired,
-    this.isBorderWhite = false, // Default is false
+    this.isBorderWhite = false,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -473,7 +481,7 @@ class _PasswordFieldState extends State<PasswordField> {
             ),
           ),
           const SizedBox(height: 10),
-          TextField(
+          TextFormField(
             obscureText: _obscureText,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -508,6 +516,7 @@ class _PasswordFieldState extends State<PasswordField> {
             ),
             cursorColor: Color(0xFFCA2E55),
             style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+            // validator: validator,
           ),
         ],
       ),
