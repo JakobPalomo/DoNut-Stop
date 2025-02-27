@@ -7,6 +7,24 @@ import '../main.dart';
 void main() {
   runApp(const RegistrationPage());
 }
+final TextEditingController firstNameController = TextEditingController();
+final TextEditingController lastNameController = TextEditingController();
+final TextEditingController usernameController = TextEditingController();
+final TextEditingController emailController = TextEditingController();
+final TextEditingController passwordController = TextEditingController();
+final TextEditingController confirmPasswordController = TextEditingController();
+final _formKey = GlobalKey<FormState>();
+  
+  String? _validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Confirm password is required';
+    }
+    if (value != passwordController.text) {
+      return 'Passwords do not match';
+    }
+    return null;
+  }
+
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
@@ -120,7 +138,9 @@ class RegPageTxtFieldSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Form(
+    key: _formKey, // Attach _formKey here
+    child: Container(
       constraints: BoxConstraints(maxWidth: 800),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Column(
@@ -135,13 +155,14 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   return Row(
                     children: [
                       Expanded(
-                        child: _buildTextField(
-                            "First name", "Your first name", true),
+                        child: 
+                        _buildTextField("First name", "Your first name", true, firstNameController),
+
                       ),
                       SizedBox(width: 10),
                       Expanded(
                         child: _buildTextField(
-                            "Last name", "Your last name", true),
+                            "Last name", "Your last name", true,lastNameController),
                       ),
                     ],
                   );
@@ -149,19 +170,19 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   // Small screen: Use Column to stack fields
                   return Column(
                     children: [
-                      _buildTextField("First name", "Your first name", true),
-                      _buildTextField("Last name", "Your last name", true),
+                      _buildTextField("First name", "Your first name", true, firstNameController),
+                      _buildTextField("Last name", "Your last name", true, lastNameController),
                     ],
                   );
                 }
               },
             ),
           ),
-          _buildTextField("Username ", "Your username", true),
-          _buildTextField("Email address ", "Your email address", true),
-          _buildPasswordField("Password ", "Your password", true),
+          _buildTextField("Username ", "Your username", true, usernameController),
+          _buildTextField("Email address ", "Your email address", true, emailController),
+          _buildPasswordField("Password ", "Your password", true, passwordController),
           _buildPasswordField(
-              "Confirm password ", "Confirm your password", true),
+              "Confirm password ", "Confirm your password", true, confirmPasswordController),
           Container(
             width: double.infinity,
             child: LayoutBuilder(
@@ -172,22 +193,22 @@ class RegPageTxtFieldSection extends StatelessWidget {
                     children: [
                       Expanded(
                           child: _buildTextField(
-                              "District ", "Your district", true)),
+                              "District ", "Your district", true,null)),
                       const SizedBox(width: 10),
                       Expanded(
-                          child: _buildTextField("City ", "Your city", true)),
+                          child: _buildTextField("City ", "Your city", true,null)),
                       const SizedBox(width: 10),
                       Expanded(
-                          child: _buildTextField("ZIP ", "Your ZIP", true)),
+                          child: _buildTextField("ZIP ", "Your ZIP", true,null)),
                     ],
                   );
                 } else {
                   // Small screen: Use Column to stack fields
                   return Column(
                     children: [
-                      _buildTextField("District ", "Your district", true),
-                      _buildTextField("City ", "Your city", true),
-                      _buildTextField("ZIP ", "Your ZIP", true)
+                      _buildTextField("District ", "Your district", true,null),
+                      _buildTextField("City ", "Your city", true,null),
+                      _buildTextField("ZIP ", "Your ZIP", true,null)
                     ],
                   );
                 }
@@ -196,66 +217,67 @@ class RegPageTxtFieldSection extends StatelessWidget {
           )
         ],
       ),
+    )
     );
   }
 
-  Widget _buildTextField(String label, String hint, bool isRequired) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              text: label,
-              style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black,
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold),
-              children: isRequired
-                  ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
-                  : [],
+Widget _buildTextField(String label, String hint, bool isRequired, TextEditingController? controller) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.bold,
             ),
+            children: isRequired
+                ? [
+                    TextSpan(
+                      text: '*',
+                      style: TextStyle(color: Color(0xFFEC2023)),
+                    ),
+                  ]
+                : [],
           ),
-          const SizedBox(height: 10),
-          TextField(
-            decoration: InputDecoration(
-              hintText: hint,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: Colors.black26), // Default border color
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: BorderSide(
-                    color: Color(0xFFCA2E55), width: 2.0), // Highlight color
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: Colors.black26), // Normal border color
-              ),
-              filled: true,
-              fillColor: Colors.white,
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.black26),
             ),
-            cursorColor: Color(0xFFCA2E55), // Changes the cursor color
-            style: TextStyle(
-                fontFamily: 'Inter',
-                color: Colors.black), // Text color inside the field
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Color(0xFFCA2E55), width: 2.0),
+            ),
+            filled: true,
+            fillColor: Colors.white,
           ),
-        ],
-      ),
-    );
-  }
+          cursorColor: Color(0xFFCA2E55),
+          style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+          validator: (value) {
+            if (isRequired && (value == null || value.isEmpty)) {
+              return '$label is required';
+            }
+            return null;
+          },
+        ),
+      ],
+    ),
+  );
+}
 
-  Widget _buildPasswordField(String label, String hint, bool isRequired) {
+
+  Widget _buildPasswordField(String label, String hint, bool isRequired, TextEditingController passwordController) {
     return PasswordField(label: label, hint: hint, isRequired: isRequired);
   }
 }
@@ -289,12 +311,13 @@ class RegPageBtnFieldSection extends StatelessWidget {
                       }),
                     ),
                     Expanded(
-                      child: _buildSignUpButton(
-                          "Sign Up", const Color(0xFFDC345E), Colors.white, () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
+                      child: _buildSignUpButton("Sign Up", const Color(0xFFDC345E), Colors.white, () {
+                        if (_formKey.currentState!.validate()) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage()),
+                          );
+                        }
                       }),
                     ),
                   ],
