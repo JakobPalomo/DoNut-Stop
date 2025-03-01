@@ -14,24 +14,51 @@ final TextEditingController usernameController = TextEditingController();
 final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
+final TextEditingController districtController = TextEditingController();
+final TextEditingController cityController = TextEditingController();
+final TextEditingController zipController = TextEditingController();
 final _formKey = GlobalKey<FormState>();
-  
-  // String? _validateConfirmPassword(String? value) {
-  //   if (value == null || value.isEmpty) {
-  //     return 'Confirm password is required';
-  //   }
-  //   if (value != passwordController.text) {
-  //     return 'Passwords do not match';
-  //   }
-  //   return null;
-  // }
-  String? _validateEmail(String? value) {
+
+String? _validateRequiredField(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'This field is required';
+  }
+  return null;
+}
+
+String? _validateEmail(String? value) {
   if (value == null || value.isEmpty) {
     return 'Email is required';
   }
   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
   if (!emailRegex.hasMatch(value)) {
     return 'Enter a valid email address';
+  }
+  return null;
+}
+
+String? _validatePassword(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Password is required';
+  }
+  if (value.length < 8) {
+    return 'Password must be at least 8 characters long';
+  }
+  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+    return 'Password must contain at least 1 capital letter';
+  }
+  if (!RegExp(r'[0-9]').hasMatch(value)) {
+    return 'Password must contain at least 1 number';
+  }
+  return null;
+}
+
+String? _validateConfirmPassword(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'Confirm password is required';
+  }
+  if (value != passwordController.text) {
+    return 'Passwords do not match';
   }
   return null;
 }
@@ -166,13 +193,13 @@ class RegPageTxtFieldSection extends StatelessWidget {
                     children: [
                       Expanded(
                         child: 
-                        _buildTextField("First name", "Your first name", true, firstNameController),
+                        _buildTextField("First name", "Your first name", true, firstNameController, validator: _validateRequiredField),
 
                       ),
                       SizedBox(width: 10),
                       Expanded(
                         child: _buildTextField(
-                            "Last name", "Your last name", true,lastNameController),
+                            "Last name", "Your last name", true,lastNameController, validator: _validateRequiredField),
                       ),
                     ],
                   );
@@ -180,19 +207,19 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   // Small screen: Use Column to stack fields
                   return Column(
                     children: [
-                      _buildTextField("First name", "Your first name", true, firstNameController),
-                      _buildTextField("Last name", "Your last name", true, lastNameController),
+                      _buildTextField("First name", "Your first name", true, firstNameController, validator: _validateRequiredField),
+                      _buildTextField("Last name", "Your last name", true, lastNameController, validator: _validateRequiredField),
                     ],
                   );
                 }
               },
             ),
           ),
-          _buildTextField("Username ", "Your username", true, usernameController),
+          _buildTextField("Username ", "Your username", true, usernameController, validator: _validateRequiredField),
           _buildTextField("Email address ", "Your email address", true, emailController, validator: _validateEmail),
-          _buildPasswordField("Password ", "Your password", true, passwordController),
+          _buildPasswordField("Password ", "Your password", true, passwordController, validator: _validatePassword),
           _buildPasswordField(
-              "Confirm password ", "Confirm your password", true, confirmPasswordController),
+              "Confirm password ", "Confirm your password", true, confirmPasswordController, validator: _validateConfirmPassword),
           Container(
             width: double.infinity,
             child: LayoutBuilder(
@@ -203,22 +230,22 @@ class RegPageTxtFieldSection extends StatelessWidget {
                     children: [
                       Expanded(
                           child: _buildTextField(
-                              "District ", "Your district", true,null)),
+                              "District ", "Your district", true, districtController, validator: _validateRequiredField)),
                       const SizedBox(width: 10),
                       Expanded(
-                          child: _buildTextField("City ", "Your city", true,null)),
+                          child: _buildTextField("City ", "Your city", true, cityController, validator: _validateRequiredField)),
                       const SizedBox(width: 10),
                       Expanded(
-                          child: _buildTextField("ZIP ", "Your ZIP", true,null)),
+                          child: _buildTextField("ZIP ", "Your ZIP", true, zipController, validator: _validateRequiredField)),
                     ],
                   );
                 } else {
                   // Small screen: Use Column to stack fields
                   return Column(
                     children: [
-                      _buildTextField("District ", "Your district", true,null),
-                      _buildTextField("City ", "Your city", true,null),
-                      _buildTextField("ZIP ", "Your ZIP", true,null)
+                      _buildTextField("District ", "Your district", true, districtController, validator: _validateRequiredField),
+                      _buildTextField("City ", "Your city", true, cityController, validator: _validateRequiredField),
+                      _buildTextField("ZIP ", "Your ZIP", true, zipController, validator: _validateRequiredField)
                     ],
                   );
                 }
@@ -282,9 +309,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
 }
 
 
-  Widget _buildPasswordField(String label, String hint, bool isRequired, TextEditingController passwordController) {
-    return PasswordField(label: label, hint: hint, isRequired: isRequired,);
-      // validator: _validateConfirmPassword,);
+  Widget _buildPasswordField(String label, String hint, bool isRequired, TextEditingController passwordController, {String? Function(String?)? validator}) {
+    return PasswordField(label: label, hint: hint, isRequired: isRequired, validator: validator);
  }
 }
 
@@ -516,7 +542,7 @@ class _PasswordFieldState extends State<PasswordField> {
             ),
             cursorColor: Color(0xFFCA2E55),
             style: TextStyle(fontFamily: 'Inter', color: Colors.black),
-            // validator: validator,
+            validator: widget.validator,
           ),
         ],
       ),
