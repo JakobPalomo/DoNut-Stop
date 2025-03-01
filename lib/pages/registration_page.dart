@@ -13,10 +13,10 @@ final TextEditingController lastNameController = TextEditingController();
 final TextEditingController usernameController = TextEditingController();
 final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
-final TextEditingController confirmPasswordController = TextEditingController();
 final TextEditingController districtController = TextEditingController();
 final TextEditingController cityController = TextEditingController();
 final TextEditingController zipController = TextEditingController();
+final TextEditingController confirmPasswordController = TextEditingController();
 final _formKey = GlobalKey<FormState>();
 
 String? _validateRequiredField(String? value) {
@@ -55,7 +55,7 @@ String? _validatePassword(String? value) {
 
 String? _validateConfirmPassword(String? value) {
   if (value == null || value.isEmpty) {
-    return 'Confirm password is required';
+    return 'Confirm Password is required';
   }
   if (value != passwordController.text) {
     return 'Passwords do not match';
@@ -218,8 +218,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
           _buildTextField("Username ", "Your username", true, usernameController, validator: _validateRequiredField),
           _buildTextField("Email address ", "Your email address", true, emailController, validator: _validateEmail),
           _buildPasswordField("Password ", "Your password", true, passwordController, validator: _validatePassword),
-          _buildPasswordField(
-              "Confirm password ", "Confirm your password", true, confirmPasswordController, validator: _validateConfirmPassword),
+          _buildPasswordField("Confirm Password ", "Confirm your password", true, confirmPasswordController, validator: _validateConfirmPassword),
           Container(
             width: double.infinity,
             child: LayoutBuilder(
@@ -508,6 +507,7 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
           const SizedBox(height: 10),
           TextFormField(
+            controller: widget.label == "Password " ? passwordController : confirmPasswordController, // Use appropriate controller
             obscureText: _obscureText,
             decoration: InputDecoration(
               hintText: widget.hint,
