@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
@@ -116,9 +117,16 @@ class LoginPage extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 20),
-                        _buildTextField("Username ", "Your username", true, usernameController, validator: _validateRequiredField),
+                        _buildTextField("Username ", "Your username", true,
+                            usernameController,
+                            validator: _validateRequiredField,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(50)
+                            ]),
                         SizedBox(height: 10),
-                        _buildPasswordField("Password ", "Your password", true, passwordController, validator: _validateRequiredField),
+                        _buildPasswordField("Password ", "Your password", true,
+                            passwordController,
+                            validator: _validateRequiredField),
                         SizedBox(height: 10),
                         Container(
                           width: double.infinity,
@@ -247,8 +255,10 @@ class LoginPage extends StatelessWidget {
                                     iconSize: 22,
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15)),
-                                    side: BorderSide(color: Colors.grey.shade300),
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    side:
+                                        BorderSide(color: Colors.grey.shade300),
                                     padding: EdgeInsets.symmetric(
                                         vertical: 18, horizontal: 20),
                                   ),
@@ -279,8 +289,10 @@ class LoginPage extends StatelessWidget {
                                     iconSize: 22,
                                     backgroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(15)),
-                                    side: BorderSide(color: Colors.grey.shade300),
+                                        borderRadius:
+                                            BorderRadius.circular(15)),
+                                    side:
+                                        BorderSide(color: Colors.grey.shade300),
                                     padding: EdgeInsets.symmetric(
                                         vertical: 18, horizontal: 20),
                                   ),
@@ -352,7 +364,15 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(String label, String hint, bool isRequired, TextEditingController controller, {String? Function(String?)? validator}) {
+  Widget _buildTextField(
+    String label,
+    String hint,
+    bool isRequired,
+    TextEditingController controller, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
@@ -404,13 +424,17 @@ class LoginPage extends StatelessWidget {
                 fontFamily: 'Inter',
                 color: Colors.black), // Text color inside the field
             validator: validator,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPasswordField(String label, String hint, bool isRequired, TextEditingController controller, {String? Function(String?)? validator}) {
+  Widget _buildPasswordField(String label, String hint, bool isRequired,
+      TextEditingController controller,
+      {String? Function(String?)? validator}) {
     return PasswordField(
       label: label,
       hint: hint,

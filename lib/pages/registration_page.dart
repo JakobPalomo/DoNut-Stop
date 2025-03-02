@@ -1,13 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
-import 'package:flutter/services.dart'; 
 
 import '../main.dart';
 
 void main() {
   runApp(const RegistrationPage());
 }
+
 final TextEditingController firstNameController = TextEditingController();
 final TextEditingController lastNameController = TextEditingController();
 final TextEditingController usernameController = TextEditingController();
@@ -176,141 +177,231 @@ class RegPageTxtFieldSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Form(
-    key: _formKey, // Attach _formKey here
-    child: Container(
-      constraints: BoxConstraints(maxWidth: 800),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        key: _formKey, // Attach _formKey here
+        child: Container(
+          constraints: BoxConstraints(maxWidth: 800),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 320) {
+                      // Large screen: Use Row for two fields side by side
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField("First name",
+                                "Your first name", true, firstNameController,
+                                validator: _validateRequiredField,
+                                keyboardType: TextInputType.text,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(100)
+                                ]),
+                          ),
+                          SizedBox(width: 10),
+                          Expanded(
+                            child: _buildTextField("Last name",
+                                "Your last name", true, lastNameController,
+                                validator: _validateRequiredField,
+                                keyboardType: TextInputType.text,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(100)
+                                ]),
+                          ),
+                        ],
+                      );
+                    } else {
+                      // Small screen: Use Column to stack fields
+                      return Column(
+                        children: [
+                          _buildTextField("First name", "Your first name", true,
+                              firstNameController,
+                              validator: _validateRequiredField,
+                              keyboardType: TextInputType.text,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(100)
+                              ]),
+                          _buildTextField("Last name", "Your last name", true,
+                              lastNameController,
+                              validator: _validateRequiredField,
+                              keyboardType: TextInputType.text,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(100)
+                              ]),
+                        ],
+                      );
+                    }
+                  },
+                ),
+              ),
+              _buildTextField(
+                "Username ",
+                "Your username",
+                true,
+                usernameController,
+                validator: _validateRequiredField,
+                keyboardType: TextInputType.text,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_-]')),
+                  LengthLimitingTextInputFormatter(50)
+                ],
+              ),
+              _buildTextField(
+                  "Email address ", "Your email address", true, emailController,
+                  validator: _validateEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  inputFormatters: [LengthLimitingTextInputFormatter(255)]),
+              _buildPasswordField(
+                  "Password ", "Your password", true, passwordController,
+                  validator: _validatePassword),
+              _buildPasswordField("Confirm Password ", "Confirm your password",
+                  true, confirmPasswordController,
+                  validator: _validateConfirmPassword),
+              Container(
+                width: double.infinity,
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth > 400) {
+                      // Large screen: Use Row for two fields side by side
+                      return Row(
+                        children: [
+                          Expanded(
+                              child: _buildTextField("District ",
+                                  "Your district", true, districtController,
+                                  validator: _validateRequiredField,
+                                  keyboardType: TextInputType.text,
+                                  inputFormatters: [
+                                LengthLimitingTextInputFormatter(255)
+                              ])),
+                          const SizedBox(width: 10),
+                          Expanded(
+                              child: _buildTextField(
+                                  "City ", "Your city", true, cityController,
+                                  validator: _validateRequiredField,
+                                  keyboardType: TextInputType.text,
+                                  inputFormatters: [
+                                LengthLimitingTextInputFormatter(255)
+                              ])),
+                          const SizedBox(width: 10),
+                          Expanded(
+                              child: _buildTextField(
+                            "ZIP ",
+                            "Your ZIP",
+                            true,
+                            zipController,
+                            validator: _validateRequiredField,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(4)
+                            ],
+                          )),
+                        ],
+                      );
+                    } else {
+                      // Small screen: Use Column to stack fields
+                      return Column(
+                        children: [
+                          _buildTextField("District ", "Your district", true,
+                              districtController,
+                              validator: _validateRequiredField,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(255)
+                              ]),
+                          _buildTextField(
+                              "City ", "Your city", true, cityController,
+                              validator: _validateRequiredField,
+                              inputFormatters: [
+                                LengthLimitingTextInputFormatter(255)
+                              ]),
+                          _buildTextField(
+                              "ZIP ", "Your ZIP", true, zipController,
+                              validator: _validateRequiredField,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(4)
+                              ])
+                        ],
+                      );
+                    }
+                  },
+                ),
+              )
+            ],
+          ),
+        ));
+  }
+
+  Widget _buildTextField(
+    String label,
+    String hint,
+    bool isRequired,
+    TextEditingController? controller, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: double.infinity,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth > 320) {
-                  // Large screen: Use Row for two fields side by side
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: 
-                        _buildTextField("First name", "Your first name", true, firstNameController, validator: _validateRequiredField),
-
+          RichText(
+            text: TextSpan(
+              text: label,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+              ),
+              children: isRequired
+                  ? [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
                       ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: _buildTextField(
-                            "Last name", "Your last name", true,lastNameController, validator: _validateRequiredField),
-                      ),
-                    ],
-                  );
-                } else {
-                  // Small screen: Use Column to stack fields
-                  return Column(
-                    children: [
-                      _buildTextField("First name", "Your first name", true, firstNameController, validator: _validateRequiredField),
-                      _buildTextField("Last name", "Your last name", true, lastNameController, validator: _validateRequiredField),
-                    ],
-                  );
-                }
-              },
+                    ]
+                  : [],
             ),
           ),
-          _buildTextField("Username ", "Your username", true, usernameController, validator: _validateRequiredField),
-          _buildTextField("Email address ", "Your email address", true, emailController, validator: _validateEmail),
-          _buildPasswordField("Password ", "Your password", true, passwordController, validator: _validatePassword),
-          _buildPasswordField("Confirm Password ", "Confirm your password", true, confirmPasswordController, validator: _validateConfirmPassword),
-          Container(
-            width: double.infinity,
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                if (constraints.maxWidth > 400) {
-                  // Large screen: Use Row for two fields side by side
-                  return Row(
-                    children: [
-                      Expanded(
-                          child: _buildTextField(
-                              "District ", "Your district", true, districtController, validator: _validateRequiredField)),
-                      const SizedBox(width: 10),
-                      Expanded(
-                          child: _buildTextField("City ", "Your city", true, cityController, validator: _validateRequiredField)),
-                      const SizedBox(width: 10),
-                      Expanded(
-                          child: _buildTextField("ZIP ", "Your ZIP", true, zipController, validator: _validateRequiredField)),
-                    ],
-                  );
-                } else {
-                  // Small screen: Use Column to stack fields
-                  return Column(
-                    children: [
-                      _buildTextField("District ", "Your district", true, districtController, validator: _validateRequiredField),
-                      _buildTextField("City ", "Your city", true, cityController, validator: _validateRequiredField),
-                      _buildTextField("ZIP ", "Your ZIP", true, zipController, validator: _validateRequiredField)
-                    ],
-                  );
-                }
-              },
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hint,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.black26),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Color(0xFFCA2E55), width: 2.0),
+              ),
+              filled: true,
+              fillColor: Colors.white,
             ),
-          )
+            cursorColor: Color(0xFFCA2E55),
+            style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+            validator: validator,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+          ),
         ],
       ),
-    )
     );
   }
 
-  Widget _buildTextField(String label, String hint, bool isRequired, TextEditingController? controller, {String? Function(String?)? validator}) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: TextSpan(
-            text: label,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.bold,
-            ),
-            children: isRequired
-                ? [
-                    TextSpan(
-                      text: '*',
-                      style: TextStyle(color: Color(0xFFEC2023)),
-                    ),
-                  ]
-                : [],
-          ),
-        ),
-        const SizedBox(height: 10),
-        TextFormField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: hint,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.black26),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Color(0xFFCA2E55), width: 2.0),
-            ),
-            filled: true,
-            fillColor: Colors.white,
-          ),
-          cursorColor: Color(0xFFCA2E55),
-          style: TextStyle(fontFamily: 'Inter', color: Colors.black),
-          validator: validator,
-        ),
-      ],
-    ),
-  );
-}
-
-
-  Widget _buildPasswordField(String label, String hint, bool isRequired, TextEditingController passwordController, {String? Function(String?)? validator}) {
-    return PasswordField(label: label, hint: hint, isRequired: isRequired, validator: validator);
- }
+  Widget _buildPasswordField(String label, String hint, bool isRequired,
+      TextEditingController passwordController,
+      {String? Function(String?)? validator}) {
+    return PasswordField(
+        label: label, hint: hint, isRequired: isRequired, validator: validator);
+  }
 }
 
 class RegPageBtnFieldSection extends StatelessWidget {
@@ -342,11 +433,13 @@ class RegPageBtnFieldSection extends StatelessWidget {
                       }),
                     ),
                     Expanded(
-                      child: _buildSignUpButton("Sign Up", const Color(0xFFDC345E), Colors.white, () {
+                      child: _buildSignUpButton(
+                          "Sign Up", const Color(0xFFDC345E), Colors.white, () {
                         if (_formKey.currentState!.validate()) {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginPage()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
                           );
                         }
                       }),
@@ -460,7 +553,7 @@ class PasswordField extends StatefulWidget {
   final String hint;
   final bool isRequired;
   final bool isBorderWhite; // New parameter with default value false
-  final String? Function(String?)? validator; 
+  final String? Function(String?)? validator;
 
   const PasswordField({
     Key? key,
@@ -507,7 +600,9 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
           const SizedBox(height: 10),
           TextFormField(
-            controller: widget.label == "Password " ? passwordController : confirmPasswordController, // Use appropriate controller
+            controller: widget.label == "Password "
+                ? passwordController
+                : confirmPasswordController, // Use appropriate controller
             obscureText: _obscureText,
             decoration: InputDecoration(
               hintText: widget.hint,
@@ -543,6 +638,7 @@ class _PasswordFieldState extends State<PasswordField> {
             cursorColor: Color(0xFFCA2E55),
             style: TextStyle(fontFamily: 'Inter', color: Colors.black),
             validator: widget.validator,
+            inputFormatters: [LengthLimitingTextInputFormatter(255)],
           ),
         ],
       ),
