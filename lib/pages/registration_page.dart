@@ -269,8 +269,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       return Row(
                         children: [
                           Expanded(
-                              child: _buildTextField("District ",
-                                  "Your district", true, districtController,
+                              child: _buildTextField("Barangay",
+                                  "Your barangay", true, districtController,
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
