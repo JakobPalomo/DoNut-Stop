@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
-
-import '../main.dart';
+import 'package:itelec_quiz_one/pages/cart_page.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:itelec_quiz_one/main.dart';
 
 class CatalogPage extends StatelessWidget {
   const CatalogPage({super.key});
@@ -15,63 +16,7 @@ class CatalogPage extends StatelessWidget {
         scaffoldBackgroundColor: Color(0xFFFFE0B6),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0, // Remove shadow
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              // Square Image on the Left
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-
-              // Search Bar
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: SizedBox(
-                    height: 38,
-                    child: TextField(
-                      cursorColor: Colors.white,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Color(0xFF2F090B),
-                        hintText: "Search products",
-                        hintStyle: TextStyle(color: Colors.white70),
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.only(left: 15, right: 10),
-                          child: Icon(Icons.search,
-                              color: Colors.white, size: 18.0),
-                        ), // Search icon
-                        border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(30), // Rounded edges
-                          borderSide: BorderSide.none, // No border
-                        ),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        appBar: CustomAppBar(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -82,11 +27,7 @@ class CatalogPage extends StatelessWidget {
             ],
           ),
         ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
-          ),
-        ),
+        drawer: UserDrawer(),
       ),
     );
   }
@@ -240,9 +181,22 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
           color: Colors.transparent,
           child: InkWell(
             onTap: () {
+              print("Navigating to ProductPage with:");
+              print("Image: ${widget.image}");
+              print("Title: ${widget.title}");
+              print("Description: ${widget.description}");
+              print("Old Price: ${widget.oldPrice}");
+              print("New Price: ${widget.newPrice}");
+
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProductPage()),
+                MaterialPageRoute(
+                    builder: (context) => ProductPage(
+                        image: widget.image,
+                        title: widget.title,
+                        description: widget.description,
+                        oldPrice: widget.oldPrice,
+                        newPrice: widget.newPrice)),
               );
             },
             borderRadius:
@@ -380,7 +334,9 @@ class DonutSelectionWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProductPage()),
+                    MaterialPageRoute(
+                        builder: (context) => ProductPage(
+                            image: image, title: title, newPrice: newPrice)),
                   );
                 },
                 borderRadius:
@@ -439,7 +395,9 @@ class DonutSelectionWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProductPage()),
+                    MaterialPageRoute(
+                        builder: (context) => ProductPage(
+                            image: image, title: title, newPrice: newPrice)),
                   );
                 },
                 child: Image.asset(
