@@ -64,8 +64,85 @@ String? _validateConfirmPassword(String? value) {
   return null;
 }
 
-class RegistrationPage extends StatelessWidget {
+class RegistrationPage extends StatefulWidget {
   const RegistrationPage({super.key});
+
+  @override
+  _RegistrationPageState createState() => _RegistrationPageState();
+}
+
+class _RegistrationPageState extends State<RegistrationPage> {
+  List<UserInformation> submittedData = [];
+  int? _editingIndex;
+
+  void _validateAndSubmit() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        if (_editingIndex != null) {
+          submittedData[_editingIndex!] = UserInformation(
+            firstName: firstNameController.text,
+            lastName: lastNameController.text,
+            username: usernameController.text,
+            email: emailController.text,
+            password: passwordController.text,
+            district: districtController.text,
+            city: cityController.text,
+            zip: zipController.text,
+          );
+          _editingIndex = null;
+        } else {
+          submittedData.add(UserInformation(
+            firstName: firstNameController.text,
+            lastName: lastNameController.text,
+            username: usernameController.text,
+            email: emailController.text,
+            password: passwordController.text,
+            district: districtController.text,
+            city: cityController.text,
+            zip: zipController.text,
+          ));
+        }
+        _clearForm();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Validation successful!'))
+      );
+    }
+  }
+
+  void _clearForm() {
+    firstNameController.clear();
+    lastNameController.clear();
+    usernameController.clear();
+    emailController.clear();
+    passwordController.clear();
+    confirmPasswordController.clear();
+    districtController.clear();
+    cityController.clear();
+    zipController.clear();
+  }
+
+  void _deleteEntry(int index) {
+    setState(() {
+      submittedData.removeAt(index);
+    });
+  }
+
+  void _editEntry(int index) {
+    setState(() {
+      _editingIndex = index;
+      final user = submittedData[index];
+      firstNameController.text = user.firstName;
+      lastNameController.text = user.lastName;
+      usernameController.text = user.username;
+      emailController.text = user.email;
+      passwordController.text = user.password;
+      confirmPasswordController.text = user.password;
+      districtController.text = user.district;
+      cityController.text = user.city;
+      zipController.text = user.zip;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +215,8 @@ class RegistrationPage extends StatelessWidget {
                       child: Column(
                         children: [
                           const RegPageTxtFieldSection(),
-                          const RegPageBtnFieldSection(),
+                          RegPageBtnFieldSection(onValidate: _validateAndSubmit),
+                          _buildSubmittedDataList(),
                         ],
                       ),
                     ),
@@ -154,6 +232,52 @@ class RegistrationPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildSubmittedDataList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: submittedData.length,
+      itemBuilder: (context, index) {
+        final user = submittedData[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            title: Text(
+              '${user.firstName} ${user.lastName}',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color(0xFF462521),
+              ),
+            ),
+            subtitle: Text(
+              'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF462521),
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () => _editEntry(index),
+                ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _deleteEntry(index),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -405,7 +529,9 @@ class RegPageTxtFieldSection extends StatelessWidget {
 }
 
 class RegPageBtnFieldSection extends StatelessWidget {
-  const RegPageBtnFieldSection({super.key});
+  final VoidCallback onValidate;
+
+  const RegPageBtnFieldSection({super.key, required this.onValidate});
 
   @override
   Widget build(BuildContext context) {
@@ -417,35 +543,36 @@ class RegPageBtnFieldSection extends StatelessWidget {
         child: Column(
           children: [
             Container(
-                width: double.infinity, // Ensures full width
-                child: Wrap(
-                  alignment: WrapAlignment.center, // Ensures spacing works
-                  spacing: 20, // Horizontal spacing between buttons
-                  runSpacing: 10,
-                  children: [
-                    Expanded(
-                      child: _buildCancelButton(
-                          "Cancel", Colors.white, const Color(0xFFDC345E), () {
+              width: double.infinity, // Ensures full width
+              child: Wrap(
+                alignment: WrapAlignment.center, // Ensures spacing works
+                spacing: 20, // Horizontal spacing between buttons
+                runSpacing: 10,
+                children: [
+                  _buildCancelButton(
+                    "Cancel", Colors.white, const Color(0xFFDC345E), () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MyApp()),
+                      );
+                    }
+                  ),
+                  _buildSignUpButton(
+                    "Sign Up", const Color(0xFFDC345E), Colors.white, () {
+                      if (_formKey.currentState!.validate()) {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => MyApp()),
+                          MaterialPageRoute(builder: (context) => LoginPage()),
                         );
-                      }),
-                    ),
-                    Expanded(
-                      child: _buildSignUpButton(
-                          "Sign Up", const Color(0xFFDC345E), Colors.white, () {
-                        if (_formKey.currentState!.validate()) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()),
-                          );
-                        }
-                      }),
-                    ),
-                  ],
-                )),
+                      }
+                    }
+                  ),
+                  _buildValidateButton(
+                    "Validate", const Color(0xFFDC345E), Colors.white, onValidate
+                  ),
+                ].reversed.toList(), // Reverse the order of children
+              ),
+            ),
             const SizedBox(height: 10),
             MouseRegion(
               child: RichText(
@@ -469,8 +596,7 @@ class RegPageBtnFieldSection extends StatelessWidget {
                         ..onTap = () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()),
+                            MaterialPageRoute(builder: (context) => LoginPage()),
                           );
                         },
                     ),
@@ -514,6 +640,40 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildSignUpButton(
+      String text, Color bgColor, Color textColor, VoidCallback onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 50),
+          minimumSize: const Size(200, 50),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w700,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildValidateButton(
       String text, Color bgColor, Color textColor, VoidCallback onPressed) {
     return Container(
       decoration: BoxDecoration(
@@ -644,4 +804,26 @@ class _PasswordFieldState extends State<PasswordField> {
       ),
     );
   }
+}
+
+class UserInformation {
+  final String firstName;
+  final String lastName;
+  final String username;
+  final String email;
+  final String password;
+  final String district;
+  final String city;
+  final String zip;
+
+  UserInformation({
+    required this.firstName,
+    required this.lastName,
+    required this.username,
+    required this.email,
+    required this.password,
+    required this.district,
+    required this.city,
+    required this.zip,
+  });
 }
