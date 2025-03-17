@@ -144,6 +144,95 @@ class _RegistrationPageState extends State<RegistrationPage> {
     });
   }
 
+  void _saveEdit(int index) {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        submittedData[index] = UserInformation(
+          firstName: firstNameController.text,
+          lastName: lastNameController.text,
+          username: usernameController.text,
+          email: emailController.text,
+          password: passwordController.text,
+          district: districtController.text,
+          city: cityController.text,
+          zip: zipController.text,
+        );
+        _editingIndex = null;
+        _clearForm();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Update successful!'))
+      );
+    }
+  }
+
+  Widget _buildTextField(
+    String label,
+    String hint,
+    bool isRequired,
+    TextEditingController? controller, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          RichText(
+            text: TextSpan(
+              text: label,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+              ),
+              children: isRequired
+                  ? [
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
+                  : [],
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextFormField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: hint,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.black26),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Color(0xFFCA2E55), width: 2.0),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+            cursorColor: Color(0xFFCA2E55),
+            style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+            validator: validator,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordField(String label, String hint, bool isRequired,
+      TextEditingController passwordController,
+      {String? Function(String?)? validator}) {
+    return PasswordField(
+        label: label, hint: hint, isRequired: isRequired, validator: validator);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -243,41 +332,96 @@ class _RegistrationPageState extends State<RegistrationPage> {
         final user = submittedData[index];
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-          child: ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            title: Text(
-              '${user.firstName} ${user.lastName}',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF462521),
-              ),
-            ),
-            subtitle: Text(
-              'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 14,
-                color: Color(0xFF462521),
-              ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _editEntry(index),
+          child: _editingIndex == index
+              ? _buildEditForm(index)
+              : ListTile(
+                  contentPadding: const EdgeInsets.all(16),
+                  title: Text(
+                    '${user.firstName} ${user.lastName}',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xFF462521),
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      color: Color(0xFF462521),
+                    ),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _editEntry(index),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deleteEntry(index),
+                      ),
+                    ],
+                  ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteEntry(index),
+        );
+      },
+    );
+  }
+
+  Widget _buildEditForm(int index) {
+    return Form(
+      key: _formKey,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            _buildTextField("First name", "Your first name", true, firstNameController,
+                validator: _validateRequiredField),
+            _buildTextField("Last name", "Your last name", true, lastNameController,
+                validator: _validateRequiredField),
+            _buildTextField("Username", "Your username", true, usernameController,
+                validator: _validateRequiredField),
+            _buildTextField("Email address", "Your email address", true, emailController,
+                validator: _validateEmail),
+            _buildPasswordField("Password", "Your password", true, passwordController,
+                validator: _validatePassword),
+            _buildPasswordField("Confirm Password", "Confirm your password", true, confirmPasswordController,
+                validator: _validateConfirmPassword),
+            _buildTextField("Barangay", "Your barangay", true, districtController,
+                validator: _validateRequiredField),
+            _buildTextField("City", "Your city", true, cityController,
+                validator: _validateRequiredField),
+            _buildTextField("ZIP", "Your ZIP", true, zipController,
+                validator: _validateRequiredField),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _saveEdit(index),
+                  child: Text('Save'),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _editingIndex = null;
+                      _clearForm();
+                    });
+                  },
+                  child: Text('Cancel'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                  ),
                 ),
               ],
             ),
-          ),
-        );
-      },
+          ],
+        ),
+      ),
     );
   }
 }
