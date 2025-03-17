@@ -300,15 +300,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         color: Color(0xFF462521),
                       ),
                     ),
-                    Container(
-                      child: Column(
-                        children: [
-                          const RegPageTxtFieldSection(),
-                          RegPageBtnFieldSection(onValidate: _validateAndSubmit),
-                          _buildSubmittedDataList(),
-                        ],
-                      ),
-                    ),
+                    if (_editingIndex == null) const RegPageTxtFieldSection(),
+                    RegPageBtnFieldSection(onValidate: _validateAndSubmit),
+                    _buildSubmittedDataList(),
                   ],
                 ),
               ),
