@@ -19,5 +19,4 @@ class UserInformation {
     required this.city,
     required this.zip,
   });
-
 }
