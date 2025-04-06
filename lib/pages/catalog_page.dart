@@ -1,10 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
 
 import '../main.dart';
 
-class CatalogPage extends StatelessWidget {
+class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
+
+  @override
+  _CatalogPageState createState() => _CatalogPageState();
+}
+
+class _CatalogPageState extends State<CatalogPage> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
+  final CollectionReference _donutsCollection =
+      FirebaseFirestore.instance.collection('donuts');
+
+  void _createDonut() async {
+    if (_nameController.text.isNotEmpty && _priceController.text.isNotEmpty) {
+      await _donutsCollection.add({
+        'name': _nameController.text,
+        'price': double.tryParse(_priceController.text) ?? 0.0,
+      });
+      _nameController.clear();
+      _priceController.clear();
+    }
+  }
+
+  void _updateDonut(String id, String newName, double newPrice) async {
+    await _donutsCollection.doc(id).update({'name': newName, 'price': newPrice});
+  }
+
+  void _deleteDonut(String id) async {
+    await _donutsCollection.doc(id).delete();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,33 +42,30 @@ class CatalogPage extends StatelessWidget {
       title: "Catalog Page Module",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFFFE0B6),
+        scaffoldBackgroundColor: const Color(0xFFFFE0B6),
       ),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0, // Remove shadow
+          backgroundColor: const Color(0xFFEDC690),
+          elevation: 0,
           scrolledUnderElevation: 0,
           title: Row(
             children: [
-              // Square Image on the Left
               Container(
                 width: 50,
                 height: 50,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
+                  image: const DecorationImage(
                     image: AssetImage("assets/mini_logo.png"),
                     fit: BoxFit.contain,
                   ),
                 ),
               ),
-
-              // Search Bar
               Expanded(
                 child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: SizedBox(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: const SizedBox(
                     height: 38,
                     child: TextField(
                       cursorColor: Colors.white,
@@ -56,11 +83,10 @@ class CatalogPage extends StatelessWidget {
                           padding: EdgeInsets.only(left: 15, right: 10),
                           child: Icon(Icons.search,
                               color: Colors.white, size: 18.0),
-                        ), // Search icon
+                        ),
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(30), // Rounded edges
-                          borderSide: BorderSide.none, // No border
+                         borderRadius: BorderRadius.all(Radius.circular(30)),
+                          borderSide: BorderSide.none,
                         ),
                         contentPadding:
                             EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -75,10 +101,11 @@ class CatalogPage extends StatelessWidget {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              CatalogPageTitleContainer(),
-              CatalogPageTodaysOffers(),
-              CatalogPageDonuts(),
-              SizedBox(height: 30)
+              const CatalogPageTitleContainer(),
+              const CatalogPageTodaysOffers(),
+              const CatalogPageDonuts(),
+              const SizedBox(height: 30),
+              _buildCrudSection(),
             ],
           ),
         ),
@@ -87,6 +114,133 @@ class CatalogPage extends StatelessWidget {
             children: [DrwerHeader(), DrwListView()],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCrudSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(
+              labelText: 'Donut Name',
+              border: OutlineInputBorder(),
+            ),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: _priceController,
+            decoration: const InputDecoration(
+              labelText: 'Donut Price',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: _createDonut,
+            child: const Text('Add Donut'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFDC345E),
+            ),
+          ),
+          const SizedBox(height: 20),
+          StreamBuilder<QuerySnapshot>(
+            stream: _donutsCollection.snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(child: Text('No donuts found.'));
+              }
+              final donuts = snapshot.data!.docs;
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: donuts.length,
+                itemBuilder: (context, index) {
+                  final donut = donuts[index];
+                  final donutName = donut['name'];
+                  final donutPrice = donut['price'];
+                  return ListTile(
+                    title: Text(donutName),
+                    subtitle: Text('Price: ₱${donutPrice.toStringAsFixed(2)}'),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.blue),
+                          onPressed: () {
+                            _nameController.text = donutName;
+                            _priceController.text = donutPrice.toString();
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Update Donut'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      TextField(
+                                        controller: _nameController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'New Name',
+                                        ),
+                                      ),
+                                      TextField(
+                                        controller: _priceController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'New Price',
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        _updateDonut(
+                                          donut.id,
+                                          _nameController.text,
+                                          double.tryParse(
+                                                  _priceController.text) ??
+                                              0.0,
+                                        );
+                                        _nameController.clear();
+                                        _priceController.clear();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Update'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        _nameController.clear();
+                                        _priceController.clear();
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteDonut(donut.id),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
     );
   }

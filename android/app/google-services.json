@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "357182777996",
+    "project_id": "donut-stop",
+    "storage_bucket": "donut-stop.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:357182777996:android:9e1346fa3a8b253d06a9a9",
+        "android_client_info": {
+          "package_name": "com.example.itelec_quiz_one"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1cT7DJ1Vpk7i9oofmBrMRk5lRjRbu44s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
