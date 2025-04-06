@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
 
 class ProductPage extends StatefulWidget {
+  final String image;
+  final String title;
+  final String description;
+  final String oldPrice;
+  final String newPrice;
   final bool isFavInitial;
 
-  ProductPage({
+  const ProductPage({
+    this.image = "assets/front_donut/fdonut5.png",
+    this.title = "Strawberry Sprimkle",
+    this.description =
+        "Strawberry Sprinkles doni is a treat you can't resist! With a soft, fluffy base coated in rich strawberry glaze and topped with colorful ssprinkle, every bite is a perfect  balance of sweetness.",
+    this.oldPrice = "₱90",
+    this.newPrice = "₱76",
     this.isFavInitial = false,
+    super.key,
   });
 
   @override
-  _ProductPageState createState() => _ProductPageState();
+  State<ProductPage> createState() => _ProductPageState();
 }
 
 class _ProductPageState extends State<ProductPage> {
+  @override
   late bool isFav;
 
   @override
@@ -58,7 +71,7 @@ class _ProductPageState extends State<ProductPage> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
                 child: Image.asset(
-                  "assets/front_donut/fdonut3.png",
+                  widget.image,
                   width: 250,
                   height: 250,
                   fit: BoxFit.contain,
@@ -92,7 +105,7 @@ class _ProductPageState extends State<ProductPage> {
                           children: [
                             Expanded(
                               child: Text(
-                                "Strawberry Sprinkle",
+                                widget.title,
                                 style: TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.w800,
@@ -128,7 +141,7 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                         SizedBox(height: 20),
                         Text(
-                          "Strawberry Sprinkles donut is a treat you can’t resist! With a soft, fluffy base coated in rich strawberry glaze and topped with colorful sprinkles, every bite is a perfect balance of sweetness.",
+                          widget.description,
                           style: TextStyle(
                             fontSize: 14,
                             color: Color(0xFF666666),
@@ -170,7 +183,7 @@ class _ProductPageState extends State<ProductPage> {
                             runSpacing: 30,
                             children: [
                               Text(
-                                "₱50",
+                                widget.newPrice,
                                 style: TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.w700,
