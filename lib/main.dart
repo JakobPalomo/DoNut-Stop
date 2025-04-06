@@ -1,10 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'package:firebase_core/firebase_core.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: "AIzaSyANrhbfi3htnVLnZzLGgRXED5yH3YotKy4",
+        authDomain: "donut-stop.firebaseapp.com",
+        projectId: "donut-stop",
+        storageBucket: "donut-stop.firebasestorage.app",
+        messagingSenderId: "357182777996",
+        appId: "1:357182777996:web:a9547e3826d3c0e906a9a9",
+      ),
+    );
+  } else {
+    await Firebase.initializeApp();
+  }
+
   runApp(const MyApp());
 }
 
