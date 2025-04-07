@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
+import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:itelec_quiz_one/main.dart';
 
@@ -13,30 +14,6 @@ class CatalogPage extends StatefulWidget {
 }
 
 class _CatalogPageState extends State<CatalogPage> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final CollectionReference _donutsCollection =
-      FirebaseFirestore.instance.collection('donuts');
-
-  void _createDonut() async {
-    if (_nameController.text.isNotEmpty && _priceController.text.isNotEmpty) {
-      await _donutsCollection.add({
-        'name': _nameController.text,
-        'price': double.tryParse(_priceController.text) ?? 0.0,
-      });
-      _nameController.clear();
-      _priceController.clear();
-    }
-  }
-
-  void _updateDonut(String id, String newName, double newPrice) async {
-    await _donutsCollection.doc(id).update({'name': newName, 'price': newPrice});
-  }
-
-  void _deleteDonut(String id) async {
-    await _donutsCollection.doc(id).delete();
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -54,138 +31,10 @@ class _CatalogPageState extends State<CatalogPage> {
               const CatalogPageTodaysOffers(),
               const CatalogPageDonuts(),
               const SizedBox(height: 30),
-              _buildCrudSection(),
             ],
           ),
         ),
         drawer: UserDrawer(),
-      ),
-    );
-  }
-
-  Widget _buildCrudSection() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          TextField(
-            controller: _nameController,
-            decoration: const InputDecoration(
-              labelText: 'Donut Name',
-              border: OutlineInputBorder(),
-            ),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _priceController,
-            decoration: const InputDecoration(
-              labelText: 'Donut Price',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: _createDonut,
-            child: const Text('Add Donut'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFDC345E),
-            ),
-          ),
-          const SizedBox(height: 20),
-          StreamBuilder<QuerySnapshot>(
-            stream: _donutsCollection.snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(child: Text('No donuts found.'));
-              }
-              final donuts = snapshot.data!.docs;
-              return ListView.builder(
-                shrinkWrap: true,
-                itemCount: donuts.length,
-                itemBuilder: (context, index) {
-                  final donut = donuts[index];
-                  final donutName = donut['name'];
-                  final donutPrice = donut['price'];
-                  return ListTile(
-                    title: Text(donutName),
-                    subtitle: Text('Price: ₱${donutPrice.toStringAsFixed(2)}'),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            _nameController.text = donutName;
-                            _priceController.text = donutPrice.toString();
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  title: const Text('Update Donut'),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextField(
-                                        controller: _nameController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'New Name',
-                                        ),
-                                      ),
-                                      TextField(
-                                        controller: _priceController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'New Price',
-                                        ),
-                                        keyboardType: TextInputType.number,
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        _updateDonut(
-                                          donut.id,
-                                          _nameController.text,
-                                          double.tryParse(
-                                                  _priceController.text) ??
-                                              0.0,
-                                        );
-                                        _nameController.clear();
-                                        _priceController.clear();
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Update'),
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        _nameController.clear();
-                                        _priceController.clear();
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: const Text('Cancel'),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteDonut(donut.id),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ],
       ),
     );
   }
@@ -901,51 +750,33 @@ class CatalogPageDonuts extends StatelessWidget {
             height: 235,
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SizedBox(width: 35),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut8.png",
-                    title: "Chocolate Cherry",
-                    newPrice: "₱50",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut7.png",
-                    title: "Strawberry Rain",
-                    newPrice: "₱65",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut6.png",
-                    title: "Purple Blast",
-                    newPrice: "₱45",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut5.png",
-                    title: "Royal Ube",
-                    newPrice: "₱45",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut4.png",
-                    title: "Matcha Rainbow",
-                    newPrice: "₱45",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut3.png",
-                    title: "Clear Glaze",
-                    newPrice: "₱45",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut2.png",
-                    title: "Purple Drip",
-                    newPrice: "₱45",
-                  ),
-                  DonutSelectionWidget(
-                    image: "assets/side_donut/sdonut1.png",
-                    title: "Purple Scramble",
-                    newPrice: "₱45",
-                  ),
-                  SizedBox(width: 20),
-                ],
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection('products').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text('No donuts found.'));
+                  }
+                  final donuts = snapshot.data!.docs;
+                  final images = [
+                    "assets/side_donut/sdonut8.png",
+                    "assets/side_donut/sdonut7.png",
+                    "assets/side_donut/sdonut6.png",
+                  ];
+                  return Row(
+                    children: List.generate(donuts.length, (index) {
+                      final donut = donuts[index];
+                      final image = images[index % images.length];
+                      return DonutSelectionWidget(
+                        image: image,
+                        title: donut['name'],
+                        newPrice: '₱${donut['price'].toStringAsFixed(2)}',
+                      );
+                    }),
+                  );
+                },
               ),
             ),
           ),
