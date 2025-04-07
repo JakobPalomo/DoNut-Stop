@@ -4,25 +4,79 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../main.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
-    final TextEditingController usernameController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+  _LoginPageState createState() => _LoginPageState();
+}
 
-    String? _validateRequiredField(String? value) {
-      if (value == null || value.isEmpty) {
-        return 'This field is required';
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  String? _errorText; // Add a variable to store error messages
+
+  Future<void> _loginUser() async {
+    if (_formKey.currentState!.validate()) {
+      print('Email: ' + emailController.text);
+      print('Password: ' + passwordController.text);
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+        setState(() {
+          _errorText = null; // Clear the error message on successful login
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => CatalogPage()),
+        );
+      } on FirebaseAuthException catch (e) {
+        String errorMessage;
+        if (e.code == 'user-not-found') {
+          errorMessage = 'No user found for that email.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Wrong password provided.';
+        } else {
+          errorMessage = 'Login failed: invalid email or password';
+        }
+        setState(() {
+          _errorText = errorMessage;
+        });
+      } catch (e) {
+        setState(() {
+          _errorText = 'An unexpected error occurred.';
+        });
       }
-      return null;
     }
+  }
 
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email is required';
+    }
+    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
+    if (!emailRegex.hasMatch(value)) {
+      return 'Enter a valid email address';
+    }
+    return null;
+  }
+
+  String? _validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Password is required';
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: "Login Page Module",
       debugShowCheckedModeBanner: false, // Remove debug ribbon
@@ -117,16 +171,26 @@ class LoginPage extends StatelessWidget {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 20),
-                        _buildTextField("Username ", "Your username", true,
-                            usernameController,
-                            validator: _validateRequiredField,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(50)
-                            ]),
+                        _buildTextField("Email ", "Your email", true,
+                            emailController,
+                            validator: _validateEmail),
                         SizedBox(height: 10),
                         _buildPasswordField("Password ", "Your password", true,
                             passwordController,
-                            validator: _validateRequiredField),
+                            validator: _validatePassword),
+                        SizedBox(height: 10),
+                        if (_errorText != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Text(
+                              _errorText!,
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         SizedBox(height: 10),
                         Container(
                           width: double.infinity,
@@ -192,15 +256,7 @@ class LoginPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => CatalogPage()),
-                                );
-                              }
-                            },
+                            onPressed: _loginUser,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.transparent,
                               shadowColor: Colors.transparent,
@@ -435,11 +491,18 @@ class LoginPage extends StatelessWidget {
   Widget _buildPasswordField(String label, String hint, bool isRequired,
       TextEditingController controller,
       {String? Function(String?)? validator}) {
-    return PasswordField(
-      label: label,
-      hint: hint,
-      isRequired: isRequired,
-      isBorderWhite: true,
+    return TextFormField(
+      controller: controller,
+      obscureText: true,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        filled: true,
+        fillColor: Colors.white,
+      ),
       validator: validator,
     );
   }
