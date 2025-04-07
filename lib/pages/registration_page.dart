@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import '../models/userInformation.dart';
-
 import '../main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   runApp(const RegistrationPage());
@@ -20,6 +21,9 @@ final TextEditingController cityController = TextEditingController();
 final TextEditingController zipController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
 final _formKey = GlobalKey<FormState>();
+
+final FirebaseAuth _auth = FirebaseAuth.instance;
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
 String? _validateRequiredField(String? value) {
   if (value == null || value.isEmpty) {
@@ -76,41 +80,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   List<UserInformation> submittedData = [];
   int? _editingIndex;
 
-  void _validateAndSubmit() {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        if (_editingIndex != null) {
-          submittedData[_editingIndex!] = UserInformation(
-            firstName: firstNameController.text,
-            lastName: lastNameController.text,
-            username: usernameController.text,
-            email: emailController.text,
-            password: passwordController.text,
-            district: districtController.text,
-            city: cityController.text,
-            zip: zipController.text,
-          );
-          _editingIndex = null;
-        } else {
-          submittedData.add(UserInformation(
-            firstName: firstNameController.text,
-            lastName: lastNameController.text,
-            username: usernameController.text,
-            email: emailController.text,
-            password: passwordController.text,
-            district: districtController.text,
-            city: cityController.text,
-            zip: zipController.text,
-          ));
-        }
-        _clearForm();
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Validation successful!'))
-      );
-    }
-  }
-
   void _clearForm() {
     firstNameController.clear();
     lastNameController.clear();
@@ -164,6 +133,40 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Update successful!'))
       );
+    }
+  }
+
+  Future<void> _registerUser() async {
+    if (_formKey.currentState!.validate()) {
+      try {
+        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        await _firestore.collection('users').doc(userCredential.user!.uid).set({
+          'firstName': firstNameController.text,
+          'lastName': firstNameController.text,
+          'username': usernameController.text,
+          'email': emailController.text,
+          'district': districtController.text,
+          'city': cityController.text,
+          'zip': zipController.text,
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration successful! Please log in.')),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
     }
   }
 
@@ -301,8 +304,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         color: Color(0xFF462521),
                       ),
                     ),
-                    if (_editingIndex == null) const RegPageTxtFieldSection(),
-                    RegPageBtnFieldSection(onValidate: _validateAndSubmit),
+                    if (_editingIndex == null)
+                      RegPageTxtFieldSection(),
+                    RegPageBtnFieldSection(onRegisterUser: _registerUser),
                     _buildSubmittedDataList(),
                   ],
                 ),
@@ -668,48 +672,47 @@ class RegPageTxtFieldSection extends StatelessWidget {
 }
 
 class RegPageBtnFieldSection extends StatelessWidget {
-  final VoidCallback onValidate;
+  final VoidCallback onRegisterUser;
 
-  const RegPageBtnFieldSection({super.key, required this.onValidate});
+  const RegPageBtnFieldSection({
+    Key? key,
+    required this.onRegisterUser,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      alignment: Alignment.center, // Centers content
+      alignment: Alignment.center,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 800), // Max width 800px
+        constraints: const BoxConstraints(maxWidth: 800),
         child: Column(
           children: [
             Container(
-              width: double.infinity, // Ensures full width
+              width: double.infinity,
               child: Wrap(
-                alignment: WrapAlignment.center, // Ensures spacing works
-                spacing: 20, // Horizontal spacing between buttons
+                alignment: WrapAlignment.center,
+                spacing: 20,
                 runSpacing: 10,
                 children: [
                   _buildCancelButton(
-                    "Cancel", Colors.white, const Color(0xFFDC345E), () {
+                    "Cancel",
+                    Colors.white,
+                    const Color(0xFFDC345E),
+                    () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MyApp()),
                       );
-                    }
+                    },
                   ),
                   _buildSignUpButton(
-                    "Sign Up", const Color(0xFFDC345E), Colors.white, () {
-                      if (_formKey.currentState!.validate()) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      }
-                    }
+                    "Sign Up",
+                    const Color(0xFFDC345E),
+                    Colors.white,
+                    onRegisterUser,
                   ),
-                  _buildValidateButton(
-                    "Validate", const Color(0xFFDC345E), Colors.white, onValidate
-                  ),
-                ].reversed.toList(), // Reverse the order of children
+                ].reversed.toList(),
               ),
             ),
             const SizedBox(height: 10),
@@ -743,7 +746,7 @@ class RegPageBtnFieldSection extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 50),
+            const SizedBox(height: 50),
           ],
         ),
       ),
@@ -751,7 +754,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildCancelButton(
-      String text, Color bgColor, Color textColor, VoidCallback onPressed) {
+    String text,
+    Color bgColor,
+    Color textColor,
+    VoidCallback onPressed,
+  ) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -779,41 +786,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildSignUpButton(
-      String text, Color bgColor, Color textColor, VoidCallback onPressed) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 50),
-          minimumSize: const Size(200, 50),
-        ),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildValidateButton(
-      String text, Color bgColor, Color textColor, VoidCallback onPressed) {
+    String text,
+    Color bgColor,
+    Color textColor,
+    VoidCallback onPressed,
+  ) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
