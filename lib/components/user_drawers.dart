@@ -4,6 +4,7 @@ import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
+import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/main.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -174,6 +175,25 @@ class AdminDrawer extends StatelessWidget {
             RegistrationPage(), context),
         _buildDrawerItem(
             "Login", 'assets/icons/login.png', LoginPage(), context),
+        ListTile(
+          title: Text(
+            "Product Management",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
+          ),
+          leading: Container(
+            padding: const EdgeInsets.only(left: 15, right: 5),
+            child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProductManagementPage()),
+          ),
+        ),
       ],
     );
   }
@@ -195,6 +215,8 @@ class UserDrawer extends StatelessWidget {
             RegistrationPage(), context),
         _buildDrawerItem(
             "Login", 'assets/icons/login.png', LoginPage(), context),
+            _buildDrawerItem(
+            "Manage Product", 'assets/icons/catalog.png', ProductManagementPage(), context),
       ],
     );
   }

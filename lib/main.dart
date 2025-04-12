@@ -5,6 +5,7 @@ import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
+import 'package:itelec_quiz_one/pages/product_management_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -269,6 +270,26 @@ class _DrwListView extends State<DrwListView> {
             ),
             onTap: () => Navigator.push(
                 context, MaterialPageRoute(builder: (context) => LoginPage())),
+          ),
+          // Page 5 - Product Management
+          ListTile(
+            title: Text(
+              "Manage Products",
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF462521),
+                fontSize: 16,
+              ),
+            ),
+            leading: Container(
+              padding: const EdgeInsets.only(left: 15, right: 5),
+              child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
+            ),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProductManagementPage()),
+            ),
           ),
         ],
       ),
