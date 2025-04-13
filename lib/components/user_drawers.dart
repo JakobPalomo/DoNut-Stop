@@ -166,16 +166,19 @@ class AdminDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
         _buildDrawerItem(
-            "Our Donuts", 'assets/icons/catalog.png', CatalogPage(), context),
+            "Manage Donuts", 'assets/icons/managedonuts.png', CatalogPage(), context),
         _buildDrawerItem(
-            "About Donut", 'assets/icons/about.png', ProductPage(), context),
+            "Manage Users", 'assets/icons/manageusers.png', ProductPage(), context),
         _buildDrawerItem("Register", 'assets/icons/register.png',
             RegistrationPage(), context),
         _buildDrawerItem(
-            "Login", 'assets/icons/login.png', LoginPage(), context),
+            "Profile", 'assets/icons/profile.png', LoginPage(), context),
+        _buildDrawerItem(
+            "Logout", 'assets/icons/logout.png', ProductPage(), context),
         ListTile(
+
           title: Text(
             "Product Management",
             style: TextStyle(
@@ -199,6 +202,44 @@ class AdminDrawer extends StatelessWidget {
   }
 }
 
+// Employee Drawer
+class EmployeeDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomDrawer(
+      drawerHeader: DrawerHeaderWidget(),
+      drawerItems: [
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
+        _buildDrawerItem(
+            "Profile", 'assets/icons/profile.png', LoginPage(), context),
+        _buildDrawerItem(
+            "Logout", 'assets/icons/logout.png', ProductPage(), context),
+        ListTile(
+
+          title: Text(
+            "Product Management",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
+          ),
+          leading: Container(
+            padding: const EdgeInsets.only(left: 15, right: 5),
+            child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
+          ),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ProductManagementPage()),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+
 // User Drawer
 class UserDrawer extends StatelessWidget {
   @override
@@ -206,17 +247,17 @@ class UserDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
+        _buildDrawerItem("Catalog", 'assets/icons/home.png', MyApp(), context),
         _buildDrawerItem(
-            "Our Donuts", 'assets/icons/catalog.png', CatalogPage(), context),
+            "My Cart", 'assets/icons/cart.png', CatalogPage(), context),
         _buildDrawerItem(
-            "About Donut", 'assets/icons/about.png', ProductPage(), context),
-        _buildDrawerItem("Register", 'assets/icons/register.png',
-            RegistrationPage(), context),
+            "My Orders", 'assets/icons/myorders.png', ProductPage(), context),
         _buildDrawerItem(
-            "Login", 'assets/icons/login.png', LoginPage(), context),
+            "Favorites", 'assets/icons/favorites.png', LoginPage(), context),
             _buildDrawerItem(
-            "Manage Product", 'assets/icons/catalog.png', ProductManagementPage(), context),
+            "Profile", 'assets/icons/profile.png', ProductManagementPage(), context),
+        _buildDrawerItem(
+            "Logout", 'assets/icons/logout.png', ProductPage(), context),
       ],
     );
   }

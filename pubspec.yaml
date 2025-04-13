@@ -102,6 +102,14 @@ flutter:
     - assets/icons/register.png
     - assets/icons/about.png
     - assets/icons/back.png
+    - assets/icons/cart.png
+    - assets/icons/favorites.png
+    - assets/icons/logout.png
+    - assets/icons/managedonuts.png
+    - assets/icons/manageorders.png
+    - assets/icons/manageusers.png
+    - assets/icons/myorders.png
+    - assets/icons/profile.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
