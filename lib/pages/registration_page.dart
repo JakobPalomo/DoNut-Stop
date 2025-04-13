@@ -390,11 +390,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 validator: _validatePassword),
             _buildPasswordField("Confirm Password", "Confirm your password", true, confirmPasswordController,
                 validator: _validateConfirmPassword),
-            _buildTextField("Barangay", "Your barangay", true, districtController,
+            _buildTextField("Province", "Your province", true, districtController,
                 validator: _validateRequiredField),
             _buildTextField("City", "Your city", true, cityController,
                 validator: _validateRequiredField),
-            _buildTextField("ZIP", "Your ZIP", true, zipController,
+            _buildTextField("Barangay", "Your barangay", true, zipController,
                 validator: _validateRequiredField),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -536,8 +536,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       return Row(
                         children: [
                           Expanded(
-                              child: _buildTextField("Barangay",
-                                  "Your barangay", true, districtController,
+                              child: _buildTextField("Province",
+                                  "Your province", true, districtController,
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
@@ -555,8 +555,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
-                            "ZIP ",
-                            "Your ZIP",
+                            "Barangay ",
+                            "Your barangay",
                             true,
                             zipController,
                             validator: _validateRequiredField,
@@ -572,7 +572,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       // Small screen: Use Column to stack fields
                       return Column(
                         children: [
-                          _buildTextField("District ", "Your district", true,
+                          _buildTextField("Province ", "Your province", true,
                               districtController,
                               validator: _validateRequiredField,
                               inputFormatters: [
@@ -585,7 +585,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
                                 LengthLimitingTextInputFormatter(255)
                               ]),
                           _buildTextField(
-                              "ZIP ", "Your ZIP", true, zipController,
+                              "Barangay ", "Your barangay", true, zipController,
                               validator: _validateRequiredField,
                               keyboardType: TextInputType.number,
                               inputFormatters: [
