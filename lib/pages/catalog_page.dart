@@ -153,14 +153,13 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
 }
 
 class OfferSelectionWidget extends StatefulWidget {
-  final String image, title, description, oldPrice, newPrice;
+  final String image, title, description, newPrice;
   final bool isFavInitial;
 
   OfferSelectionWidget({
     required this.image,
     required this.title,
     required this.description,
-    required this.oldPrice,
     required this.newPrice,
     this.isFavInitial = false,
   });
@@ -192,7 +191,6 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
               print("Image: ${widget.image}");
               print("Title: ${widget.title}");
               print("Description: ${widget.description}");
-              print("Old Price: ${widget.oldPrice}");
               print("New Price: ${widget.newPrice}");
 
               Navigator.push(
@@ -202,7 +200,6 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                         image: widget.image,
                         title: widget.title,
                         description: widget.description,
-                        oldPrice: widget.oldPrice,
                         newPrice: widget.newPrice)),
               );
             },
@@ -280,16 +277,6 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            Text(
-                              widget.oldPrice,
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 14,
-                                color: Color(0xFF665A49),
-                                decoration: TextDecoration.lineThrough,
-                              ),
-                            ),
                             SizedBox(width: 10),
                             Text(
                               widget.newPrice,
@@ -379,7 +366,7 @@ class DonutSelectionWidget extends StatelessWidget {
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w700,
                             fontSize: 22,
-                            color: Color(0xFFCA2E55),
+                            color: Color(0xFF000000),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -497,7 +484,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Strawberry Wheel",
                     description:
                         "These Baked Strawberry Donuts are filled with fresh strawberries and rainbow sprinkles.",
-                    oldPrice: "₱90",
                     newPrice: "₱76",
                     isFavInitial: true,
                   ),
@@ -506,7 +492,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Chocolate Glaze",
                     description:
                         "Moist and fluffy baked chocolate donuts full of chocolate flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -515,7 +500,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked cotton candy flavored-donuts with a splash of colorful sprinkles.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -524,7 +508,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -533,7 +516,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -542,7 +524,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -551,7 +532,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -560,7 +540,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -569,7 +548,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -578,7 +556,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -587,7 +564,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
@@ -596,7 +572,6 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     title: "Matcha Rainbow",
                     description:
                         "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
                   ),
