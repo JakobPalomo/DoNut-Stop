@@ -5,6 +5,7 @@ import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
+import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
 import 'package:itelec_quiz_one/main.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -251,7 +252,7 @@ class UserDrawer extends StatelessWidget {
         _buildDrawerItem(
             "My Cart", 'assets/icons/cart.png', CatalogPage(), context),
         _buildDrawerItem(
-            "My Orders", 'assets/icons/myorders.png', ProductPage(), context),
+            "My Orders", 'assets/icons/myorders.png', MyOrdersPage(), context), // Update this line
         _buildDrawerItem(
             "Favorites", 'assets/icons/favorites.png', LoginPage(), context),
             _buildDrawerItem(
