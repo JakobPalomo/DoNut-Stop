@@ -6,6 +6,7 @@ import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
+import 'package:itelec_quiz_one/pages/manage_orders.dart'; // Corrected package name
 import 'package:itelec_quiz_one/main.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -177,7 +178,7 @@ class AdminDrawer extends StatelessWidget {
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', LoginPage(), context),
         _buildDrawerItem(
-            "Logout", 'assets/icons/logout.png', ProductPage(), context),
+            "Logout", 'assets/icons/logout.png', LoginPage(), context),
         ListTile(
 
           title: Text(
@@ -214,7 +215,7 @@ class EmployeeDrawer extends StatelessWidget {
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', LoginPage(), context),
         _buildDrawerItem(
-            "Logout", 'assets/icons/logout.png', ProductPage(), context),
+            "Logout", 'assets/icons/logout.png', LoginPage(), context),
         ListTile(
 
           title: Text(
@@ -250,15 +251,17 @@ class UserDrawer extends StatelessWidget {
       drawerItems: [
         _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
         _buildDrawerItem(
-            "My Cart", 'assets/icons/cart.png', CatalogPage(), context),
+            "My Cart", 'assets/icons/cart.png', CartPage(), context),
         _buildDrawerItem(
             "My Orders", 'assets/icons/myorders.png', MyOrdersPage(), context), // Update this line
+        _buildDrawerItem(
+            "Manage Orders", 'assets/icons/manageorders.png', ManageOrdersPage(), context),
         _buildDrawerItem(
             "Favorites", 'assets/icons/favorites.png', LoginPage(), context),
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', ProductManagementPage(), context),
         _buildDrawerItem(
-            "Logout", 'assets/icons/logout.png', ProductPage(), context),
+            "Logout", 'assets/icons/logout.png', LoginPage(), context),
       ],
     );
   }
