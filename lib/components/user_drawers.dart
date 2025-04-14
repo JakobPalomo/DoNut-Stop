@@ -59,7 +59,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderSide: BorderSide.none, // No border
                   ),
                   contentPadding:
-                      EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 ),
               ),
             ),
@@ -248,14 +248,14 @@ class UserDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Catalog", 'assets/icons/home.png', MyApp(), context),
+        _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
         _buildDrawerItem(
             "My Cart", 'assets/icons/cart.png', CatalogPage(), context),
         _buildDrawerItem(
             "My Orders", 'assets/icons/myorders.png', MyOrdersPage(), context), // Update this line
         _buildDrawerItem(
             "Favorites", 'assets/icons/favorites.png', LoginPage(), context),
-            _buildDrawerItem(
+        _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', ProductManagementPage(), context),
         _buildDrawerItem(
             "Logout", 'assets/icons/logout.png', ProductPage(), context),

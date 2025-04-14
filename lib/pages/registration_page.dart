@@ -22,6 +22,8 @@ final TextEditingController districtController = TextEditingController();
 final TextEditingController cityController = TextEditingController();
 final TextEditingController zipController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
+final TextEditingController streetNameController = TextEditingController();
+final TextEditingController barangayController = TextEditingController(); // Define a separate controller for Barangay
 final _formKey = GlobalKey<FormState>();
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -92,6 +94,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     districtController.clear();
     cityController.clear();
     zipController.clear();
+    streetNameController.clear();
+    barangayController.clear();
   }
 
   void _deleteEntry(int index) {
@@ -133,7 +137,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _clearForm();
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Update successful!'))
+          SnackBar(content: Text('Update successful!'))
       );
     }
   }
@@ -154,6 +158,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
           'district': districtController.text,
           'city': cityController.text,
           'zip': zipController.text,
+          'streetName': streetNameController.text, // Save Street Name
+          'barangay': barangayController.text, // Save Barangay
+          'role': 1, // Add role field with value 1
         });
 
         toastification.show(
@@ -181,14 +188,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _buildTextField(
-    String label,
-    String hint,
-    bool isRequired,
-    TextEditingController? controller, {
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    List<TextInputFormatter>? inputFormatters,
-  }) {
+      String label,
+      String hint,
+      bool isRequired,
+      TextEditingController? controller, {
+        String? Function(String?)? validator,
+        TextInputType? keyboardType,
+        List<TextInputFormatter>? inputFormatters,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
@@ -205,11 +212,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               children: isRequired
                   ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
+                TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Color(0xFFEC2023)),
+                ),
+              ]
                   : [],
             ),
           ),
@@ -340,38 +347,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: _editingIndex == index
               ? _buildEditForm(index)
               : ListTile(
-                  contentPadding: const EdgeInsets.all(16),
-                  title: Text(
-                    '${user.firstName} ${user.lastName}',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Color(0xFF462521),
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 14,
-                      color: Color(0xFF462521),
-                    ),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => _editEntry(index),
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _deleteEntry(index),
-                      ),
-                    ],
-                  ),
+            contentPadding: const EdgeInsets.all(16),
+            title: Text(
+              '${user.firstName} ${user.lastName}',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Color(0xFF462521),
+              ),
+            ),
+            subtitle: Text(
+              'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Color(0xFF462521),
+              ),
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.edit, color: Colors.blue),
+                  onPressed: () => _editEntry(index),
                 ),
+                IconButton(
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => _deleteEntry(index),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -400,8 +407,49 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 validator: _validateRequiredField),
             _buildTextField("City", "Your city", true, cityController,
                 validator: _validateRequiredField),
-            _buildTextField("Barangay", "Your barangay", true, zipController,
+            _buildTextField("Barangay", "Your barangay", true, barangayController, // Use the new Barangay controller
                 validator: _validateRequiredField),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2, // Street name field is longer
+                  child: _buildTextField(
+                    "Street Name",
+                    "Your street name",
+                    true,
+                    streetNameController,
+                    validator: _validateRequiredField,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(255),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 1, // ZIP code field is shorter
+                  child: _buildTextField(
+                    "ZIP Code",
+                    "Your ZIP code",
+                    true,
+                    zipController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'ZIP Code is required';
+                      }
+                      if (!RegExp(r'^\d+$').hasMatch(value)) {
+                        return 'Enter a valid ZIP Code (numbers only)';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                  ),
+                ),
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -439,7 +487,7 @@ class RegPageImgSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0),
       child:
-          Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.contain),
+      Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.contain),
     );
   }
 }
@@ -547,8 +595,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
-                                LengthLimitingTextInputFormatter(255)
-                              ])),
+                                    LengthLimitingTextInputFormatter(255)
+                                  ])),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
@@ -556,22 +604,21 @@ class RegPageTxtFieldSection extends StatelessWidget {
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
-                                LengthLimitingTextInputFormatter(255)
-                              ])),
+                                    LengthLimitingTextInputFormatter(255)
+                                  ])),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
-                            "Barangay ",
-                            "Your barangay",
-                            true,
-                            zipController,
-                            validator: _validateRequiredField,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(4)
-                            ],
-                          )),
+                                "Barangay ",
+                                "Your barangay",
+                                true,
+                                barangayController, // Use the new Barangay controller
+                                validator: _validateRequiredField,
+                                keyboardType: TextInputType.text,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(255)
+                                ],
+                              )),
                         ],
                       );
                     } else {
@@ -591,18 +638,58 @@ class RegPageTxtFieldSection extends StatelessWidget {
                                 LengthLimitingTextInputFormatter(255)
                               ]),
                           _buildTextField(
-                              "Barangay ", "Your barangay", true, zipController,
+                              "Barangay ", "Your barangay", true, barangayController, // Use the new Barangay controller
                               validator: _validateRequiredField,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(4)
+                                LengthLimitingTextInputFormatter(255)
                               ])
                         ],
                       );
                     }
                   },
                 ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2, // Street name field is longer
+                    child: _buildTextField(
+                      "Street Name",
+                      "Your street name",
+                      true,
+                      streetNameController,
+                      validator: _validateRequiredField,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(255),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 1, // ZIP code field is shorter
+                    child: _buildTextField(
+                      "ZIP Code",
+                      "Your ZIP code",
+                      true,
+                      zipController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'ZIP Code is required';
+                        }
+                        if (!RegExp(r'^\d+$').hasMatch(value)) {
+                          return 'Enter a valid ZIP Code (numbers only)';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                  ),
+                ],
               )
             ],
           ),
@@ -610,14 +697,14 @@ class RegPageTxtFieldSection extends StatelessWidget {
   }
 
   Widget _buildTextField(
-    String label,
-    String hint,
-    bool isRequired,
-    TextEditingController? controller, {
-    String? Function(String?)? validator,
-    TextInputType? keyboardType,
-    List<TextInputFormatter>? inputFormatters,
-  }) {
+      String label,
+      String hint,
+      bool isRequired,
+      TextEditingController? controller, {
+        String? Function(String?)? validator,
+        TextInputType? keyboardType,
+        List<TextInputFormatter>? inputFormatters,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
@@ -634,11 +721,11 @@ class RegPageTxtFieldSection extends StatelessWidget {
               ),
               children: isRequired
                   ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
+                TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Color(0xFFEC2023)),
+                ),
+              ]
                   : [],
             ),
           ),
@@ -705,7 +792,7 @@ class RegPageBtnFieldSection extends StatelessWidget {
                     "Cancel",
                     Colors.white,
                     const Color(0xFFDC345E),
-                    () {
+                        () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MyApp()),
@@ -760,11 +847,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildCancelButton(
-    String text,
-    Color bgColor,
-    Color textColor,
-    VoidCallback onPressed,
-  ) {
+      String text,
+      Color bgColor,
+      Color textColor,
+      VoidCallback onPressed,
+      ) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -792,11 +879,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildSignUpButton(
-    String text,
-    Color bgColor,
-    Color textColor,
-    VoidCallback onPressed,
-  ) {
+      String text,
+      Color bgColor,
+      Color textColor,
+      VoidCallback onPressed,
+      ) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -872,11 +959,11 @@ class _PasswordFieldState extends State<PasswordField> {
                   fontWeight: FontWeight.bold),
               children: widget.isRequired
                   ? [
-                      TextSpan(
-                        text: '*',
-                        style: TextStyle(color: Color(0xFFEC2023)),
-                      ),
-                    ]
+                TextSpan(
+                  text: '*',
+                  style: TextStyle(color: Color(0xFFEC2023)),
+                ),
+              ]
                   : [],
             ),
           ),
@@ -891,7 +978,7 @@ class _PasswordFieldState extends State<PasswordField> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide:
-                    BorderSide(color: borderColor), // Dynamic border color
+                BorderSide(color: borderColor), // Dynamic border color
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -901,7 +988,7 @@ class _PasswordFieldState extends State<PasswordField> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide:
-                    BorderSide(color: borderColor), // Dynamic enabled border
+                BorderSide(color: borderColor), // Dynamic enabled border
               ),
               filled: true,
               fillColor: Colors.white,
