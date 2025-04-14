@@ -6,6 +6,7 @@ import '../models/userInformation.dart';
 import '../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
 
 void main() {
   runApp(const RegistrationPage());
@@ -314,11 +315,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ],
           ),
         ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
-          ),
-        ),
+        drawer: UserDrawer(), // Replaced the sidebar with UserDrawer
       ),
     );
   }

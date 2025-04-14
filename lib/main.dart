@@ -6,6 +6,7 @@ import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -96,14 +97,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        drawer: Drawer(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.zero,
-          ),
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
-          ),
-        ),
+        drawer: UserDrawer(),
       ),
     );
   }
@@ -140,155 +134,6 @@ class _Drwheader extends State<DrwerHeader> {
               width: 220,
               height: 220,
               fit: BoxFit.cover,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class DrwListView extends StatefulWidget {
-  @override
-  _DrwListView createState() => _DrwListView();
-}
-
-class _DrwListView extends State<DrwListView> {
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Column(
-        children: [
-          // Home Page
-          ListTile(
-            title: Text(
-              "Home",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF462521),
-                fontSize: 16,
-              ),
-            ),
-            leading: Container(
-              padding: const EdgeInsets.only(left: 15, right: 5),
-              child: Image.asset(
-                'assets/icons/home.png',
-                width: 24,
-                height: 24,
-              ),
-            ),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => MyApp())),
-          ),
-          // Page 1 - Registration
-          ListTile(
-            title: Text(
-              "Our Donuts",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF462521),
-                fontSize: 16,
-              ),
-            ),
-            leading: Container(
-              padding: const EdgeInsets.only(left: 15, right: 5),
-              child: Image.asset(
-                'assets/icons/catalog.png',
-                width: 24,
-                height: 24,
-              ),
-            ),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => CatalogPage())),
-          ),
-          // Page 4 - Free Page/Login
-          ListTile(
-            title: Text(
-              "About Donut",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF462521),
-                fontSize: 16,
-              ),
-            ),
-            leading: Container(
-              padding: const EdgeInsets.only(left: 15, right: 5),
-              child: Image.asset(
-                'assets/icons/about.png',
-                width: 24,
-                height: 24,
-              ),
-            ),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ProductPage())),
-          ),
-
-          // Page 2 - Catalog
-          ListTile(
-            title: Text(
-              "Register",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF462521),
-                fontSize: 16,
-              ),
-            ),
-            leading: Container(
-              padding: const EdgeInsets.only(left: 15, right: 5),
-              child: Image.asset(
-                'assets/icons/register.png',
-                width: 24,
-                height: 24,
-              ),
-            ),
-            onTap: () => Navigator.push(context,
-                MaterialPageRoute(builder: (context) => RegistrationPage())),
-          ),
-          // Page 3 - Product
-          ListTile(
-            title: Text(
-              "Login",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF462521),
-                fontSize: 16,
-              ),
-            ),
-            leading: Container(
-              padding: const EdgeInsets.only(left: 15, right: 5),
-              child: Image.asset(
-                'assets/icons/login.png',
-                width: 24,
-                height: 24,
-              ),
-            ),
-            onTap: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => LoginPage())),
-          ),
-          // Page 5 - Product Management
-          ListTile(
-            title: Text(
-              "Manage Products",
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF462521),
-                fontSize: 16,
-              ),
-            ),
-            leading: Container(
-              padding: const EdgeInsets.only(left: 15, right: 5),
-              child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
-            ),
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProductManagementPage()),
             ),
           ),
         ],
@@ -498,7 +343,7 @@ class BtnFieldSection extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RegistrationPage()),
+                          builder: (context) => LoginPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

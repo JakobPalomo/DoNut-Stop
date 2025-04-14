@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
 
 import '../main.dart';
 
@@ -118,11 +119,7 @@ class _LoginPageState extends State<LoginPage> {
             ],
           ),
         ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
-          ),
-        ),
+        drawer: UserDrawer(), // Replaced the sidebar with UserDrawer
         body: Container(
           width: double.infinity, // Ensures the gradient covers the full width
           height: double.infinity, // Ensures it covers the full height
