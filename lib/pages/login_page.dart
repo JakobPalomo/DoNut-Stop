@@ -173,7 +173,6 @@ class _LoginPageState extends State<LoginPage> {
                             validator: _validateEmail),
                         SizedBox(height: 10),
                         _buildPasswordField("Password ", "Your password", true,
-                            passwordController,
                             validator: _validatePassword),
                         SizedBox(height: 10),
                         if (_errorText != null)
@@ -486,21 +485,75 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPasswordField(String label, String hint, bool isRequired,
-      TextEditingController controller,
       {String? Function(String?)? validator}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: true,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-      ),
-      validator: validator,
+    bool _obscureText = true;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: label,
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold),
+                  children: isRequired
+                      ? [
+                          TextSpan(
+                            text: '*',
+                            style: TextStyle(color: Color(0xFFEC2023)),
+                          ),
+                        ]
+                      : [],
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: passwordController, // Use class-level controller
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                        color: Color(0xFFEF4F56), width: 2.0), // Highlight color
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
+                cursorColor: Color(0xFFCA2E55),
+                style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+                validator: validator,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
