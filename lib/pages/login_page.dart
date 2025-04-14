@@ -6,6 +6,7 @@ import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:toastification/toastification.dart';
 
 import '../main.dart';
 
@@ -34,6 +35,13 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _errorText = null; // Clear the error message on successful login
         });
+        toastification.show(
+          context: context,
+          title: Text('Login Successful'),
+          description: Text('Welcome back!'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+        );
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => CatalogPage()),
@@ -50,10 +58,24 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _errorText = errorMessage;
         });
+        toastification.show(
+          context: context,
+          title: Text('Login Failed'),
+          description: Text(errorMessage),
+          type: ToastificationType.error,
+          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+        );
       } catch (e) {
         setState(() {
           _errorText = 'An unexpected error occurred.';
         });
+        toastification.show(
+          context: context,
+          title: Text('Error'),
+          description: Text('An unexpected error occurred.'),
+          type: ToastificationType.error,
+          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+        );
       }
     }
   }

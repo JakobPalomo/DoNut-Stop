@@ -7,6 +7,7 @@ import '../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:toastification/toastification.dart';
 
 void main() {
   runApp(const RegistrationPage());
@@ -155,8 +156,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
           'zip': zipController.text,
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful! Please log in.')),
+        toastification.show(
+          context: context,
+          title: Text('Registration Successful'),
+          description: Text('You can now log in.'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
 
         Navigator.push(
@@ -164,8 +169,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+        toastification.show(
+          context: context,
+          title: Text('Registration Failed'),
+          description: Text('Error: ${e.toString()}'),
+          type: ToastificationType.error,
+          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
       }
     }
