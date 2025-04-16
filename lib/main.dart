@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:firebase_core/firebase_core.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
@@ -379,6 +380,15 @@ class BtnFieldSection extends StatelessWidget {
                   ),
                 ),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ManageUsersPage()),
+                );
+              },
+              child: Text("Manage Users"),
             ),
           ],
         ),
