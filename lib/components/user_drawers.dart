@@ -10,7 +10,7 @@ import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
-import 'package:itelec_quiz_one/pages/manage_orders.dart'; // Corrected package name
+import 'package:itelec_quiz_one/pages/admin/manage_orders.dart'; // Corrected package name
 import 'package:itelec_quiz_one/main.dart';
 
 class AppBarWithSearchAndCart extends StatelessWidget

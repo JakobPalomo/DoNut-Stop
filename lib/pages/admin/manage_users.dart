@@ -73,9 +73,9 @@ class _ManageUsersPageState extends State<ManageUsersPage>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildFilterTab("For Delivery", 0),
-                _buildFilterTab("Shipped", 1),
-                _buildFilterTab("Cancelled", 2),
+                _buildFilterTab("Customers", 0),
+                _buildFilterTab("Employees", 1),
+                _buildFilterTab("Admin", 2),
               ],
             ),
           ),

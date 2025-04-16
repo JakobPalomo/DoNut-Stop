@@ -221,7 +221,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                           child: IconButton(
                             icon: Icon(
                               Icons.visibility,
-                              color: Colors.red,
+                              color: Color(0xFFCA2E55),
                             ),
                             onPressed: () {
                               // View order details
@@ -249,7 +249,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Color(0xFFCA2E55),
                     shape: BoxShape.circle,
                   ),
                   child: Text(
@@ -282,7 +282,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? Colors.red : Colors.transparent,
+          color: isActive ? Color(0xFFCA2E55) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -298,14 +298,14 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
             Container(
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isActive ? Colors.white : Colors.red,
+                color: isActive ? Colors.white : Color(0xFFCA2E55),
                 shape: BoxShape.circle,
               ),
               child: Text(
                 '0',
                 style: TextStyle(
                   fontSize: 10,
-                  color: isActive ? Colors.red : Colors.white,
+                  color: isActive ? Color(0xFFCA2E55) : Colors.white,
                 ),
               ),
             ),
