@@ -40,7 +40,8 @@ class _LoginPageState extends State<LoginPage> {
           title: Text('Login Successful'),
           description: Text('Welcome back!'),
           type: ToastificationType.success,
-          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
         Navigator.push(
           context,
@@ -63,7 +64,8 @@ class _LoginPageState extends State<LoginPage> {
           title: Text('Login Failed'),
           description: Text(errorMessage),
           type: ToastificationType.error,
-          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
       } catch (e) {
         setState(() {
@@ -74,7 +76,8 @@ class _LoginPageState extends State<LoginPage> {
           title: Text('Error'),
           description: Text('An unexpected error occurred.'),
           type: ToastificationType.error,
-          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
       }
     }
@@ -108,40 +111,8 @@ class _LoginPageState extends State<LoginPage> {
         fontFamily: 'Inter', // Apply Inter font
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690),
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF462521)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        drawer: UserDrawer(), // Replaced the sidebar with UserDrawer
+        appBar: AppBarWithMenuAndTitle(title: "Login"),
+        drawer: GuestDrawer(),
         body: Container(
           width: double.infinity, // Ensures the gradient covers the full width
           height: double.infinity, // Ensures it covers the full height
@@ -190,8 +161,8 @@ class _LoginPageState extends State<LoginPage> {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 20),
-                        _buildTextField("Email ", "Your email", true,
-                            emailController,
+                        _buildTextField(
+                            "Email ", "Your email", true, emailController,
                             validator: _validateEmail),
                         SizedBox(height: 10),
                         _buildPasswordField("Password ", "Your password", true,
@@ -548,7 +519,8 @@ class _LoginPageState extends State<LoginPage> {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: BorderSide(
-                        color: Color(0xFFEF4F56), width: 2.0), // Highlight color
+                        color: Color(0xFFEF4F56),
+                        width: 2.0), // Highlight color
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),

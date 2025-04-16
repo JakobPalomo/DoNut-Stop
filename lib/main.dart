@@ -71,6 +71,7 @@ class MyApp extends StatelessWidget {
             ],
           ),
         ),
+        drawer: GuestDrawer(),
         body: Container(
           width: double.infinity,
           height: double.infinity,
@@ -97,7 +98,6 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        drawer: UserDrawer(),
       ),
     );
   }
@@ -342,8 +342,7 @@ class BtnFieldSection extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => LoginPage()),
+                      MaterialPageRoute(builder: (context) => LoginPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(

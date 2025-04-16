@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_donuts.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:itelec_quiz_one/pages/favorites.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
+import 'package:itelec_quiz_one/pages/profile.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
@@ -9,7 +13,10 @@ import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
 import 'package:itelec_quiz_one/pages/manage_orders.dart'; // Corrected package name
 import 'package:itelec_quiz_one/main.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class AppBarWithSearchAndCart extends StatelessWidget
+    implements PreferredSizeWidget {
+  const AppBarWithSearchAndCart({super.key});
+
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 
@@ -60,7 +67,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     borderSide: BorderSide.none, // No border
                   ),
                   contentPadding:
-                  EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                      EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                 ),
               ),
             ),
@@ -77,6 +84,96 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ]),
+    );
+  }
+}
+
+class AppBarWithMenuAndTitle extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String title;
+
+  const AppBarWithMenuAndTitle({required this.title, super.key});
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Color(0xFFEDC690), // Background color
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      title: Row(
+        children: [
+          // Square Logo on the Left
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              image: DecorationImage(
+                image: AssetImage("assets/mini_logo.png"),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF462521),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AppBarWithBackAndTitle extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String? title;
+
+  const AppBarWithBackAndTitle({this.title, super.key});
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(
+        title ?? "",
+        style: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF462521),
+        ),
+      ),
+      backgroundColor: Color(0xFFEDC690),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      leading: Container(
+        alignment: Alignment.centerLeft,
+        child: IconButton(
+          icon: Image.asset(
+            'assets/icons/back.png',
+            width: 20,
+            height: 20,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
     );
   }
 }
@@ -168,37 +265,16 @@ class AdminDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
+            ManageOrdersPage(), context),
+        _buildDrawerItem("Manage Donuts", 'assets/icons/managedonuts.png',
+            ManageDonutsPage(), context),
+        _buildDrawerItem("Manage Users", 'assets/icons/manageusers.png',
+            ManageUsersPage(), context),
         _buildDrawerItem(
-            "Manage Donuts", 'assets/icons/managedonuts.png', CatalogPage(), context),
-        _buildDrawerItem(
-            "Manage Users", 'assets/icons/manageusers.png', ProductPage(), context),
-        _buildDrawerItem("Register", 'assets/icons/register.png',
-            RegistrationPage(), context),
-        _buildDrawerItem(
-            "Profile", 'assets/icons/profile.png', LoginPage(), context),
+            "Profile", 'assets/icons/profile.png', ProfilePage(), context),
         _buildDrawerItem(
             "Logout", 'assets/icons/logout.png', LoginPage(), context),
-        ListTile(
-
-          title: Text(
-            "Product Management",
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF462521),
-              fontSize: 16,
-            ),
-          ),
-          leading: Container(
-            padding: const EdgeInsets.only(left: 15, right: 5),
-            child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
-          ),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProductManagementPage()),
-          ),
-        ),
       ],
     );
   }
@@ -211,36 +287,16 @@ class EmployeeDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
         _buildDrawerItem(
-            "Profile", 'assets/icons/profile.png', LoginPage(), context),
+            "Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
+        _buildDrawerItem(
+            "Profile", 'assets/icons/profile.png', ProfilePage(), context),
         _buildDrawerItem(
             "Logout", 'assets/icons/logout.png', LoginPage(), context),
-        ListTile(
-
-          title: Text(
-            "Product Management",
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF462521),
-              fontSize: 16,
-            ),
-          ),
-          leading: Container(
-            padding: const EdgeInsets.only(left: 15, right: 5),
-            child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
-          ),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProductManagementPage()),
-          ),
-        ),
       ],
     );
   }
 }
-
 
 // User Drawer
 class UserDrawer extends StatelessWidget {
@@ -249,19 +305,21 @@ class UserDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
+        _buildDrawerItem(
+            "Catalog", 'assets/icons/home.png', CatalogPage(), context),
         _buildDrawerItem(
             "My Cart", 'assets/icons/cart.png', CartPage(), context),
         _buildDrawerItem(
-            "My Orders", 'assets/icons/myorders.png', MyOrdersPage(), context), // Update this line
+            "My Orders", 'assets/icons/myorders.png', MyOrdersPage(), context),
+        _buildDrawerItem("My Favorites", 'assets/icons/favorites.png',
+            MyFavoritesPage(), context),
         _buildDrawerItem(
-            "Manage Orders", 'assets/icons/manageorders.png', ManageOrdersPage(), context),
-        _buildDrawerItem(
-            "Favorites", 'assets/icons/favorites.png', LoginPage(), context),
-        _buildDrawerItem(
-            "Profile", 'assets/icons/profile.png', ProductManagementPage(), context),
+            "Profile", 'assets/icons/profile.png', ProfilePage(), context),
         _buildDrawerItem(
             "Logout", 'assets/icons/logout.png', LoginPage(), context),
+        SizedBox(height: 20),
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
+            ManageOrdersPage(), context),
       ],
     );
   }

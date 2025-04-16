@@ -23,7 +23,8 @@ final TextEditingController cityController = TextEditingController();
 final TextEditingController zipController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
 final TextEditingController streetNameController = TextEditingController();
-final TextEditingController barangayController = TextEditingController(); // Define a separate controller for Barangay
+final TextEditingController barangayController =
+    TextEditingController(); // Define a separate controller for Barangay
 final _formKey = GlobalKey<FormState>();
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -136,16 +137,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _editingIndex = null;
         _clearForm();
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Update successful!'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Update successful!')));
     }
   }
 
   Future<void> _registerUser() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
@@ -168,7 +169,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
           title: Text('Registration Successful'),
           description: Text('You can now log in.'),
           type: ToastificationType.success,
-          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
 
         Navigator.push(
@@ -181,21 +183,22 @@ class _RegistrationPageState extends State<RegistrationPage> {
           title: Text('Registration Failed'),
           description: Text('Error: ${e.toString()}'),
           type: ToastificationType.error,
-          autoCloseDuration: const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
       }
     }
   }
 
   Widget _buildTextField(
-      String label,
-      String hint,
-      bool isRequired,
-      TextEditingController? controller, {
-        String? Function(String?)? validator,
-        TextInputType? keyboardType,
-        List<TextInputFormatter>? inputFormatters,
-      }) {
+    String label,
+    String hint,
+    bool isRequired,
+    TextEditingController? controller, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
@@ -212,11 +215,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
               ),
               children: isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -269,41 +272,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
         ),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0, // Remove shadow
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              // Square Image on the Left
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Register",
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF462521)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        appBar: AppBarWithMenuAndTitle(title: "Registration"),
         backgroundColor: const Color(0xFFFFE0B6),
+        drawer: GuestDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -321,8 +292,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         color: Color(0xFF462521),
                       ),
                     ),
-                    if (_editingIndex == null)
-                      RegPageTxtFieldSection(),
+                    if (_editingIndex == null) RegPageTxtFieldSection(),
                     RegPageBtnFieldSection(onRegisterUser: _registerUser),
                     _buildSubmittedDataList(),
                   ],
@@ -331,7 +301,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ],
           ),
         ),
-        drawer: UserDrawer(), // Replaced the sidebar with UserDrawer
       ),
     );
   }
@@ -347,38 +316,38 @@ class _RegistrationPageState extends State<RegistrationPage> {
           child: _editingIndex == index
               ? _buildEditForm(index)
               : ListTile(
-            contentPadding: const EdgeInsets.all(16),
-            title: Text(
-              '${user.firstName} ${user.lastName}',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF462521),
-              ),
-            ),
-            subtitle: Text(
-              'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 14,
-                color: Color(0xFF462521),
-              ),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.edit, color: Colors.blue),
-                  onPressed: () => _editEntry(index),
+                  contentPadding: const EdgeInsets.all(16),
+                  title: Text(
+                    '${user.firstName} ${user.lastName}',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Color(0xFF462521),
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Username: ${user.username}\nEmail: ${user.email}\nCity: ${user.city}\nZIP: ${user.zip}',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 14,
+                      color: Color(0xFF462521),
+                    ),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () => _editEntry(index),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => _deleteEntry(index),
+                      ),
+                    ],
+                  ),
                 ),
-                IconButton(
-                  icon: Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => _deleteEntry(index),
-                ),
-              ],
-            ),
-          ),
         );
       },
     );
@@ -391,23 +360,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildTextField("First name", "Your first name", true, firstNameController,
+            _buildTextField(
+                "First name", "Your first name", true, firstNameController,
                 validator: _validateRequiredField),
-            _buildTextField("Last name", "Your last name", true, lastNameController,
+            _buildTextField(
+                "Last name", "Your last name", true, lastNameController,
                 validator: _validateRequiredField),
-            _buildTextField("Username", "Your username", true, usernameController,
+            _buildTextField(
+                "Username", "Your username", true, usernameController,
                 validator: _validateRequiredField),
-            _buildTextField("Email address", "Your email address", true, emailController,
+            _buildTextField(
+                "Email address", "Your email address", true, emailController,
                 validator: _validateEmail),
-            _buildPasswordField("Password", "Your password", true, passwordController,
+            _buildPasswordField(
+                "Password", "Your password", true, passwordController,
                 validator: _validatePassword),
-            _buildPasswordField("Confirm Password", "Confirm your password", true, confirmPasswordController,
+            _buildPasswordField("Confirm Password", "Confirm your password",
+                true, confirmPasswordController,
                 validator: _validateConfirmPassword),
-            _buildTextField("Province", "Your province", true, districtController,
+            _buildTextField(
+                "Province", "Your province", true, districtController,
                 validator: _validateRequiredField),
             _buildTextField("City", "Your city", true, cityController,
                 validator: _validateRequiredField),
-            _buildTextField("Barangay", "Your barangay", true, barangayController, // Use the new Barangay controller
+            _buildTextField("Barangay", "Your barangay", true,
+                barangayController, // Use the new Barangay controller
                 validator: _validateRequiredField),
             Row(
               children: [
@@ -487,7 +464,7 @@ class RegPageImgSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(0),
       child:
-      Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.contain),
+          Image.asset('assets/main_logo.png', height: 400, fit: BoxFit.contain),
     );
   }
 }
@@ -595,8 +572,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
-                                    LengthLimitingTextInputFormatter(255)
-                                  ])),
+                                LengthLimitingTextInputFormatter(255)
+                              ])),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
@@ -604,21 +581,21 @@ class RegPageTxtFieldSection extends StatelessWidget {
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
-                                    LengthLimitingTextInputFormatter(255)
-                                  ])),
+                                LengthLimitingTextInputFormatter(255)
+                              ])),
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
-                                "Barangay ",
-                                "Your barangay",
-                                true,
-                                barangayController, // Use the new Barangay controller
-                                validator: _validateRequiredField,
-                                keyboardType: TextInputType.text,
-                                inputFormatters: [
-                                  LengthLimitingTextInputFormatter(255)
-                                ],
-                              )),
+                            "Barangay ",
+                            "Your barangay",
+                            true,
+                            barangayController, // Use the new Barangay controller
+                            validator: _validateRequiredField,
+                            keyboardType: TextInputType.text,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(255)
+                            ],
+                          )),
                         ],
                       );
                     } else {
@@ -637,8 +614,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(255)
                               ]),
-                          _buildTextField(
-                              "Barangay ", "Your barangay", true, barangayController, // Use the new Barangay controller
+                          _buildTextField("Barangay ", "Your barangay", true,
+                              barangayController, // Use the new Barangay controller
                               validator: _validateRequiredField,
                               keyboardType: TextInputType.text,
                               inputFormatters: [
@@ -697,14 +674,14 @@ class RegPageTxtFieldSection extends StatelessWidget {
   }
 
   Widget _buildTextField(
-      String label,
-      String hint,
-      bool isRequired,
-      TextEditingController? controller, {
-        String? Function(String?)? validator,
-        TextInputType? keyboardType,
-        List<TextInputFormatter>? inputFormatters,
-      }) {
+    String label,
+    String hint,
+    bool isRequired,
+    TextEditingController? controller, {
+    String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Column(
@@ -721,11 +698,11 @@ class RegPageTxtFieldSection extends StatelessWidget {
               ),
               children: isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -792,7 +769,7 @@ class RegPageBtnFieldSection extends StatelessWidget {
                     "Cancel",
                     Colors.white,
                     const Color(0xFFDC345E),
-                        () {
+                    () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => MyApp()),
@@ -831,7 +808,8 @@ class RegPageBtnFieldSection extends StatelessWidget {
                         ..onTap = () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginPage()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
                           );
                         },
                     ),
@@ -847,11 +825,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildCancelButton(
-      String text,
-      Color bgColor,
-      Color textColor,
-      VoidCallback onPressed,
-      ) {
+    String text,
+    Color bgColor,
+    Color textColor,
+    VoidCallback onPressed,
+  ) {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
@@ -879,11 +857,11 @@ class RegPageBtnFieldSection extends StatelessWidget {
   }
 
   Widget _buildSignUpButton(
-      String text,
-      Color bgColor,
-      Color textColor,
-      VoidCallback onPressed,
-      ) {
+    String text,
+    Color bgColor,
+    Color textColor,
+    VoidCallback onPressed,
+  ) {
     return Container(
       decoration: BoxDecoration(
         gradient: const LinearGradient(
@@ -959,11 +937,11 @@ class _PasswordFieldState extends State<PasswordField> {
                   fontWeight: FontWeight.bold),
               children: widget.isRequired
                   ? [
-                TextSpan(
-                  text: '*',
-                  style: TextStyle(color: Color(0xFFEC2023)),
-                ),
-              ]
+                      TextSpan(
+                        text: '*',
+                        style: TextStyle(color: Color(0xFFEC2023)),
+                      ),
+                    ]
                   : [],
             ),
           ),
@@ -978,7 +956,7 @@ class _PasswordFieldState extends State<PasswordField> {
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide:
-                BorderSide(color: borderColor), // Dynamic border color
+                    BorderSide(color: borderColor), // Dynamic border color
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -988,7 +966,7 @@ class _PasswordFieldState extends State<PasswordField> {
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide:
-                BorderSide(color: borderColor), // Dynamic enabled border
+                    BorderSide(color: borderColor), // Dynamic enabled border
               ),
               filled: true,
               fillColor: Colors.white,

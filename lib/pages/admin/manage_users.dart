@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 
-class ManageOrdersPage extends StatefulWidget {
+class ManageUsersPage extends StatefulWidget {
   @override
-  State<ManageOrdersPage> createState() => _ManageOrdersPageState();
+  State<ManageUsersPage> createState() => _ManageUsersPageState();
 }
 
-class _ManageOrdersPageState extends State<ManageOrdersPage>
+class _ManageUsersPageState extends State<ManageUsersPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<Map<String, dynamic>> orderItems = [];
+  List<Map<String, dynamic>> user = [];
 
   @override
   void initState() {
@@ -23,15 +23,13 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
     final List<Map<String, dynamic>> dummyOrders = List.generate(
       15,
       (index) => {
-        'date': '04/07/25',
-        'time': '6:00 AM',
-        'reference': 'OR04072506000${index + 1}',
-        'status': 'For Delivery'
+        'username': 'Asherbiggie',
+        'role': 'Customer',
       },
     );
 
     setState(() {
-      orderItems = dummyOrders;
+      user = dummyOrders;
     });
   }
 
@@ -45,8 +43,8 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xFFFFE0B6),
-      appBar: AppBarWithMenuAndTitle(title: "Manage Orders"),
-      drawer: AdminDrawer(), // or EmployeeDrawer()
+      appBar: AppBarWithMenuAndTitle(title: "Manage Users"),
+      drawer: AdminDrawer(),
       body: Column(
         children: [
           // Search Bar
@@ -91,7 +89,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'Date & Time',
+                    'Username',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -101,17 +99,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                 Expanded(
                   flex: 2,
                   child: Text(
-                    'Reference No.',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Order Status',
+                    'Role',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -129,9 +117,9 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
           // Order list
           Expanded(
             child: ListView.builder(
-              itemCount: orderItems.length,
+              itemCount: user.length,
               itemBuilder: (context, index) {
-                final item = orderItems[index];
+                final indivUser = user[index];
                 return Container(
                   decoration: BoxDecoration(
                     border: Border(
@@ -145,36 +133,13 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                     padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                     child: Row(
                       children: [
-                        // Date and Time
-                        Expanded(
-                          flex: 2,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                item['date'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              Text(
-                                item['time'],
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey.shade700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // Reference Number
+                        // Username
                         Expanded(
                           flex: 2,
                           child: Text(
-                            item['reference'],
+                            indivUser['username'],
                             style: TextStyle(
-                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
@@ -192,14 +157,14 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: DropdownButton<String>(
-                              value: item['status'],
+                              value: indivUser['role'],
                               isExpanded: true,
                               isDense: true,
                               underline: Container(),
                               items: [
-                                'For Delivery',
-                                'Shipped',
-                                'Cancelled',
+                                'Customer',
+                                'Employee',
+                                'Admin',
                               ].map((String value) {
                                 return DropdownMenuItem<String>(
                                   value: value,
@@ -208,7 +173,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                               }).toList(),
                               onChanged: (newValue) {
                                 setState(() {
-                                  orderItems[index]['status'] = newValue;
+                                  user[index]['role'] = newValue;
                                 });
                               },
                             ),
@@ -221,10 +186,38 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                           child: IconButton(
                             icon: Icon(
                               Icons.visibility,
-                              color: Colors.red,
+                              color: Color(0xFFCA2E55),
                             ),
                             onPressed: () {
-                              // View order details
+                              // View user details
+                            },
+                          ),
+                        ),
+
+                        // Edit button
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.edit,
+                              color: Color(0xFFCA2E55),
+                            ),
+                            onPressed: () {
+                              // View user details
+                            },
+                          ),
+                        ),
+
+                        // Delete button
+                        Expanded(
+                          flex: 1,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.delete,
+                              color: Color(0xFFCA2E55),
+                            ),
+                            onPressed: () {
+                              // View user details
                             },
                           ),
                         ),
@@ -249,7 +242,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
                 Container(
                   padding: EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red,
+                    color: Color(0xFFCA2E55),
                     shape: BoxShape.circle,
                   ),
                   child: Text(
@@ -282,7 +275,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? Colors.red : Colors.transparent,
+          color: isActive ? Color(0xFFCA2E55) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -298,14 +291,14 @@ class _ManageOrdersPageState extends State<ManageOrdersPage>
             Container(
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: isActive ? Colors.white : Colors.red,
+                color: isActive ? Colors.white : Color(0xFFCA2E55),
                 shape: BoxShape.circle,
               ),
               child: Text(
                 '0',
                 style: TextStyle(
                   fontSize: 10,
-                  color: isActive ? Colors.red : Colors.white,
+                  color: isActive ? Color(0xFFCA2E55) : Colors.white,
                 ),
               ),
             ),

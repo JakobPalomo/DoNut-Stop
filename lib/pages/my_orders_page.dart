@@ -84,40 +84,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFFEDC690), // Background color
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        title: Row(
-          children: [
-            // Square Logo on the Left
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                image: DecorationImage(
-                  image: AssetImage("assets/mini_logo.png"),
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 10),
-                child: Text(
-                  "My Orders",
-                  style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: Color(0xFF462521)),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppBarWithMenuAndTitle(title: "My Orders"),
       drawer: UserDrawer(),
       body: Container(
         color: Color(0xFFFFE1B7),
@@ -146,7 +113,8 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                   return Container(
                     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Color(0xFFFFEEE1), // Updated background color to FFEEE1
+                      color: Color(
+                          0xFFFFEEE1), // Updated background color to FFEEE1
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Stack(
@@ -160,7 +128,8 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                               itemBuilder: (context, itemIndex) {
                                 final item = order['items'][itemIndex];
                                 // Add a divider between items, but not after the last item
-                                bool showDivider = itemIndex < order['items'].length - 1;
+                                bool showDivider =
+                                    itemIndex < order['items'].length - 1;
 
                                 return Column(
                                   children: [
@@ -195,8 +164,10 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                         ),
                                       ),
                                       trailing: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         children: [
                                           Text(
                                             '₱${item['price'].toStringAsFixed(2)}',
@@ -250,7 +221,8 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                     fontFamily: 'Inter',
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: Color(0xFFEC2073), // Pink color for the reference number
+                                    color: Color(
+                                        0xFFEC2073), // Pink color for the reference number
                                   ),
                                 ),
                               ],

@@ -23,7 +23,8 @@ class _CatalogPageState extends State<CatalogPage> {
         scaffoldBackgroundColor: const Color(0xFFFFE0B6),
       ),
       home: Scaffold(
-        appBar: CustomAppBar(),
+        appBar: AppBarWithSearchAndCart(),
+        drawer: UserDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -34,7 +35,6 @@ class _CatalogPageState extends State<CatalogPage> {
             ],
           ),
         ),
-        drawer: UserDrawer(),
       ),
     );
   }
@@ -726,7 +726,9 @@ class CatalogPageDonuts extends StatelessWidget {
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('products').snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('products')
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
