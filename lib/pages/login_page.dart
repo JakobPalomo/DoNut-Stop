@@ -33,9 +33,24 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _checkIfLoggedIn() async {
+    final user = FirebaseAuth.instance.currentUser;
     final prefs = await SharedPreferences.getInstance();
-    final isRemembered = prefs.getBool('rememberMe') ?? false;
-    if (isRemembered) {
+    final role = prefs.getInt('role'); // Retrieve role from shared preferences
+
+    if (user != null && role != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists && role == 3) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+        );
+        return;
+      }
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => CatalogPage()),

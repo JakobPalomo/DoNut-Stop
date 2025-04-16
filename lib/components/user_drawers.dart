@@ -387,6 +387,7 @@ class GuestDrawer extends StatelessWidget {
 
 Future<void> _logout(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('role'); // Clear the role from shared preferences
   await prefs.clear(); // Clear all shared preferences
 
   Navigator.pushReplacement(
