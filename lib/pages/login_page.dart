@@ -25,6 +25,23 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   String? _errorText; // Add a variable to store error messages
 
+  @override
+  void initState() {
+    super.initState();
+    _checkIfLoggedIn();
+  }
+
+  Future<void> _checkIfLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isRemembered = prefs.getBool('rememberMe') ?? false;
+    if (isRemembered) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CatalogPage()),
+      );
+    }
+  }
+
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
       try {
