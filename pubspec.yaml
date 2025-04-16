@@ -33,16 +33,13 @@ dependencies:
 
     cupertino_icons: ^1.0.8
     font_awesome_flutter: ^10.7.0
-
     firebase_core: ^3.13.0
     firebase_core_web: ^2.22.0
-
     firebase_auth: ^5.5.2
     firebase_auth_web: ^5.8.12
-
     cloud_firestore: ^5.6.6
-
     toastification: ^3.0.2
+    shared_preferences: ^2.5.3
 
 dev_dependencies:
     flutter_test:
