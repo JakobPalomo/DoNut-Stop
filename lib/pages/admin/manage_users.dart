@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:itelec_quiz_one/components/pagination.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 
 class ManageUsersPage extends StatefulWidget {
@@ -10,6 +12,16 @@ class _ManageUsersPageState extends State<ManageUsersPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Map<String, dynamic>> user = [];
+
+  // Pagination variables
+  int currentPage = 1; // Initial page
+  final int totalPages = 5; // Total number of pages
+
+  void _handlePageChange(int newPage) {
+    setState(() {
+      currentPage = newPage; // Update the current page
+    });
+  }
 
   @override
   void initState() {
@@ -41,224 +53,233 @@ class _ManageUsersPageState extends State<ManageUsersPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFFFFE0B6),
-      appBar: AppBarWithMenuAndTitle(title: "Manage Users"),
-      drawer: AdminDrawer(),
-      body: Column(
-        children: [
-          // Search Bar
-          Container(
-            padding: EdgeInsets.all(16),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search...',
-                filled: true,
-                fillColor: Colors.brown.shade800,
-                hintStyle: TextStyle(color: Colors.white70),
-                prefixIcon: Icon(Icons.search, color: Colors.white),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
-                ),
-                contentPadding: EdgeInsets.symmetric(vertical: 8),
-              ),
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-
-          // Filter tabs
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildFilterTab("Customers", 0),
-                _buildFilterTab("Employees", 1),
-                _buildFilterTab("Admin", 2),
-              ],
-            ),
-          ),
-
-          // Headers
-          Container(
-            color: Color(0xFFDC345E),
-            padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Username',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+    return MaterialApp(
+      title: "Manage Users",
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Color(0xFFFFE0B6),
+        appBar: AppBarWithMenuAndTitle(title: "Manage Users"),
+        drawer: AdminDrawer(),
+        body: Column(
+          children: [
+            // Search Bar
+            Container(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                height: 42,
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    focusColor: Color(0xFF684440),
+                    textSelectionTheme: TextSelectionThemeData(
+                      cursorColor: Colors.white,
+                      selectionColor: Color(0xFF684440),
+                      selectionHandleColor: Color(0xFF684440),
                     ),
                   ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Role',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(), // Space for view button
-                ),
-              ],
-            ),
-          ),
-
-          // Order list
-          Expanded(
-            child: ListView.builder(
-              itemCount: user.length,
-              itemBuilder: (context, index) {
-                final indivUser = user[index];
-                return Container(
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 1,
+                  child: TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      filled: true,
+                      fillColor: Colors.brown.shade800,
+                      hintStyle: TextStyle(color: Colors.white70),
+                      suffixIcon: Padding(
+                        padding: EdgeInsets.only(left: 15, right: 15),
+                        child: Icon(Icons.search, color: Colors.white),
                       ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                      contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                    ),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                    cursorColor: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+
+            // Table
+            Container(
+                padding: EdgeInsets.all(16),
+                child: Column(children: [
+                  // Filter tabs
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        _buildFilterTab("Customers", 0),
+                        _buildFilterTab("Employees", 1),
+                        _buildFilterTab("Admin", 2),
+                      ],
                     ),
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+
+                  // Headers
+                  Container(
+                    color: Color(0xFFDC345E),
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                     child: Row(
                       children: [
-                        // Username
                         Expanded(
                           flex: 2,
                           child: Text(
-                            indivUser['username'],
+                            'Username',
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-
-                        // Status
                         Expanded(
                           flex: 2,
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.black),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: DropdownButton<String>(
-                              value: indivUser['role'],
-                              isExpanded: true,
-                              isDense: true,
-                              underline: Container(),
-                              items: [
-                                'Customer',
-                                'Employee',
-                                'Admin',
-                              ].map((String value) {
-                                return DropdownMenuItem<String>(
-                                  value: value,
-                                  child: Text(value),
-                                );
-                              }).toList(),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  user[index]['role'] = newValue;
-                                });
-                              },
+                          child: Text(
+                            'Role',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
                             ),
                           ),
                         ),
-
-                        // View button
                         Expanded(
                           flex: 1,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.visibility,
-                              color: Color(0xFFCA2E55),
-                            ),
-                            onPressed: () {
-                              // View user details
-                            },
-                          ),
-                        ),
-
-                        // Edit button
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.edit,
-                              color: Color(0xFFCA2E55),
-                            ),
-                            onPressed: () {
-                              // View user details
-                            },
-                          ),
-                        ),
-
-                        // Delete button
-                        Expanded(
-                          flex: 1,
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.delete,
-                              color: Color(0xFFCA2E55),
-                            ),
-                            onPressed: () {
-                              // View user details
-                            },
-                          ),
+                          child: Container(), // Space for view button
                         ),
                       ],
                     ),
                   ),
-                );
-              },
-            ),
-          ),
+                ])),
 
-          // Pagination
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.chevron_left),
-                  onPressed: () {},
-                ),
-                Container(
-                  padding: EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Color(0xFFCA2E55),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '1',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                Text(' / 5'),
-                IconButton(
-                  icon: Icon(Icons.chevron_right),
-                  onPressed: () {},
-                ),
-              ],
+            // Order list
+            Expanded(
+              child: ListView.builder(
+                itemCount: user.length,
+                itemBuilder: (context, index) {
+                  final indivUser = user[index];
+                  return Container(
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                      child: Row(
+                        children: [
+                          // Username
+                          Expanded(
+                            flex: 2,
+                            child: Text(
+                              indivUser['username'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          // Status
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.black),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: DropdownButton<String>(
+                                value: indivUser['role'],
+                                isExpanded: true,
+                                isDense: true,
+                                underline: Container(),
+                                items: [
+                                  'Customer',
+                                  'Employee',
+                                  'Admin',
+                                ].map((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(value),
+                                  );
+                                }).toList(),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    user[index]['role'] = newValue;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+
+                          // View button
+                          Expanded(
+                            flex: 1,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.visibility,
+                                color: Color(0xFFCA2E55),
+                              ),
+                              onPressed: () {
+                                // View user details
+                              },
+                            ),
+                          ),
+
+                          // Edit button
+                          Expanded(
+                            flex: 1,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.edit,
+                                color: Color(0xFFCA2E55),
+                              ),
+                              onPressed: () {
+                                // View user details
+                              },
+                            ),
+                          ),
+
+                          // Delete button
+                          Expanded(
+                            flex: 1,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.delete,
+                                color: Color(0xFFCA2E55),
+                              ),
+                              onPressed: () {
+                                // View user details
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+
+            // Pagination
+            Pagination(
+                currentPage: currentPage,
+                totalPages: totalPages,
+                onPageChange: (int page) {
+                  print("Go to page $page");
+                  _handlePageChange(page);
+                })
+          ],
+        ),
       ),
     );
   }
