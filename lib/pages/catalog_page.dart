@@ -5,6 +5,10 @@ import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:itelec_quiz_one/main.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:toastification/toastification.dart';
+import 'package:itelec_quiz_one/pages/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
@@ -14,8 +18,41 @@ class CatalogPage extends StatefulWidget {
 }
 
 class _CatalogPageState extends State<CatalogPage> {
+  String? username;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUsername();
+  }
+
+  Future<void> _loadUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      username = prefs.getString('username') ?? 'User';
+    });
+  }
+
+  void _checkUserSession(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      toastification.show(
+        context: context,
+        title: Text('Access Denied'),
+        description: Text('You are not logged in yet.'),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _checkUserSession(context); // Check session on page load
     return MaterialApp(
       title: "Catalog Page Module",
       debugShowCheckedModeBanner: false,
@@ -28,50 +65,42 @@ class _CatalogPageState extends State<CatalogPage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              const CatalogPageTitleContainer(),
+              Padding(
+                padding: EdgeInsets.fromLTRB(35, 35, 35, 25),
+                child: Container(
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 5),
+                      Text(
+                        "Welcome back, ${username ?? 'User'}!",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 28,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF462521),
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        "Order your favourite donuts from here!",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xFF665A49),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               const CatalogPageTodaysOffers(),
               const CatalogPageDonuts(),
               const SizedBox(height: 30),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class CatalogPageTitleContainer extends StatelessWidget {
-  const CatalogPageTitleContainer({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(35, 35, 35, 25),
-      child: Container(
-        width: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 5),
-            Text(
-              "Welcome to Donut Stop!",
-              style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: Color(0xFF462521)),
-            ),
-            SizedBox(height: 5),
-            Text(
-              "Order your favourite donuts from here!",
-              style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: Color(0xFF665A49)),
-            ),
-          ],
         ),
       ),
     );

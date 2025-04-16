@@ -7,6 +7,8 @@ import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:toastification/toastification.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../main.dart';
 
@@ -25,13 +27,26 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
-      print('Email: ' + emailController.text);
-      print('Password: ' + passwordController.text);
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
+
+        // Retrieve the username from Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          String username = userDoc['username'];
+
+          // Save the username in SharedPreferences for session-wide access
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('username', username);
+        }
+
         setState(() {
           _errorText = null; // Clear the error message on successful login
         });
@@ -40,8 +55,7 @@ class _LoginPageState extends State<LoginPage> {
           title: Text('Login Successful'),
           description: Text('Welcome back!'),
           type: ToastificationType.success,
-          autoCloseDuration:
-              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration: const Duration(seconds: 4),
         );
         Navigator.push(
           context,
@@ -64,10 +78,11 @@ class _LoginPageState extends State<LoginPage> {
           title: Text('Login Failed'),
           description: Text(errorMessage),
           type: ToastificationType.error,
-          autoCloseDuration:
-              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration: const Duration(seconds: 4),
         );
-      } catch (e) {
+      } catch (e, stackTrace) {
+        print('Unexpected error: $e');
+        print('Stack trace: $stackTrace');
         setState(() {
           _errorText = 'An unexpected error occurred.';
         });
@@ -76,8 +91,7 @@ class _LoginPageState extends State<LoginPage> {
           title: Text('Error'),
           description: Text('An unexpected error occurred.'),
           type: ToastificationType.error,
-          autoCloseDuration:
-              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration: const Duration(seconds: 4),
         );
       }
     }
@@ -561,6 +575,24 @@ class _MyCheckboxState extends State<MyCheckbox> {
   bool _isChecked = false; // Variable to store checkbox state
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMeState(); // Load the saved state on initialization
+  }
+
+  Future<void> _loadRememberMeState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isChecked = prefs.getBool('rememberMe') ?? false;
+    });
+  }
+
+  Future<void> _saveRememberMeState(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('rememberMe', value);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -569,6 +601,7 @@ class _MyCheckboxState extends State<MyCheckbox> {
           onChanged: (value) {
             setState(() {
               _isChecked = value!; // Update the state on change
+              _saveRememberMeState(_isChecked); // Save the state persistently
             });
           },
           activeColor: Color(0xFFCA2E55), // Color when active

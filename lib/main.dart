@@ -7,9 +7,10 @@ import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure plugin initialization
 
   if (kIsWeb) {
     await Firebase.initializeApp(
@@ -32,8 +33,20 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  Future<void> _checkRememberMe(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final isRemembered = prefs.getBool('rememberMe') ?? false;
+    if (isRemembered) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CatalogPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _checkRememberMe(context); // Check remember me on app start
     return MaterialApp(
       title: "DoNut Stop",
       debugShowCheckedModeBanner: false, // Remove debug ribbon

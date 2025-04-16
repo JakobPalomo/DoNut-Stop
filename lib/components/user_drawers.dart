@@ -12,6 +12,7 @@ import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
 import 'package:itelec_quiz_one/pages/admin/manage_orders.dart'; // Corrected package name
 import 'package:itelec_quiz_one/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AppBarWithSearchAndCart extends StatelessWidget
     implements PreferredSizeWidget {
@@ -273,8 +274,22 @@ class AdminDrawer extends StatelessWidget {
             ManageUsersPage(), context),
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', ProfilePage(), context),
-        _buildDrawerItem(
-            "Logout", 'assets/icons/logout.png', LoginPage(), context),
+        ListTile(
+          title: Text(
+            "Logout",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
+          ),
+          leading: Container(
+            padding: EdgeInsets.only(left: 15, right: 5),
+            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+          ),
+          onTap: () => _logout(context),
+        ),
       ],
     );
   }
@@ -291,8 +306,22 @@ class EmployeeDrawer extends StatelessWidget {
             "Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', ProfilePage(), context),
-        _buildDrawerItem(
-            "Logout", 'assets/icons/logout.png', LoginPage(), context),
+        ListTile(
+          title: Text(
+            "Logout",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
+          ),
+          leading: Container(
+            padding: EdgeInsets.only(left: 15, right: 5),
+            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+          ),
+          onTap: () => _logout(context),
+        ),
       ],
     );
   }
@@ -315,8 +344,22 @@ class UserDrawer extends StatelessWidget {
             MyFavoritesPage(), context),
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', ProfilePage(), context),
-        _buildDrawerItem(
-            "Logout", 'assets/icons/logout.png', LoginPage(), context),
+        ListTile(
+          title: Text(
+            "Logout",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
+          ),
+          leading: Container(
+            padding: EdgeInsets.only(left: 15, right: 5),
+            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+          ),
+          onTap: () => _logout(context),
+        ),
         SizedBox(height: 20),
         _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
             ManageOrdersPage(), context),
@@ -340,4 +383,14 @@ class GuestDrawer extends StatelessWidget {
       ],
     );
   }
+}
+
+Future<void> _logout(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.clear(); // Clear all shared preferences
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage()),
+  );
 }
