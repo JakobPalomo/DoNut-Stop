@@ -268,6 +268,15 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 18, horizontal: 30),
+                            ).copyWith(
+                              overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return const Color(0xFF2F090B); // Hover color
+                                  }
+                                  return null; // Default color
+                                },
+                              ),
                             ),
                             child: Text(
                               "Log in",

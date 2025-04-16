@@ -438,8 +438,31 @@ class DonutSelectionWidget extends StatelessWidget {
   }
 }
 
-class CatalogPageTodaysOffers extends StatelessWidget {
+class CatalogPageTodaysOffers extends StatefulWidget {
   const CatalogPageTodaysOffers({super.key});
+
+  @override
+  _CatalogPageTodaysOffersState createState() => _CatalogPageTodaysOffersState();
+}
+
+class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollLeft() {
+    _scrollController.animateTo(
+      _scrollController.offset - 200,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _scrollRight() {
+    _scrollController.animateTo(
+      _scrollController.offset + 200,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -448,14 +471,13 @@ class CatalogPageTodaysOffers extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Today's Offers & See More
           Padding(
             padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
             child: Container(
-              width: double.infinity, // Ensures full width
+              width: double.infinity,
               child: Wrap(
-                alignment: WrapAlignment.spaceBetween, // Ensures spacing works
-                spacing: 20, // Horizontal spacing between buttons
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 20,
                 runSpacing: 5,
                 children: [
                   Text(
@@ -468,18 +490,16 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     ),
                   ),
                   Material(
-                    color: Colors.transparent, // Ensures no background color
-                    borderRadius: BorderRadius.circular(8), // Rounded edges
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
                     child: InkWell(
                       onTap: () {
                         debugPrint("See More clicked");
                       },
                       borderRadius: BorderRadius.circular(20),
-                      splashColor:
-                          Colors.white.withOpacity(0.3), // White ripple effect
+                      splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -497,198 +517,94 @@ class CatalogPageTodaysOffers extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          // Flavors Chips
-          ToggleChipsRow(),
-          SizedBox(height: 10),
-          // Selections
-          SizedBox(
-            height: 375,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SizedBox(width: 35),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut5.png",
-                    title: "Strawberry Wheel",
-                    description:
-                        "These Baked Strawberry Donuts are filled with fresh strawberries and rainbow sprinkles.",
-                    newPrice: "₱76",
-                    isFavInitial: true,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut11.png",
-                    title: "Chocolate Glaze",
-                    description:
-                        "Moist and fluffy baked chocolate donuts full of chocolate flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut9.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked cotton candy flavored-donuts with a splash of colorful sprinkles.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut10.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut1.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut2.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut3.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut4.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut5.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut6.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut7.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  OfferSelectionWidget(
-                    image: "assets/front_donut/fdonut8.png",
-                    title: "Matcha Rainbow",
-                    description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                    newPrice: "₱40",
-                    isFavInitial: false,
-                  ),
-                  SizedBox(width: 20),
-                ],
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                onPressed: _scrollLeft,
               ),
-            ),
+              Expanded(
+                child: SizedBox(
+                  height: 375,
+                  child: ListView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      SizedBox(width: 35),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut5.png",
+                        title: "Strawberry Wheel",
+                        description:
+                            "These Baked Strawberry Donuts are filled with fresh strawberries and rainbow sprinkles.",
+                        newPrice: "₱76",
+                        isFavInitial: true,
+                      ),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut11.png",
+                        title: "Chocolate Glaze",
+                        description:
+                            "Moist and fluffy baked chocolate donuts full of chocolate flavor.",
+                        newPrice: "₱40",
+                        isFavInitial: false,
+                      ),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut9.png",
+                        title: "Matcha Rainbow",
+                        description:
+                            "Moist and fluffy baked cotton candy flavored-donuts with a splash of colorful sprinkles.",
+                        newPrice: "₱40",
+                        isFavInitial: false,
+                      ),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut10.png",
+                        title: "Matcha Rainbow",
+                        description:
+                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                        newPrice: "₱40",
+                        isFavInitial: false,
+                      ),
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios),
+                onPressed: _scrollRight,
+              ),
+            ],
           ),
-          SizedBox(height: 20),
-          // Buttons
-          Padding(
-            padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
-            child: Container(
-              width: double
-                  .infinity, // Ensures it spans the full width of the screen
-              alignment: Alignment.center, // Centers content inside
-              child: Wrap(
-                alignment: WrapAlignment
-                    .center, // Centers buttons inside the full-width container
-                spacing: 20, // Horizontal spacing between buttons
-                runSpacing: 10, // Vertical spacing when wrapped
-                children: [
-                  // Back to Top Button
-                  ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shadowColor: Colors.transparent,
-                      side: BorderSide(color: Color(0xFFEF4F56)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 18, horizontal: 50),
-                    ),
-                    child: Text(
-                      "Back to Top",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFCA2E55),
-                      ),
-                    ),
-                  ),
-
-                  // More Today's Offers Button with Gradient
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.transparent,
-                        shadowColor: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding:
-                            EdgeInsets.symmetric(vertical: 18, horizontal: 30),
-                      ),
-                      child: Text(
-                        "More Today's Offers",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
         ],
       ),
     );
   }
 }
 
-class CatalogPageDonuts extends StatelessWidget {
+class CatalogPageDonuts extends StatefulWidget {
   const CatalogPageDonuts({super.key});
+
+  @override
+  _CatalogPageDonutsState createState() => _CatalogPageDonutsState();
+}
+
+class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
+  final ScrollController _scrollController = ScrollController();
+
+  void _scrollLeft() {
+    _scrollController.animateTo(
+      _scrollController.offset - 200,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  void _scrollRight() {
+    _scrollController.animateTo(
+      _scrollController.offset + 200,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -697,14 +613,13 @@ class CatalogPageDonuts extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Donuts & See More
           Padding(
             padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
             child: Container(
-              width: double.infinity, // Ensures full width
+              width: double.infinity,
               child: Wrap(
-                alignment: WrapAlignment.spaceBetween, // Ensures spacing works
-                spacing: 20, // Horizontal spacing between buttons
+                alignment: WrapAlignment.spaceBetween,
+                spacing: 20,
                 runSpacing: 5,
                 children: [
                   Text(
@@ -717,18 +632,16 @@ class CatalogPageDonuts extends StatelessWidget {
                     ),
                   ),
                   Material(
-                    color: Colors.transparent, // Ensures no background color
-                    borderRadius: BorderRadius.circular(8), // Rounded edges
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(8),
                     child: InkWell(
                       onTap: () {
                         debugPrint("See More clicked");
                       },
                       borderRadius: BorderRadius.circular(20),
-                      splashColor:
-                          Colors.white.withOpacity(0.3), // White ripple effect
+                      splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -746,118 +659,59 @@ class CatalogPageDonuts extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          // Flavors Chips
-          ToggleChipsRow(),
-          SizedBox(height: 10),
-          // Selections
-          SizedBox(
-            height: 235,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('products')
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return const Center(child: Text('No donuts found.'));
-                  }
-                  final donuts = snapshot.data!.docs;
-                  final images = [
-                    "assets/side_donut/sdonut8.png",
-                    "assets/side_donut/sdonut7.png",
-                    "assets/side_donut/sdonut6.png",
-                  ];
-                  return Row(
-                    children: List.generate(donuts.length, (index) {
-                      final donut = donuts[index];
-                      final image = images[index % images.length];
-                      return DonutSelectionWidget(
-                        image: image,
-                        title: donut['name'],
-                        newPrice: '₱${donut['price'].toStringAsFixed(2)}',
-                      );
-                    }),
-                  );
-                },
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios),
+                onPressed: _scrollLeft,
               ),
-            ),
+              Expanded(
+                child: SizedBox(
+                  height: 235,
+                  child: ListView(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('products')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
+                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                            return const Center(child: Text('No donuts found.'));
+                          }
+                          final donuts = snapshot.data!.docs;
+                          final images = [
+                            "assets/side_donut/sdonut8.png",
+                            "assets/side_donut/sdonut7.png",
+                            "assets/side_donut/sdonut6.png",
+                          ];
+                          return Row(
+                            children: List.generate(donuts.length, (index) {
+                              final donut = donuts[index];
+                              final image = images[index % images.length];
+                              return DonutSelectionWidget(
+                                image: image,
+                                title: donut['name'],
+                                newPrice: '₱${donut['price'].toStringAsFixed(2)}',
+                              );
+                            }),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: Icon(Icons.arrow_forward_ios),
+                onPressed: _scrollRight,
+              ),
+            ],
           ),
-          SizedBox(height: 20),
-          // Buttons
-          Padding(
-            padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
-            child: Container(
-              width: double
-                  .infinity, // Ensures it spans the full width of the screen
-              alignment: Alignment.center,
-              child: Wrap(
-                alignment: WrapAlignment
-                    .center, // Centers buttons inside the full-width container
-                spacing: 20, // Horizontal spacing between buttons
-                runSpacing: 10,
-                children: [
-                  // Back to Top Button
-                  ElevatedButton(
-                    onPressed: () => () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shadowColor: Colors.transparent, // No shadow effect
-                      side: BorderSide(color: Color(0xFFEF4F56)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      padding: EdgeInsets.symmetric(
-                          vertical: 18, horizontal: 50), // Bigger padding
-                    ),
-                    child: Text(
-                      "Back to Top",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFFCA2E55),
-                      ),
-                    ),
-                  ),
-                  // More Donuts Button with Gradient
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Colors.transparent, // transparent background
-                        shadowColor: Colors.transparent, // No shadow effect
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                            vertical: 18, horizontal: 30), // Bigger padding
-                      ),
-                      child: Text(
-                        "More Donuts",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
         ],
       ),
     );
