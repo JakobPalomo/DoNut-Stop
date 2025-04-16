@@ -6,6 +6,8 @@ import '../models/userInformation.dart';
 import '../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:toastification/toastification.dart';
 
 void main() {
   runApp(const RegistrationPage());
@@ -20,6 +22,9 @@ final TextEditingController districtController = TextEditingController();
 final TextEditingController cityController = TextEditingController();
 final TextEditingController zipController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
+final TextEditingController streetNameController = TextEditingController();
+final TextEditingController barangayController =
+    TextEditingController(); // Define a separate controller for Barangay
 final _formKey = GlobalKey<FormState>();
 
 final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -90,6 +95,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     districtController.clear();
     cityController.clear();
     zipController.clear();
+    streetNameController.clear();
+    barangayController.clear();
   }
 
   void _deleteEntry(int index) {
@@ -130,16 +137,16 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _editingIndex = null;
         _clearForm();
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Update successful!'))
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Update successful!')));
     }
   }
 
   Future<void> _registerUser() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
@@ -152,10 +159,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
           'district': districtController.text,
           'city': cityController.text,
           'zip': zipController.text,
+          'streetName': streetNameController.text, // Save Street Name
+          'barangay': barangayController.text, // Save Barangay
+          'role': 1, // Add role field with value 1
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration successful! Please log in.')),
+        toastification.show(
+          context: context,
+          title: Text('Registration Successful'),
+          description: Text('You can now log in.'),
+          type: ToastificationType.success,
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
 
         Navigator.push(
@@ -163,8 +178,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+        toastification.show(
+          context: context,
+          title: Text('Registration Failed'),
+          description: Text('Error: ${e.toString()}'),
+          type: ToastificationType.error,
+          autoCloseDuration:
+              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
         );
       }
     }
@@ -252,41 +272,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
         ),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0, // Remove shadow
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              // Square Image on the Left
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Register",
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF462521)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        appBar: AppBarWithMenuAndTitle(title: "Registration"),
         backgroundColor: const Color(0xFFFFE0B6),
+        drawer: GuestDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -304,19 +292,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         color: Color(0xFF462521),
                       ),
                     ),
-                    if (_editingIndex == null)
-                      RegPageTxtFieldSection(),
+                    if (_editingIndex == null) RegPageTxtFieldSection(),
                     RegPageBtnFieldSection(onRegisterUser: _registerUser),
                     _buildSubmittedDataList(),
                   ],
                 ),
               ),
             ],
-          ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
           ),
         ),
       ),
@@ -378,24 +360,73 @@ class _RegistrationPageState extends State<RegistrationPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            _buildTextField("First name", "Your first name", true, firstNameController,
+            _buildTextField(
+                "First name", "Your first name", true, firstNameController,
                 validator: _validateRequiredField),
-            _buildTextField("Last name", "Your last name", true, lastNameController,
+            _buildTextField(
+                "Last name", "Your last name", true, lastNameController,
                 validator: _validateRequiredField),
-            _buildTextField("Username", "Your username", true, usernameController,
+            _buildTextField(
+                "Username", "Your username", true, usernameController,
                 validator: _validateRequiredField),
-            _buildTextField("Email address", "Your email address", true, emailController,
+            _buildTextField(
+                "Email address", "Your email address", true, emailController,
                 validator: _validateEmail),
-            _buildPasswordField("Password", "Your password", true, passwordController,
+            _buildPasswordField(
+                "Password", "Your password", true, passwordController,
                 validator: _validatePassword),
-            _buildPasswordField("Confirm Password", "Confirm your password", true, confirmPasswordController,
+            _buildPasswordField("Confirm Password", "Confirm your password",
+                true, confirmPasswordController,
                 validator: _validateConfirmPassword),
-            _buildTextField("Barangay", "Your barangay", true, districtController,
+            _buildTextField(
+                "Province", "Your province", true, districtController,
                 validator: _validateRequiredField),
             _buildTextField("City", "Your city", true, cityController,
                 validator: _validateRequiredField),
-            _buildTextField("ZIP", "Your ZIP", true, zipController,
+            _buildTextField("Barangay", "Your barangay", true,
+                barangayController, // Use the new Barangay controller
                 validator: _validateRequiredField),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2, // Street name field is longer
+                  child: _buildTextField(
+                    "Street Name",
+                    "Your street name",
+                    true,
+                    streetNameController,
+                    validator: _validateRequiredField,
+                    keyboardType: TextInputType.text,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(255),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  flex: 1, // ZIP code field is shorter
+                  child: _buildTextField(
+                    "ZIP Code",
+                    "Your ZIP code",
+                    true,
+                    zipController,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'ZIP Code is required';
+                      }
+                      if (!RegExp(r'^\d+$').hasMatch(value)) {
+                        return 'Enter a valid ZIP Code (numbers only)';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                  ),
+                ),
+              ],
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -536,8 +567,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       return Row(
                         children: [
                           Expanded(
-                              child: _buildTextField("Barangay",
-                                  "Your barangay", true, districtController,
+                              child: _buildTextField("Province",
+                                  "Your province", true, districtController,
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
@@ -555,15 +586,14 @@ class RegPageTxtFieldSection extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
-                            "ZIP ",
-                            "Your ZIP",
+                            "Barangay ",
+                            "Your barangay",
                             true,
-                            zipController,
+                            barangayController, // Use the new Barangay controller
                             validator: _validateRequiredField,
-                            keyboardType: TextInputType.number,
+                            keyboardType: TextInputType.text,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(4)
+                              LengthLimitingTextInputFormatter(255)
                             ],
                           )),
                         ],
@@ -572,7 +602,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       // Small screen: Use Column to stack fields
                       return Column(
                         children: [
-                          _buildTextField("District ", "Your district", true,
+                          _buildTextField("Province ", "Your province", true,
                               districtController,
                               validator: _validateRequiredField,
                               inputFormatters: [
@@ -584,19 +614,59 @@ class RegPageTxtFieldSection extends StatelessWidget {
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(255)
                               ]),
-                          _buildTextField(
-                              "ZIP ", "Your ZIP", true, zipController,
+                          _buildTextField("Barangay ", "Your barangay", true,
+                              barangayController, // Use the new Barangay controller
                               validator: _validateRequiredField,
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(4)
+                                LengthLimitingTextInputFormatter(255)
                               ])
                         ],
                       );
                     }
                   },
                 ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2, // Street name field is longer
+                    child: _buildTextField(
+                      "Street Name",
+                      "Your street name",
+                      true,
+                      streetNameController,
+                      validator: _validateRequiredField,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(255),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    flex: 1, // ZIP code field is shorter
+                    child: _buildTextField(
+                      "ZIP Code",
+                      "Your ZIP code",
+                      true,
+                      zipController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'ZIP Code is required';
+                        }
+                        if (!RegExp(r'^\d+$').hasMatch(value)) {
+                          return 'Enter a valid ZIP Code (numbers only)';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                  ),
+                ],
               )
             ],
           ),
@@ -738,7 +808,8 @@ class RegPageBtnFieldSection extends StatelessWidget {
                         ..onTap = () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginPage()),
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
                           );
                         },
                     ),

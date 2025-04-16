@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -20,7 +21,7 @@ class _CartPageState extends State<CartPage> {
   Future<void> fetchCartItems() async {
     try {
       String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1";
-      
+
       print("Fetched User ID: $userId");
 
       // Fetch cart items from the user's cart collection
@@ -33,8 +34,9 @@ class _CartPageState extends State<CartPage> {
       List<Map<String, dynamic>> items = [];
 
       for (var cartDoc in cartSnapshot.docs) {
-      String productId = (cartDoc.data() as Map<String, dynamic>)['product_id'];
-        
+        String productId =
+            (cartDoc.data() as Map<String, dynamic>)['product_id'];
+
         print("Cart Item: ${cartDoc.data()}");
 
         // Fetch product details from the donuts collection
@@ -47,9 +49,9 @@ class _CartPageState extends State<CartPage> {
           print("Product Details: ${productSnapshot.data()}");
 
           items.add(productSnapshot.data() as Map<String, dynamic>);
-        }else{
-          print("Product with ID $productId does not exist in the products collection.");
-
+        } else {
+          print(
+              "Product with ID $productId does not exist in the products collection.");
         }
       }
 
@@ -72,24 +74,8 @@ class _CartPageState extends State<CartPage> {
       ),
       home: Scaffold(
         backgroundColor: Color(0xFFFFE0B6),
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: Container(
-            margin: EdgeInsets.only(left: 10, top: 10),
-            child: IconButton(
-              icon: Image.asset(
-                'assets/icons/back.png',
-                width: 20,
-                height: 20,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-        ),
+        appBar: AppBarWithMenuAndTitle(title: "My Cart"),
+        drawer: UserDrawer(),
         body: Column(
           children: [
             Container(
@@ -128,7 +114,7 @@ class _CartPageState extends State<CartPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // Image.network(
-                        //   item['imageUrl'], 
+                        //   item['imageUrl'],
                         //   width: 80,
                         //   height: 80,
                         // ),
@@ -136,7 +122,7 @@ class _CartPageState extends State<CartPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              item['name'], 
+                              item['name'],
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -190,7 +176,10 @@ class _CartPageState extends State<CartPage> {
                             Container(
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                                  colors: [
+                                    Color(0xFFFF7171),
+                                    Color(0xFFDC345E)
+                                  ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),

@@ -5,6 +5,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:toastification/toastification.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
 
 import '../main.dart';
 
@@ -21,18 +26,94 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController passwordController = TextEditingController();
   String? _errorText; // Add a variable to store error messages
 
+  @override
+  void initState() {
+    super.initState();
+    _checkIfLoggedIn();
+  }
+
+  Future<void> _checkIfLoggedIn() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final prefs = await SharedPreferences.getInstance();
+    final role = prefs.getInt('role'); // Retrieve role from shared preferences
+
+    if (user != null && role != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        if (role == 3) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+          );
+          return;
+        } else if (role == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CatalogPage()),
+          );
+          return;
+        }
+      }
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CatalogPage()),
+      );
+    }
+  }
+
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
-      print('Email: ' + emailController.text);
-      print('Password: ' + passwordController.text);
       try {
-        await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
+
+        // Retrieve the username from Firestore
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+
+        if (userDoc.exists) {
+          String username = userDoc['username'];
+          int role = userDoc['role']; // Assuming 'role' is stored in Firestore
+
+          // Save the username in SharedPreferences for session-wide access
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('username', username);
+          await prefs.setInt('role', role); // Save the role
+
+          if (role == 3) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+            );
+            return;
+          } else if (role == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CatalogPage()),
+            );
+            return;
+          }
+        }
+
         setState(() {
           _errorText = null; // Clear the error message on successful login
         });
+        toastification.show(
+          context: context,
+          title: Text('Login Successful'),
+          description: Text('Welcome back!'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => CatalogPage()),
@@ -49,10 +130,26 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           _errorText = errorMessage;
         });
-      } catch (e) {
+        toastification.show(
+          context: context,
+          title: Text('Login Failed'),
+          description: Text(errorMessage),
+          type: ToastificationType.error,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
+      } catch (e, stackTrace) {
+        print('Unexpected error: $e');
+        print('Stack trace: $stackTrace');
         setState(() {
           _errorText = 'An unexpected error occurred.';
         });
+        toastification.show(
+          context: context,
+          title: Text('Error'),
+          description: Text('An unexpected error occurred.'),
+          type: ToastificationType.error,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
       }
     }
   }
@@ -85,44 +182,8 @@ class _LoginPageState extends State<LoginPage> {
         fontFamily: 'Inter', // Apply Inter font
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690),
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF462521)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
-          ),
-        ),
+        appBar: AppBarWithMenuAndTitle(title: "Login"),
+        drawer: GuestDrawer(),
         body: Container(
           width: double.infinity, // Ensures the gradient covers the full width
           height: double.infinity, // Ensures it covers the full height
@@ -171,12 +232,11 @@ class _LoginPageState extends State<LoginPage> {
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 20),
-                        _buildTextField("Email ", "Your email", true,
-                            emailController,
+                        _buildTextField(
+                            "Email ", "Your email", true, emailController,
                             validator: _validateEmail),
                         SizedBox(height: 10),
                         _buildPasswordField("Password ", "Your password", true,
-                            passwordController,
                             validator: _validatePassword),
                         SizedBox(height: 10),
                         if (_errorText != null)
@@ -265,6 +325,15 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               padding: const EdgeInsets.symmetric(
                                   vertical: 18, horizontal: 30),
+                            ).copyWith(
+                              overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                                (Set<MaterialState> states) {
+                                  if (states.contains(MaterialState.hovered)) {
+                                    return const Color(0xFF2F090B); // Hover color
+                                  }
+                                  return null; // Default color
+                                },
+                              ),
                             ),
                             child: Text(
                               "Log in",
@@ -489,21 +558,76 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildPasswordField(String label, String hint, bool isRequired,
-      TextEditingController controller,
       {String? Function(String?)? validator}) {
-    return TextFormField(
-      controller: controller,
-      obscureText: true,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-      ),
-      validator: validator,
+    bool _obscureText = true;
+
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: TextSpan(
+                  text: label,
+                  style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold),
+                  children: isRequired
+                      ? [
+                          TextSpan(
+                            text: '*',
+                            style: TextStyle(color: Color(0xFFEC2023)),
+                          ),
+                        ]
+                      : [],
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: passwordController, // Use class-level controller
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  hintText: hint,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(
+                        color: Color(0xFFEF4F56),
+                        width: 2.0), // Highlight color
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    borderSide: BorderSide(color: Colors.black26),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.grey,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
+                ),
+                cursorColor: Color(0xFFCA2E55),
+                style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+                validator: validator,
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -517,6 +641,24 @@ class _MyCheckboxState extends State<MyCheckbox> {
   bool _isChecked = false; // Variable to store checkbox state
 
   @override
+  void initState() {
+    super.initState();
+    _loadRememberMeState(); // Load the saved state on initialization
+  }
+
+  Future<void> _loadRememberMeState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _isChecked = prefs.getBool('rememberMe') ?? false;
+    });
+  }
+
+  Future<void> _saveRememberMeState(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('rememberMe', value);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -525,6 +667,7 @@ class _MyCheckboxState extends State<MyCheckbox> {
           onChanged: (value) {
             setState(() {
               _isChecked = value!; // Update the state on change
+              _saveRememberMeState(_isChecked); // Save the state persistently
             });
           },
           activeColor: Color(0xFFCA2E55), // Color when active

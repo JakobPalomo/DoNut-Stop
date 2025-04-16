@@ -5,14 +5,14 @@ import 'package:itelec_quiz_one/main.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/sample_catalog.dart';
 
-class ProductManagementPage extends StatefulWidget {
-  const ProductManagementPage({super.key});
+class ManageDonutsPage extends StatefulWidget {
+  const ManageDonutsPage({super.key});
 
   @override
-  _ProductManagementPageState createState() => _ProductManagementPageState();
+  _ManageDonutsPageState createState() => _ManageDonutsPageState();
 }
 
-class _ProductManagementPageState extends State<ProductManagementPage> {
+class _ManageDonutsPageState extends State<ManageDonutsPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final CollectionReference _productsCollection =
@@ -42,13 +42,14 @@ class _ProductManagementPageState extends State<ProductManagementPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Product Management Page",
+      title: "Manage Donuts",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: const Color(0xFFFFE0B6),
       ),
       home: Scaffold(
-        appBar: AppBarWithMenuAndTitle(title: "Product Management"),
+        appBar: AppBarWithMenuAndTitle(title: "Manage Donuts"),
+        drawer: AdminDrawer(),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -200,7 +201,6 @@ class _ProductManagementPageState extends State<ProductManagementPage> {
             ],
           ),
         ),
-        drawer: UserDrawer(),
       ),
     );
   }

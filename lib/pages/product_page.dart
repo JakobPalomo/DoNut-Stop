@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
 
 class ProductPage extends StatefulWidget {
   final String image;
@@ -45,24 +46,7 @@ class _ProductPageState extends State<ProductPage> {
       ),
       home: Scaffold(
         backgroundColor: Color(0xFFFFE0B6), // Background color
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          leading: Container(
-            margin: EdgeInsets.only(left: 10, top: 10),
-            child: IconButton(
-              icon: Image.asset(
-                'assets/icons/back.png',
-                width: 20,
-                height: 20,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ),
-        ),
+        appBar: AppBarWithBackAndTitle(),
         body: Column(
           children: [
             // Donut Image Section

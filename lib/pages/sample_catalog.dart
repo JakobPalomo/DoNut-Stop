@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
-
-import '../main.dart';
 
 class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
@@ -29,7 +28,9 @@ class _CatalogPageState extends State<CatalogPage> {
   }
 
   void _updateDonut(String id, String newName, double newPrice) async {
-    await _donutsCollection.doc(id).update({'name': newName, 'price': newPrice});
+    await _donutsCollection
+        .doc(id)
+        .update({'name': newName, 'price': newPrice});
   }
 
   void _deleteDonut(String id) async {
@@ -45,59 +46,8 @@ class _CatalogPageState extends State<CatalogPage> {
         scaffoldBackgroundColor: const Color(0xFFFFE0B6),
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFEDC690),
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: const DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: const SizedBox(
-                    height: 38,
-                    child: TextField(
-                      cursorColor: Colors.white,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: Color(0xFF2F090B),
-                        hintText: "Search products",
-                        hintStyle: TextStyle(color: Colors.white70),
-                        prefixIcon: Padding(
-                          padding: EdgeInsets.only(left: 15, right: 10),
-                          child: Icon(Icons.search,
-                              color: Colors.white, size: 18.0),
-                        ),
-                        border: OutlineInputBorder(
-                         borderRadius: BorderRadius.all(Radius.circular(30)),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        appBar: AppBarWithSearchAndCart(),
+        drawer: UserDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -107,11 +57,6 @@ class _CatalogPageState extends State<CatalogPage> {
               const SizedBox(height: 30),
               _buildCrudSection(),
             ],
-          ),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            children: [DrwerHeader(), DrwListView()],
           ),
         ),
       ),

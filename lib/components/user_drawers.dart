@@ -1,13 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_donuts.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:itelec_quiz_one/pages/favorites.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
+import 'package:itelec_quiz_one/pages/profile.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
+import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
+import 'package:itelec_quiz_one/pages/admin/manage_orders.dart'; // Corrected package name
 import 'package:itelec_quiz_one/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+class AppBarWithSearchAndCart extends StatelessWidget
+    implements PreferredSizeWidget {
+  const AppBarWithSearchAndCart({super.key});
+
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 
@@ -75,6 +85,96 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ]),
+    );
+  }
+}
+
+class AppBarWithMenuAndTitle extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String title;
+
+  const AppBarWithMenuAndTitle({required this.title, super.key});
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Color(0xFFEDC690), // Background color
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      title: Row(
+        children: [
+          // Square Logo on the Left
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              image: DecorationImage(
+                image: AssetImage("assets/mini_logo.png"),
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              padding: EdgeInsets.only(left: 10),
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 20,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF462521),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AppBarWithBackAndTitle extends StatelessWidget
+    implements PreferredSizeWidget {
+  final String? title;
+
+  const AppBarWithBackAndTitle({this.title, super.key});
+
+  @override
+  Size get preferredSize => Size.fromHeight(56.0);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(
+        title ?? "",
+        style: TextStyle(
+          fontFamily: 'Inter',
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
+          color: Color(0xFF462521),
+        ),
+      ),
+      backgroundColor: Color(0xFFEDC690),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      leading: Container(
+        alignment: Alignment.centerLeft,
+        child: IconButton(
+          icon: Image.asset(
+            'assets/icons/back.png',
+            width: 20,
+            height: 20,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
     );
   }
 }
@@ -166,18 +266,17 @@ class AdminDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
+            ManageOrdersPage(), context),
+        _buildDrawerItem("Manage Donuts", 'assets/icons/managedonuts.png',
+            ManageDonutsPage(), context),
+        _buildDrawerItem("Manage Users", 'assets/icons/manageusers.png',
+            ManageUsersPage(), context),
         _buildDrawerItem(
-            "Our Donuts", 'assets/icons/catalog.png', CatalogPage(), context),
-        _buildDrawerItem(
-            "About Donut", 'assets/icons/about.png', ProductPage(), context),
-        _buildDrawerItem("Register", 'assets/icons/register.png',
-            RegistrationPage(), context),
-        _buildDrawerItem(
-            "Login", 'assets/icons/login.png', LoginPage(), context),
+            "Profile", 'assets/icons/profile.png', ProfilePage(), context),
         ListTile(
           title: Text(
-            "Product Management",
+            "Logout",
             style: TextStyle(
               fontFamily: 'Inter',
               fontWeight: FontWeight.w600,
@@ -186,13 +285,42 @@ class AdminDrawer extends StatelessWidget {
             ),
           ),
           leading: Container(
-            padding: const EdgeInsets.only(left: 15, right: 5),
-            child: Icon(Icons.manage_accounts, color: Color(0xFF462521)),
+            padding: EdgeInsets.only(left: 15, right: 5),
+            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ProductManagementPage()),
+          onTap: () => _logout(context),
+        ),
+      ],
+    );
+  }
+}
+
+// Employee Drawer
+class EmployeeDrawer extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return CustomDrawer(
+      drawerHeader: DrawerHeaderWidget(),
+      drawerItems: [
+        _buildDrawerItem(
+            "Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
+        _buildDrawerItem(
+            "Profile", 'assets/icons/profile.png', ProfilePage(), context),
+        ListTile(
+          title: Text(
+            "Logout",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
           ),
+          leading: Container(
+            padding: EdgeInsets.only(left: 15, right: 5),
+            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+          ),
+          onTap: () => _logout(context),
         ),
       ],
     );
@@ -206,17 +334,35 @@ class UserDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem("Home", 'assets/icons/home.png', MyApp(), context),
         _buildDrawerItem(
-            "Our Donuts", 'assets/icons/catalog.png', CatalogPage(), context),
+            "Catalog", 'assets/icons/home.png', CatalogPage(), context),
         _buildDrawerItem(
-            "About Donut", 'assets/icons/about.png', ProductPage(), context),
-        _buildDrawerItem("Register", 'assets/icons/register.png',
-            RegistrationPage(), context),
+            "My Cart", 'assets/icons/cart.png', CartPage(), context),
         _buildDrawerItem(
-            "Login", 'assets/icons/login.png', LoginPage(), context),
-            _buildDrawerItem(
-            "Manage Product", 'assets/icons/catalog.png', ProductManagementPage(), context),
+            "My Orders", 'assets/icons/myorders.png', MyOrdersPage(), context),
+        _buildDrawerItem("My Favorites", 'assets/icons/favorites.png',
+            MyFavoritesPage(), context),
+        _buildDrawerItem(
+            "Profile", 'assets/icons/profile.png', ProfilePage(), context),
+        ListTile(
+          title: Text(
+            "Logout",
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF462521),
+              fontSize: 16,
+            ),
+          ),
+          leading: Container(
+            padding: EdgeInsets.only(left: 15, right: 5),
+            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+          ),
+          onTap: () => _logout(context),
+        ),
+        SizedBox(height: 20),
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
+            ManageOrdersPage(), context),
       ],
     );
   }
@@ -237,4 +383,15 @@ class GuestDrawer extends StatelessWidget {
       ],
     );
   }
+}
+
+Future<void> _logout(BuildContext context) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('role'); // Clear the role from shared preferences
+  await prefs.clear(); // Clear all shared preferences
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => LoginPage()),
+  );
 }
