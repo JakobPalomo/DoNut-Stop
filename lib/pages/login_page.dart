@@ -9,6 +9,7 @@ import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:toastification/toastification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
 
 import '../main.dart';
 
@@ -58,10 +59,19 @@ class _LoginPageState extends State<LoginPage> {
 
         if (userDoc.exists) {
           String username = userDoc['username'];
+          int role = userDoc['role']; // Assuming 'role' is stored in Firestore
 
           // Save the username in SharedPreferences for session-wide access
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('username', username);
+
+          if (role == 3) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+            );
+            return;
+          }
         }
 
         setState(() {
