@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:itelec_quiz_one/main.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:itelec_quiz_one/pages/sample_catalog.dart';
 
 class ProductManagementPage extends StatefulWidget {
   const ProductManagementPage({super.key});
