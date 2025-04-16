@@ -43,12 +43,20 @@ class _LoginPageState extends State<LoginPage> {
           .doc(user.uid)
           .get();
 
-      if (userDoc.exists && role == 3) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => ManageOrdersPage()),
-        );
-        return;
+      if (userDoc.exists) {
+        if (role == 3) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+          );
+          return;
+        } else if (role == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CatalogPage()),
+          );
+          return;
+        }
       }
 
       Navigator.pushReplacement(
@@ -79,11 +87,18 @@ class _LoginPageState extends State<LoginPage> {
           // Save the username in SharedPreferences for session-wide access
           final prefs = await SharedPreferences.getInstance();
           await prefs.setString('username', username);
+          await prefs.setInt('role', role); // Save the role
 
           if (role == 3) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+            );
+            return;
+          } else if (role == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => CatalogPage()),
             );
             return;
           }
