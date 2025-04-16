@@ -564,6 +564,33 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                         isFavInitial: false,
                       ),
                       SizedBox(width: 20),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut11.png",
+                        title: "Matcha Rainbow",
+                        description:
+                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                        newPrice: "₱40",
+                        isFavInitial: false,
+                      ),
+                      SizedBox(width: 20),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut12.png",
+                        title: "Matcha Rainbow",
+                        description:
+                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                        newPrice: "₱40",
+                        isFavInitial: false,
+                      ),
+                      SizedBox(width: 20),
+                      OfferSelectionWidget(
+                        image: "assets/front_donut/fdonut13.png",
+                        title: "Matcha Rainbow",
+                        description:
+                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                        newPrice: "₱40",
+                        isFavInitial: false,
+                      ),
+                      SizedBox(width: 20),
                     ],
                   ),
                 ),
@@ -685,9 +712,11 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                           }
                           final donuts = snapshot.data!.docs;
                           final images = [
-                            "assets/side_donut/sdonut8.png",
-                            "assets/side_donut/sdonut7.png",
-                            "assets/side_donut/sdonut6.png",
+                            "assets/front_donut/fdonut8.png",
+                            "assets/front_donut/fdonut7.png",
+                            "assets/front_donut/fdonut6.png",
+                            "assets/front_donut/fdonut21.png",
+                            "assets/front_donut/fdonut22.png",
                           ];
                           return Row(
                             children: List.generate(donuts.length, (index) {
