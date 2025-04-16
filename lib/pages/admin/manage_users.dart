@@ -12,6 +12,7 @@ class _ManageUsersPageState extends State<ManageUsersPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   List<Map<String, dynamic>> user = [];
+  int activeFilterIndex = 0; // Track the active filter index
 
   // Pagination variables
   int currentPage = 1; // Initial page
@@ -102,23 +103,104 @@ class _ManageUsersPageState extends State<ManageUsersPage>
               ),
             ),
 
-            // Table
-            Container(
-                padding: EdgeInsets.all(16),
-                child: Column(children: [
-                  // Filter tabs
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _buildFilterTab("Customers", 0),
-                        _buildFilterTab("Employees", 1),
-                        _buildFilterTab("Admin", 2),
-                      ],
+            // Filter tabs
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFFFEEE1),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  border: Border(
+                    top: BorderSide(
+                      color: Color(0xFFD0B8A4),
+                      width: 1,
+                      strokeAlign: BorderSide.strokeAlignInside,
+                    ),
+                    left: BorderSide(
+                      color: Color(0xFFD0B8A4),
+                      width: 1,
+                      strokeAlign: BorderSide.strokeAlignInside,
+                    ),
+                    right: BorderSide(
+                      color: Color(0xFFD0B8A4),
+                      width: 1,
+                      strokeAlign: BorderSide.strokeAlignInside,
                     ),
                   ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  child: Wrap(
+                    spacing: 0, // Add spacing between buttons
+                    runSpacing:
+                        0, // Add spacing between rows if wrapping occurs
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 3 -
+                            0, // Divide width evenly
+                        child: FilterButton(
+                          title: "Customers",
+                          color: Color(0xFFFFB957),
+                          activeColor: Color(0xFFFFE7C7),
+                          count: 10, // Replace with actual count
+                          isActive: activeFilterIndex == 0,
+                          onTap: () {
+                            setState(() {
+                              activeFilterIndex = 0;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 3 -
+                            8, // Divide width evenly
+                        child: FilterButton(
+                          title: "Employees",
+                          color: Color(0xFFFF7859),
+                          activeColor: Color(0xFFFFD7C5),
+                          count: 5, // Replace with actual count
+                          isActive: activeFilterIndex == 1,
+                          onTap: () {
+                            setState(() {
+                              activeFilterIndex = 1;
+                            });
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 3 -
+                            27, // Divide width evenly
+                        child: FilterButton(
+                          title: "Admin",
+                          color: Color(0xFFFF8BA8),
+                          activeColor: Color(0xFFFFD7E0),
+                          count: 2, // Replace with actual count
+                          isActive: activeFilterIndex == 2,
+                          onTap: () {
+                            setState(() {
+                              activeFilterIndex = 2;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
+            // Table
+            Container(
+                padding: EdgeInsets.symmetric(horizontal: 16),
+                child: Column(children: [
                   // Headers
                   Container(
                     color: Color(0xFFDC345E),
@@ -283,47 +365,78 @@ class _ManageUsersPageState extends State<ManageUsersPage>
       ),
     );
   }
+}
 
-  Widget _buildFilterTab(String title, int index) {
-    bool isActive = _tabController.index == index;
+class FilterButton extends StatelessWidget {
+  final String title;
+  final Color color; // Bottom border color and badge background color
+  final Color activeColor; // Background color when selected
+  final int count; // Badge count
+  final bool isActive; // Whether the button is active
+  final VoidCallback onTap; // Callback when the button is tapped
 
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _tabController.index = index;
-        });
-      },
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isActive ? Color(0xFFCA2E55) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                color: isActive ? Colors.white : Colors.black,
-                fontWeight: FontWeight.w500,
+  const FilterButton({
+    super.key,
+    required this.title,
+    required this.color,
+    required this.activeColor,
+    required this.count,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isActive ? activeColor : Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: color.withOpacity(0.1),
+        hoverColor: color.withOpacity(0.1),
+        focusColor: color.withOpacity(0.1),
+        highlightColor: color.withOpacity(0.2),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? color : Colors.transparent,
+                width: 4,
               ),
             ),
-            SizedBox(width: 4),
-            Container(
-              padding: EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: isActive ? Colors.white : Color(0xFFCA2E55),
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                '0',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: isActive ? Color(0xFFCA2E55) : Colors.white,
+          ),
+          child: Center(
+            child: Row(
+              mainAxisSize: MainAxisSize.min, // Prevent taking full width
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Color(0xFF462521),
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                  ),
                 ),
-              ),
+                SizedBox(width: 10),
+                Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    count.toString(),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Inter',
+                      color: Color(0xFF462521),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
