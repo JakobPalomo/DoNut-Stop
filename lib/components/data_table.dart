@@ -6,14 +6,14 @@ class CustomDataTable extends StatefulWidget {
   final List<Map<String, dynamic>> data;
   final List<Map<String, dynamic>> columns;
   final int rowsPerPage;
-  final int page;
+  final List<Map<String, dynamic>> filters;
 
   const CustomDataTable({
     super.key,
     required this.data,
     required this.columns,
     this.rowsPerPage = 5,
-    this.page = 1,
+    this.filters = const [],
   });
 
   @override
@@ -21,201 +21,244 @@ class CustomDataTable extends StatefulWidget {
 }
 
 class _CustomDataTableState extends State<CustomDataTable> {
-  late int currentPage;
-  late List<Map<String, dynamic>> sortedData;
-  String? sortedColumn;
-  bool ascending = true;
+  late List<Map<String, dynamic>> filteredData;
+  int page = 1;
+  int activeFilterValue = 0; // Default to "All"
 
   @override
   void initState() {
     super.initState();
-    currentPage = widget.page;
-    sortedData = List.from(widget.data);
+    _updateFilterCounts();
+    _applyFilter(); // Show all rows by default
   }
 
-  void _sortData(String column, String type) {
-    setState(() {
-      if (sortedColumn == column) {
-        ascending = !ascending;
+  void _updateFilterCounts() {
+    // Update the count for each filter
+    for (var filter in widget.filters) {
+      if (filter['value'] == 0) {
+        // "All" filter shows all rows
+        filter['count'] = widget.data.length;
       } else {
-        sortedColumn = column;
-        ascending = true;
+        // Count rows matching the filter's value
+        filter['count'] =
+            widget.data.where((row) => row['role'] == filter['label']).length;
       }
+    }
+  }
 
-      sortedData.sort((a, b) {
-        final aValue = a[column];
-        final bValue = b[column];
-
-        int comparison;
-        switch (type) {
-          case 'number':
-            comparison = (aValue as num).compareTo(bValue as num);
-            break;
-          case 'date':
-            comparison =
-                DateTime.parse(aValue).compareTo(DateTime.parse(bValue));
-            break;
-          default:
-            comparison = aValue.toString().compareTo(bValue.toString());
-        }
-
-        return ascending ? comparison : -comparison;
-      });
-
-      currentPage = 1;
+  void _applyFilter() {
+    setState(() {
+      if (activeFilterValue == 0) {
+        // Show all rows for "All" filter
+        filteredData = List.from(widget.data);
+      } else {
+        // Filter rows based on the selected filter's value
+        final selectedFilter = widget.filters
+            .firstWhere((filter) => filter['value'] == activeFilterValue);
+        filteredData = widget.data
+            .where((row) => row['role'] == selectedFilter['label'])
+            .toList();
+      }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final startIndex = (currentPage - 1) * widget.rowsPerPage;
+    final startIndex = (page - 1) * widget.rowsPerPage;
     final endIndex =
-        (startIndex + widget.rowsPerPage).clamp(0, sortedData.length);
-    final currentPageData = sortedData.sublist(startIndex, endIndex);
-    final totalPages = (sortedData.length / widget.rowsPerPage).ceil();
+        (startIndex + widget.rowsPerPage).clamp(0, filteredData.length);
+    final currentPageData = filteredData.sublist(startIndex, endIndex);
 
     return Column(
       children: [
+        // Filter Tabs
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            color: Color(0xFFFFEEE1),
+            border: Border(
+              top: BorderSide(
+                color: Color(0xFFD0B8A4),
+                width: 1,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
+              left: BorderSide(
+                color: Color(0xFFD0B8A4),
+                width: 1,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
+              right: BorderSide(
+                color: Color(0xFFD0B8A4),
+                width: 1,
+                strokeAlign: BorderSide.strokeAlignInside,
+              ),
+            ),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(20),
+              topRight: Radius.circular(20),
+            ),
+            child: ClipRect(
+              child: Wrap(
+                spacing: 0,
+                runSpacing: 0,
+                children: widget.filters.map((filter) {
+                  return FilterButton(
+                    filter: filter,
+                    isActive: activeFilterValue == filter['value'],
+                    onTap: () {
+                      setState(() {
+                        activeFilterValue = filter['value'];
+                        _applyFilter();
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
+          ),
+        ),
+
+        // Table Header
         Container(
           color: const Color(0xFFDC345E),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
-            children: [
-              ...widget.columns.map((col) {
-                return Expanded(
-                  child: InkWell(
-                    onTap: col['sortable']
-                        ? () => _sortData(col['column'], col['type'])
-                        : null,
-                    child: Row(
-                      children: [
-                        Text(
-                          col['label'],
-                          style: const TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                        if (sortedColumn == col['column'])
-                          Icon(
-                            ascending
-                                ? Icons.arrow_upward
-                                : Icons.arrow_downward,
-                            size: 16,
-                            color: Colors.white,
-                          ),
-                      ],
-                    ),
+            children: widget.columns.map((col) {
+              return Expanded(
+                child: Text(
+                  col['label'],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                    fontSize: 13,
                   ),
-                );
-              }).toList(),
-              const Expanded(child: SizedBox()), // For actions
-            ],
+                ),
+              );
+            }).toList(),
           ),
         ),
+
+        // Table Rows
         Expanded(
           child: ListView.builder(
             itemCount: currentPageData.length,
             itemBuilder: (context, index) {
-              final user = currentPageData[index];
+              final row = currentPageData[index];
               return Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 decoration: BoxDecoration(
+                  color: Colors.white,
                   border: Border(
                     bottom: BorderSide(color: Colors.grey.shade300),
                   ),
                 ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                 child: Row(
-                  children: [
-                    ...widget.columns.map((col) {
-                      final value = user[col['column']];
-                      Widget content;
-
-                      if (col['column'] == 'role') {
-                        content = Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: DropdownButton<String>(
-                            value: value,
-                            isExpanded: true,
-                            isDense: true,
-                            underline: const SizedBox(),
-                            items: [
-                              'Customer',
-                              'Employee',
-                              'Admin',
-                            ].map((String val) {
-                              return DropdownMenuItem<String>(
-                                value: val,
-                                child: Text(val),
-                              );
-                            }).toList(),
-                            onChanged: (newVal) {
-                              setState(() {
-                                user[col['column']] = newVal;
-                              });
-                            },
-                          ),
-                        );
-                      } else if (col['type'] == 'date') {
-                        final date = DateTime.tryParse(value);
-                        content = Text(
-                          date != null
-                              ? DateFormat('yMMMd').add_jm().format(date)
-                              : value.toString(),
-                        );
-                      } else {
-                        content = Text(value.toString());
-                      }
-
-                      return Expanded(child: content);
-                    }).toList(),
-
-                    // Actions
-                    Expanded(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.visibility,
-                                color: Color(0xFFCA2E55)),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.edit,
-                                color: Color(0xFFCA2E55)),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete,
-                                color: Color(0xFFCA2E55)),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
+                  children: widget.columns.map((col) {
+                    return Expanded(
+                      child: Text(row[col['column']].toString(),
+                          style: const TextStyle(
+                            fontFamily: 'Inter',
+                            color: Colors.black,
+                            fontSize: 13,
+                          )),
+                    );
+                  }).toList(),
                 ),
               );
             },
           ),
         ),
+
+        // Pagination
         Pagination(
-          currentPage: currentPage,
-          totalPages: totalPages,
+          currentPage: page,
+          totalPages: (filteredData.length / widget.rowsPerPage).ceil(),
           onPageChange: (int page) {
             setState(() {
-              currentPage = page; // Update the current page
+              page = page; // Update the current page
             });
           },
         ),
       ],
+    );
+  }
+}
+
+class FilterButton extends StatelessWidget {
+  final Map<String, dynamic> filter; // The filter data
+  final bool isActive; // Whether the button is active
+  final VoidCallback onTap; // Callback when the button is tapped
+
+  const FilterButton({
+    super.key,
+    required this.filter,
+    required this.isActive,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final String label = filter['label'];
+    final int count = filter['count'];
+    final Color color = filter['color'] ?? Colors.grey; // Default color
+    final Color activeColor =
+        filter['activeColor'] ?? Colors.blue; // Default active color
+
+    return Material(
+      color: isActive ? activeColor : Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        splashColor: color.withOpacity(0.1),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: isActive ? color : Colors.transparent,
+                width: 4,
+              ),
+            ),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  color: Color(0xFF462521),
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                ),
+              ),
+              SizedBox(width: 8),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 3, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    color: Color(0xFF462521),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

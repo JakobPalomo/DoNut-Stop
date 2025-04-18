@@ -12,10 +12,38 @@ class ManageUsersPage extends StatefulWidget {
 
 class _ManageUsersPageState extends State<ManageUsersPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  int activeFilterIndex = 0; // Track the active filter index
-
-  // Table
+  // Filter data
+  final List<Map<String, dynamic>> filters = [
+    {
+      "label": "All",
+      "value": 0,
+      "count": 0,
+      "color": Color(0xFFCE895B),
+      "activeColor": Color(0xFFF9DBB3),
+    },
+    {
+      "label": "Customer",
+      "value": 1,
+      "count": 0,
+      "color": Color(0xFFFFB957),
+      "activeColor": Color(0xFFFFE7C7),
+    },
+    {
+      "label": "Employee",
+      "value": 2,
+      "count": 0,
+      "color": Color(0xFFFF7859),
+      "activeColor": Color(0xFFFFD7C5),
+    },
+    {
+      "label": "Admin",
+      "value": 3,
+      "count": 0,
+      "color": Color(0xFFFF8BA8),
+      "activeColor": Color(0xFFFFD7E0),
+    },
+  ];
+  // Table data
   final List<Map<String, dynamic>> users = [
     {"username": "alice", "role": "Admin", "createdAt": "2024-01-10T10:30:00"},
     {"username": "bob", "role": "Customer", "createdAt": "2024-03-05T14:20:00"},
@@ -58,25 +86,13 @@ class _ManageUsersPageState extends State<ManageUsersPage>
     },
   ];
 
-  // Pagination variables
-  int currentPage = 1; // Initial page
-  final int totalPages = 5; // Total number of pages
-
-  void _handlePageChange(int newPage) {
-    setState(() {
-      currentPage = newPage; // Update the current page
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -131,96 +147,6 @@ class _ManageUsersPageState extends State<ManageUsersPage>
               ),
             ),
 
-            // Filter Tabs
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFEEE1),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  border: Border(
-                    top: BorderSide(
-                      color: Color(0xFFD0B8A4),
-                      width: 1,
-                      strokeAlign: BorderSide.strokeAlignInside,
-                    ),
-                    left: BorderSide(
-                      color: Color(0xFFD0B8A4),
-                      width: 1,
-                      strokeAlign: BorderSide.strokeAlignInside,
-                    ),
-                    right: BorderSide(
-                      color: Color(0xFFD0B8A4),
-                      width: 1,
-                      strokeAlign: BorderSide.strokeAlignInside,
-                    ),
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  child: Wrap(
-                    spacing: 0,
-                    runSpacing: 0,
-                    alignment: WrapAlignment.spaceBetween,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3 - 16,
-                        child: FilterButton(
-                          title: "Customers",
-                          color: Color(0xFFFFB957),
-                          activeColor: Color(0xFFFFE7C7),
-                          count: 10,
-                          isActive: activeFilterIndex == 0,
-                          onTap: () {
-                            setState(() {
-                              activeFilterIndex = 0;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3 - 16,
-                        child: FilterButton(
-                          title: "Employees",
-                          color: Color(0xFFFF7859),
-                          activeColor: Color(0xFFFFD7C5),
-                          count: 5,
-                          isActive: activeFilterIndex == 1,
-                          onTap: () {
-                            setState(() {
-                              activeFilterIndex = 1;
-                            });
-                          },
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3 - 16,
-                        child: FilterButton(
-                          title: "Admin",
-                          color: Color(0xFFFF8BA8),
-                          activeColor: Color(0xFFFFD7E0),
-                          count: 2,
-                          isActive: activeFilterIndex == 2,
-                          onTap: () {
-                            setState(() {
-                              activeFilterIndex = 2;
-                            });
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
             // Main Content (CustomDataTable and Pagination)
             Expanded(
               child: Container(
@@ -233,7 +159,7 @@ class _ManageUsersPageState extends State<ManageUsersPage>
                         data: users,
                         columns: columns,
                         rowsPerPage: 15,
-                        page: currentPage,
+                        filters: filters,
                       ),
                     ),
                   ],
@@ -241,82 +167,6 @@ class _ManageUsersPageState extends State<ManageUsersPage>
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class FilterButton extends StatelessWidget {
-  final String title;
-  final Color color; // Bottom border color and badge background color
-  final Color activeColor; // Background color when selected
-  final int count; // Badge count
-  final bool isActive; // Whether the button is active
-  final VoidCallback onTap; // Callback when the button is tapped
-
-  const FilterButton({
-    super.key,
-    required this.title,
-    required this.color,
-    required this.activeColor,
-    required this.count,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: isActive ? activeColor : Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        splashColor: color.withOpacity(0.1),
-        hoverColor: color.withOpacity(0.1),
-        focusColor: color.withOpacity(0.1),
-        highlightColor: color.withOpacity(0.2),
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-          decoration: BoxDecoration(
-            border: Border(
-              bottom: BorderSide(
-                color: isActive ? color : Colors.transparent,
-                width: 4,
-              ),
-            ),
-          ),
-          child: Center(
-            child: Row(
-              mainAxisSize: MainAxisSize.min, // Prevent taking full width
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Color(0xFF462521),
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Inter',
-                  ),
-                ),
-                SizedBox(width: 10),
-                Container(
-                  padding: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    count.toString(),
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Inter',
-                      color: Color(0xFF462521),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
