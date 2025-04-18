@@ -4,6 +4,7 @@ import 'package:itelec_quiz_one/components/data_table.dart';
 import 'package:itelec_quiz_one/components/pagination.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ManageUsersPage extends StatefulWidget {
   @override
@@ -11,7 +12,13 @@ class ManageUsersPage extends StatefulWidget {
 }
 
 class _ManageUsersPageState extends State<ManageUsersPage> {
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('users');
   final TextEditingController _searchController = TextEditingController();
+
+  void _deleteUser(String id) async {
+    await _usersCollection.doc(id).delete();
+  }
 
   // Filter data
   final List<Map<String, dynamic>> filters = [
@@ -45,7 +52,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     },
   ];
   // Table data
-  final List<Map<String, dynamic>> users = [
+  final List<Map<String, dynamic>> dummyUsers = [
     {"username": "alice", "role": 3, "created_at": "2024-01-10T10:30:00"},
     {"username": "bob", "role": 1, "created_at": "2024-03-05T14:20:00"},
     {"username": "carol", "role": 2, "created_at": "2023-12-22T09:15:00"},
@@ -163,43 +170,73 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
               ),
             ),
 
-            // Main Content (CustomDataTable and Pagination)
+            // Main Content (StreamBuilder and Pagination)
             Expanded(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 23),
-                child: CustomDataTable(
-                  data: users,
-                  columns: columns,
-                  filters: filters,
-                  rowsPerPage: 5,
-                  searchQuery: _searchController.text, // Pass the search query
-                  dropdowns: dropdowns,
-                  actionsBuilder: (row) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.visibility,
-                              color: Color(0xFFCA2E55)),
-                          onPressed: () {
-                            // Handle view action
-                          },
-                        ),
-                        IconButton(
-                          icon:
-                              const Icon(Icons.edit, color: Color(0xFFCA2E55)),
-                          onPressed: () {
-                            // Handle edit action
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete,
-                              color: Color(0xFFCA2E55)),
-                          onPressed: () {
-                            // Handle delete action
-                          },
-                        ),
-                      ],
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _usersCollection.snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(child: Text('No users found.'));
+                    }
+
+                    final users = snapshot.data!.docs.map((doc) {
+                      final data = doc.data() as Map<String, dynamic>;
+
+                      // Ensure created_at and modified_at are formatted as strings
+                      return {
+                        ...data,
+                        "created_at": data['created_at'] is Timestamp
+                            ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                                .format(data['created_at'].toDate())
+                            : "2024-01-10T10:30:00",
+                        "modified_at": data['modified_at'] is Timestamp
+                            ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                                .format(data['modified_at'].toDate())
+                            : "2024-01-10T10:30:00",
+                      };
+                    }).toList();
+
+                    return CustomDataTable(
+                      data: users,
+                      columns: columns,
+                      filters: filters,
+                      rowsPerPage: 10,
+                      searchQuery: _searchController.text,
+                      dropdowns: dropdowns,
+                      actionsBuilder: (row) {
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.visibility,
+                                  color: Color(0xFFCA2E55)),
+                              onPressed: () {
+                                // Handle view action
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit,
+                                  color: Color(0xFFCA2E55)),
+                              onPressed: () {
+                                // Handle edit action
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete,
+                                  color: Color(0xFFCA2E55)),
+                              onPressed: () {
+                                // Handle delete action
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     );
                   },
                 ),

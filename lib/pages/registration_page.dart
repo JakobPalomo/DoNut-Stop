@@ -18,7 +18,7 @@ final TextEditingController lastNameController = TextEditingController();
 final TextEditingController usernameController = TextEditingController();
 final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
-final TextEditingController districtController = TextEditingController();
+final TextEditingController stateController = TextEditingController();
 final TextEditingController cityController = TextEditingController();
 final TextEditingController zipController = TextEditingController();
 final TextEditingController confirmPasswordController = TextEditingController();
@@ -92,7 +92,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
     emailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
-    districtController.clear();
+    stateController.clear();
     cityController.clear();
     zipController.clear();
     streetNameController.clear();
@@ -115,7 +115,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       emailController.text = user.email;
       passwordController.text = user.password;
       confirmPasswordController.text = user.password;
-      districtController.text = user.district;
+      stateController.text = user.district;
       cityController.text = user.city;
       zipController.text = user.zip;
     });
@@ -130,7 +130,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           username: usernameController.text,
           email: emailController.text,
           password: passwordController.text,
-          district: districtController.text,
+          district: stateController.text,
           city: cityController.text,
           zip: zipController.text,
         );
@@ -151,17 +151,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
           password: passwordController.text,
         );
 
+        // Add user document
         await _firestore.collection('users').doc(userCredential.user!.uid).set({
-          'firstName': firstNameController.text,
-          'lastName': firstNameController.text,
+          'first_name': firstNameController.text,
+          'last_name': lastNameController.text,
           'username': usernameController.text,
           'email': emailController.text,
-          'district': districtController.text,
-          'city': cityController.text,
-          'zip': zipController.text,
-          'streetName': streetNameController.text, // Save Street Name
-          'barangay': barangayController.text, // Save Barangay
-          'role': 1, // Add role field with value 1
+          'role': 1,
+          'created_at': Timestamp.now(),
+          'modified_at': Timestamp.now(),
+        });
+
+        // Add location as a subcollection
+        await _firestore
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .collection('locations')
+            .add({
+          'state_province': stateController.text,
+          'city_municipality': cityController.text,
+          'barangay': barangayController.text,
+          'zip': int.tryParse(zipController.text) ?? 0,
+          'house_no_building_street': streetNameController.text,
+          'main_location': true,
+          'created_at': Timestamp.now(),
+          'modified_at': Timestamp.now(),
         });
 
         toastification.show(
@@ -169,8 +183,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           title: Text('Registration Successful'),
           description: Text('You can now log in.'),
           type: ToastificationType.success,
-          autoCloseDuration:
-              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration: const Duration(seconds: 4),
         );
 
         Navigator.push(
@@ -183,8 +196,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           title: Text('Registration Failed'),
           description: Text('Error: ${e.toString()}'),
           type: ToastificationType.error,
-          autoCloseDuration:
-              const Duration(seconds: 4), // Ensure toast closes after 6 seconds
+          autoCloseDuration: const Duration(seconds: 4),
         );
       }
     }
@@ -379,9 +391,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 true, confirmPasswordController,
                 validator: _validateConfirmPassword),
             _buildTextField(
-                "Province", "Your province", true, districtController,
+                "State/Province", "Your state/province", true, stateController,
                 validator: _validateRequiredField),
-            _buildTextField("City", "Your city", true, cityController,
+            _buildTextField("City/Municipality", "Your city/municipality", true,
+                cityController,
                 validator: _validateRequiredField),
             _buildTextField("Barangay", "Your barangay", true,
                 barangayController, // Use the new Barangay controller
@@ -391,8 +404,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 Expanded(
                   flex: 2, // Street name field is longer
                   child: _buildTextField(
-                    "Street Name",
-                    "Your street name",
+                    "House No/Bldg./Street",
+                    "Your house no./bldg./street",
                     true,
                     streetNameController,
                     validator: _validateRequiredField,
@@ -536,7 +549,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
                 ),
               ),
               _buildTextField(
-                "Username ",
+                "Username",
                 "Your username",
                 true,
                 usernameController,
@@ -548,14 +561,14 @@ class RegPageTxtFieldSection extends StatelessWidget {
                 ],
               ),
               _buildTextField(
-                  "Email address ", "Your email address", true, emailController,
+                  "Email address", "Your email address", true, emailController,
                   validator: _validateEmail,
                   keyboardType: TextInputType.emailAddress,
                   inputFormatters: [LengthLimitingTextInputFormatter(255)]),
               _buildPasswordField(
-                  "Password ", "Your password", true, passwordController,
+                  "Password", "Your password", true, passwordController,
                   validator: _validatePassword),
-              _buildPasswordField("Confirm Password ", "Confirm your password",
+              _buildPasswordField("Confirm Password", "Confirm your password",
                   true, confirmPasswordController,
                   validator: _validateConfirmPassword),
               Container(
@@ -567,8 +580,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       return Row(
                         children: [
                           Expanded(
-                              child: _buildTextField("Province",
-                                  "Your province", true, districtController,
+                              child: _buildTextField("State/Province",
+                                  "Your state/province", true, stateController,
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
@@ -577,7 +590,10 @@ class RegPageTxtFieldSection extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
-                                  "City ", "Your city", true, cityController,
+                                  "City/Municipality",
+                                  "Your city/municipality",
+                                  true,
+                                  cityController,
                                   validator: _validateRequiredField,
                                   keyboardType: TextInputType.text,
                                   inputFormatters: [
@@ -586,7 +602,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
                           const SizedBox(width: 10),
                           Expanded(
                               child: _buildTextField(
-                            "Barangay ",
+                            "Barangay",
                             "Your barangay",
                             true,
                             barangayController, // Use the new Barangay controller
@@ -602,19 +618,19 @@ class RegPageTxtFieldSection extends StatelessWidget {
                       // Small screen: Use Column to stack fields
                       return Column(
                         children: [
-                          _buildTextField("Province ", "Your province", true,
-                              districtController,
+                          _buildTextField("State/Province",
+                              "Your state/province", true, stateController,
                               validator: _validateRequiredField,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(255)
                               ]),
-                          _buildTextField(
-                              "City ", "Your city", true, cityController,
+                          _buildTextField("City/Municipality",
+                              "Your city/municiplaity", true, cityController,
                               validator: _validateRequiredField,
                               inputFormatters: [
                                 LengthLimitingTextInputFormatter(255)
                               ]),
-                          _buildTextField("Barangay ", "Your barangay", true,
+                          _buildTextField("Barangay", "Your barangay", true,
                               barangayController, // Use the new Barangay controller
                               validator: _validateRequiredField,
                               keyboardType: TextInputType.text,
@@ -632,8 +648,8 @@ class RegPageTxtFieldSection extends StatelessWidget {
                   Expanded(
                     flex: 2, // Street name field is longer
                     child: _buildTextField(
-                      "Street Name",
-                      "Your street name",
+                      "House No/Bldg./Street",
+                      "Your house no./bldg./street",
                       true,
                       streetNameController,
                       validator: _validateRequiredField,
@@ -699,7 +715,7 @@ class RegPageTxtFieldSection extends StatelessWidget {
               children: isRequired
                   ? [
                       TextSpan(
-                        text: '*',
+                        text: ' *',
                         style: TextStyle(color: Color(0xFFEC2023)),
                       ),
                     ]
@@ -938,7 +954,7 @@ class _PasswordFieldState extends State<PasswordField> {
               children: widget.isRequired
                   ? [
                       TextSpan(
-                        text: '*',
+                        text: ' *',
                         style: TextStyle(color: Color(0xFFEC2023)),
                       ),
                     ]
@@ -947,7 +963,7 @@ class _PasswordFieldState extends State<PasswordField> {
           ),
           const SizedBox(height: 10),
           TextFormField(
-            controller: widget.label == "Password "
+            controller: widget.label == "Password"
                 ? passwordController
                 : confirmPasswordController, // Use appropriate controller
             obscureText: _obscureText,

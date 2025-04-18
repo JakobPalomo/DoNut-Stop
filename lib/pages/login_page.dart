@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:itelec_quiz_one/components/buttons.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -69,7 +70,8 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _loginUser() async {
     if (_formKey.currentState!.validate()) {
       try {
-        UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential userCredential =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
@@ -175,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Login Page Module",
+      title: "Login Page",
       debugShowCheckedModeBanner: false, // Remove debug ribbon
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFFDE5CC),
@@ -233,10 +235,10 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         SizedBox(height: 20),
                         _buildTextField(
-                            "Email ", "Your email", true, emailController,
+                            "Email", "Your email", true, emailController,
                             validator: _validateEmail),
                         SizedBox(height: 10),
-                        _buildPasswordField("Password ", "Your password", true,
+                        _buildPasswordField("Password", "Your password", true,
                             validator: _validatePassword),
                         SizedBox(height: 10),
                         if (_errorText != null)
@@ -304,47 +306,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        Container(
-                          width: double.infinity, // Take full width if wrapped
-                          constraints: BoxConstraints(maxWidth: 200),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: ElevatedButton(
-                            onPressed: _loginUser,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.transparent,
-                              shadowColor: Colors.transparent,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 18, horizontal: 30),
-                            ).copyWith(
-                              overlayColor: MaterialStateProperty.resolveWith<Color?>(
-                                (Set<MaterialState> states) {
-                                  if (states.contains(MaterialState.hovered)) {
-                                    return const Color(0xFF2F090B); // Hover color
-                                  }
-                                  return null; // Default color
-                                },
-                              ),
-                            ),
-                            child: Text(
-                              "Log in",
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                        GradientButton(text: "Log in", onPressed: _loginUser),
                         SizedBox(height: 20),
                         Row(
                           children: [
@@ -514,7 +476,7 @@ class _LoginPageState extends State<LoginPage> {
               children: isRequired
                   ? [
                       TextSpan(
-                        text: '*',
+                        text: ' *',
                         style: TextStyle(color: Color(0xFFEC2023)),
                       ),
                     ]
@@ -579,7 +541,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: isRequired
                       ? [
                           TextSpan(
-                            text: '*',
+                            text: ' *',
                             style: TextStyle(color: Color(0xFFEC2023)),
                           ),
                         ]
