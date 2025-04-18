@@ -75,7 +75,8 @@ class _ManageUsersPageState extends State<ManageUsersPage>
       "label": "Username",
       "column": "username",
       "sortable": true,
-      "type": "string"
+      "type": "string",
+      "width": 120
     },
     {
       "label": "Role",
@@ -96,7 +97,7 @@ class _ManageUsersPageState extends State<ManageUsersPage>
       "column": "actions",
       "sortable": false,
       "type": "actions",
-      "width": 180,
+      "width": 120,
     },
   ];
 

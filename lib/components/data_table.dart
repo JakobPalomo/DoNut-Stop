@@ -115,36 +115,64 @@ class _CustomDataTableState extends State<CustomDataTable> {
           ),
         ),
         SizedBox(height: 16),
+
         // Table Header
-        Container(
-          color: const Color(0xFFDC345E),
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-          child: Row(
-            children: widget.columns.map((col) {
-              var content;
-              if (col['type'] == 'actions') {
-                // Render blank header for actions column
-                content = SizedBox();
-              } else {
-                content = Text(
-                  col['label'],
-                  style: const TextStyle(
+        Row(
+          children: [
+            // Scrollable Header
+            Flexible(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  color: const Color(0xFFDC345E),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Row(children: [
+                    ...widget.columns
+                        .where((col) =>
+                            col['type'] != 'actions') // Exclude actions column
+                        .map<Widget>((col) {
+                      return SizedBox(
+                        width: col['width'], // Apply column width
+                        child: Text(
+                          col['label'],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontFamily: 'Inter',
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    SizedBox(width: 1),
+                  ]),
+                ),
+              ),
+            ),
+
+            // Fixed Actions Header
+            SizedBox(
+              width: widget.columns.firstWhere(
+                (col) => col['type'] == 'actions',
+                orElse: () => {'width': 100}, // Default width if not found
+              )['width'], // Fixed width for actions column
+              child: Container(
+                color: const Color(0xFFDC345E),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                child: const Text(
+                  '', // Blank header for actions
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
                     fontSize: 14,
                     fontFamily: 'Inter',
                   ),
-                );
-              }
-
-              return col['width'] != null
-                  ? SizedBox(
-                      width: col['width'], // Apply column width
-                      child: content,
-                    )
-                  : Expanded(child: content);
-            }).toList(),
-          ),
+                ),
+              ),
+            ),
+          ],
         ),
 
         // Table Rows
@@ -153,118 +181,146 @@ class _CustomDataTableState extends State<CustomDataTable> {
             itemCount: currentPageData.length,
             itemBuilder: (context, index) {
               final row = currentPageData[index];
-              return Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 5, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    bottom: BorderSide(color: Colors.grey.shade300),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    ...widget.columns.map((col) {
-                      final value = row[col['column']];
-                      Widget content;
+              return Row(
+                children: [
+                  // Scrollable Row Content
+                  Flexible(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border(
+                            bottom: BorderSide(color: Colors.grey.shade300),
+                          ),
+                        ),
+                        child: Row(children: [
+                          ...widget.columns
+                              .where((col) =>
+                                  col['type'] !=
+                                  'actions') // Exclude actions column
+                              .map((col) {
+                            final value = row[col['column']];
+                            Widget content;
 
-                      // Check if the column matches a dropdown configuration
-                      final dropdownConfig = widget.dropdowns.firstWhere(
-                        (dropdown) => dropdown['row'] == col['column'],
-                        orElse: () => <String, dynamic>{},
-                      );
+                            // Check if the column matches a dropdown configuration
+                            final dropdownConfig = widget.dropdowns.firstWhere(
+                              (dropdown) => dropdown['row'] == col['column'],
+                              orElse: () => <String, dynamic>{},
+                            );
 
-                      if (dropdownConfig.isNotEmpty) {
-                        // Render dropdown for the column
-                        final options = dropdownConfig['options']
-                            as List<Map<String, dynamic>>;
-                        content = DropdownButton2<String>(
-                          value: value,
-                          isExpanded: false,
-                          items: options.map((option) {
-                            return DropdownMenuItem<String>(
-                              value: option['label'],
-                              child: Text(option['label']),
+                            if (dropdownConfig.isNotEmpty) {
+                              // Render dropdown for the column
+                              final options = dropdownConfig['options']
+                                  as List<Map<String, dynamic>>;
+                              content = DropdownButton2<String>(
+                                value: value,
+                                isExpanded: false,
+                                items: options.map((option) {
+                                  return DropdownMenuItem<String>(
+                                    value: option['label'],
+                                    child: Text(option['label']),
+                                  );
+                                }).toList(),
+                                onChanged: (newVal) {
+                                  if (newVal != null) {
+                                    setState(() {
+                                      row[col['column']] = newVal;
+                                      _updateFilterCounts();
+                                      _applyFilter();
+                                    });
+                                  }
+                                },
+                                underline: SizedBox(),
+                                buttonStyleData: ButtonStyleData(
+                                  height: 40,
+                                  width: 120,
+                                  padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    border:
+                                        Border.all(color: Color(0xFF767676)),
+                                  ),
+                                ),
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 500,
+                                  width: 120,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(6),
+                                    color: Colors.white,
+                                  ),
+                                  padding: EdgeInsets.all(0),
+                                ),
+                                menuItemStyleData: MenuItemStyleData(
+                                  height: 40,
+                                  padding: EdgeInsets.only(left: 10),
+                                ),
+                                iconStyleData: IconStyleData(
+                                  icon: Transform.rotate(
+                                    angle: degreesToRadians(90),
+                                    child: Icon(Icons.chevron_right),
+                                  ),
+                                ),
+                              );
+                            } else if (col['type'] == 'date') {
+                              // Format date column
+                              final date = DateTime.tryParse(value);
+                              content = Text(
+                                date != null
+                                    ? DateFormat('yMMMd').add_jm().format(date)
+                                    : value.toString(),
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              );
+                            } else {
+                              // Default text content
+                              content = Text(
+                                value.toString(),
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              );
+                            }
+
+                            return SizedBox(
+                              width: col['width'], // Apply column width
+                              child: content,
                             );
                           }).toList(),
-                          onChanged: (newVal) {
-                            if (newVal != null) {
-                              setState(() {
-                                row[col['column']] = newVal;
-                                _updateFilterCounts();
-                                _applyFilter();
-                              });
-                            }
-                          },
-                          underline: SizedBox(),
-                          buttonStyleData: ButtonStyleData(
-                            height: 40,
-                            width: 120,
-                            padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              border: Border.all(color: Color(0xFF767676)),
-                            ),
-                          ),
-                          dropdownStyleData: DropdownStyleData(
-                            maxHeight: 500,
-                            width: 120,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(6),
-                              color: Colors.white,
-                            ),
-                            padding: EdgeInsets.all(0),
-                          ),
-                          menuItemStyleData: MenuItemStyleData(
-                            height: 40,
-                            padding: EdgeInsets.only(left: 10),
-                          ),
-                          iconStyleData: IconStyleData(
-                            icon: Transform.rotate(
-                              angle: degreesToRadians(90),
-                              child: Icon(Icons.chevron_right),
-                            ),
-                          ),
-                        );
-                      } else if (col['type'] == 'date') {
-                        // Format date column
-                        final date = DateTime.tryParse(value);
-                        content = Text(
-                          date != null
-                              ? DateFormat('yMMMd').add_jm().format(date)
-                              : value.toString(),
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        );
-                      } else if (col['type'] == 'actions') {
-                        // Render actions column
-                        return content = widget.actionsBuilder != null
-                            ? widget.actionsBuilder!(row)
-                            : const SizedBox();
-                      } else {
-                        // Default text content
-                        content = Text(
-                          value.toString(),
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Colors.black,
-                          ),
-                        );
-                      }
+                          SizedBox(width: 1),
+                        ]),
+                      ),
+                    ),
+                  ),
 
-                      return col['width'] != null
-                          ? SizedBox(
-                              width: col['width'],
-                              child: content,
-                            )
-                          : Expanded(child: content);
-                    }).toList(),
-                  ],
-                ),
+                  // Fixed Actions Column
+                  SizedBox(
+                    width: widget.columns.firstWhere(
+                      (col) => col['type'] == 'actions',
+                      orElse: () =>
+                          {'width': 130}, // Default width if not found
+                    )['width'], // Get the width of the "actions" column
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border(
+                          bottom: BorderSide(color: Colors.grey.shade300),
+                        ),
+                      ),
+                      child: widget.actionsBuilder != null
+                          ? widget.actionsBuilder!(row)
+                          : const SizedBox(),
+                    ),
+                  ),
+                ],
               );
             },
           ),
@@ -276,7 +332,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
           totalPages: (filteredData.length / widget.rowsPerPage).ceil(),
           onPageChange: (int page) {
             setState(() {
-              page = page; // Update the current page
+              this.page = page; // Update the current page
             });
           },
         ),
