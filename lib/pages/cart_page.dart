@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:itelec_quiz_one/pages/checkout_page.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -108,9 +109,22 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ],
                     ),
-                    child: Row(
+                    child: 
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                    Container(
+                      width: 60,
+                      height: 60,
+                      margin: EdgeInsets.only(right: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        image: DecorationImage(
+                          image: NetworkImage(item['image']),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -247,6 +261,10 @@ class _CartPageState extends State<CartPage> {
                     onPressed: () {
                       // Handle checkout logic here
                       print("Proceeding to checkout...");
+                        Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CheckoutPage()),
+                    );
                     },
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.symmetric(
