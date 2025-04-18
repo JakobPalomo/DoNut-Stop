@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itelec_quiz_one/components/pagination.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 
 class CustomDataTable extends StatefulWidget {
   final List<Map<String, dynamic>> data;
   final List<Map<String, dynamic>> columns;
   final int rowsPerPage;
   final List<Map<String, dynamic>> filters;
+  final List<Map<String, dynamic>> dropdowns;
+  final Widget Function(Map<String, dynamic> row)?
+      actionsBuilder; // Custom actions for each row
 
   const CustomDataTable({
     super.key,
@@ -14,6 +18,8 @@ class CustomDataTable extends StatefulWidget {
     required this.columns,
     this.rowsPerPage = 5,
     this.filters = const [],
+    this.dropdowns = const [],
+    this.actionsBuilder,
   });
 
   @override
@@ -62,6 +68,10 @@ class _CustomDataTableState extends State<CustomDataTable> {
     });
   }
 
+  double degreesToRadians(double degrees) {
+    return degrees * (3.1415926535897932 / 180);
+  }
+
   @override
   Widget build(BuildContext context) {
     final startIndex = (page - 1) * widget.rowsPerPage;
@@ -74,34 +84,16 @@ class _CustomDataTableState extends State<CustomDataTable> {
         // Filter Tabs
         Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
+            borderRadius: BorderRadius.circular(20),
             color: Color(0xFFFFEEE1),
-            border: Border(
-              top: BorderSide(
-                color: Color(0xFFD0B8A4),
-                width: 1,
-                strokeAlign: BorderSide.strokeAlignInside,
-              ),
-              left: BorderSide(
-                color: Color(0xFFD0B8A4),
-                width: 1,
-                strokeAlign: BorderSide.strokeAlignInside,
-              ),
-              right: BorderSide(
-                color: Color(0xFFD0B8A4),
-                width: 1,
-                strokeAlign: BorderSide.strokeAlignInside,
-              ),
+            border: Border.all(
+              color: Color(0xFFD0B8A4),
+              width: 1,
+              strokeAlign: BorderSide.strokeAlignInside,
             ),
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
+            borderRadius: BorderRadius.circular(20),
             child: ClipRect(
               child: Wrap(
                 spacing: 0,
@@ -122,24 +114,35 @@ class _CustomDataTableState extends State<CustomDataTable> {
             ),
           ),
         ),
-
+        SizedBox(height: 16),
         // Table Header
         Container(
           color: const Color(0xFFDC345E),
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
           child: Row(
             children: widget.columns.map((col) {
-              return Expanded(
-                child: Text(
+              var content;
+              if (col['type'] == 'actions') {
+                // Render blank header for actions column
+                content = SizedBox();
+              } else {
+                content = Text(
                   col['label'],
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontFamily: 'Inter',
                     color: Colors.white,
-                    fontSize: 13,
+                    fontSize: 14,
+                    fontFamily: 'Inter',
                   ),
-                ),
-              );
+                );
+              }
+
+              return col['width'] != null
+                  ? SizedBox(
+                      width: col['width'], // Apply column width
+                      child: content,
+                    )
+                  : Expanded(child: content);
             }).toList(),
           ),
         ),
@@ -152,7 +155,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
               final row = currentPageData[index];
               return Container(
                 padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 16),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border(
@@ -160,16 +163,107 @@ class _CustomDataTableState extends State<CustomDataTable> {
                   ),
                 ),
                 child: Row(
-                  children: widget.columns.map((col) {
-                    return Expanded(
-                      child: Text(row[col['column']].toString(),
-                          style: const TextStyle(
+                  children: [
+                    ...widget.columns.map((col) {
+                      final value = row[col['column']];
+                      Widget content;
+
+                      // Check if the column matches a dropdown configuration
+                      final dropdownConfig = widget.dropdowns.firstWhere(
+                        (dropdown) => dropdown['row'] == col['column'],
+                        orElse: () => <String, dynamic>{},
+                      );
+
+                      if (dropdownConfig.isNotEmpty) {
+                        // Render dropdown for the column
+                        final options = dropdownConfig['options']
+                            as List<Map<String, dynamic>>;
+                        content = DropdownButton2<String>(
+                          value: value,
+                          isExpanded: false,
+                          items: options.map((option) {
+                            return DropdownMenuItem<String>(
+                              value: option['label'],
+                              child: Text(option['label']),
+                            );
+                          }).toList(),
+                          onChanged: (newVal) {
+                            if (newVal != null) {
+                              setState(() {
+                                row[col['column']] = newVal;
+                                _updateFilterCounts();
+                                _applyFilter();
+                              });
+                            }
+                          },
+                          underline: SizedBox(),
+                          buttonStyleData: ButtonStyleData(
+                            height: 40,
+                            width: 120,
+                            padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: Color(0xFF767676)),
+                            ),
+                          ),
+                          dropdownStyleData: DropdownStyleData(
+                            maxHeight: 500,
+                            width: 120,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(6),
+                              color: Colors.white,
+                            ),
+                            padding: EdgeInsets.all(0),
+                          ),
+                          menuItemStyleData: MenuItemStyleData(
+                            height: 40,
+                            padding: EdgeInsets.only(left: 10),
+                          ),
+                          iconStyleData: IconStyleData(
+                            icon: Transform.rotate(
+                              angle: degreesToRadians(90),
+                              child: Icon(Icons.chevron_right),
+                            ),
+                          ),
+                        );
+                      } else if (col['type'] == 'date') {
+                        // Format date column
+                        final date = DateTime.tryParse(value);
+                        content = Text(
+                          date != null
+                              ? DateFormat('yMMMd').add_jm().format(date)
+                              : value.toString(),
+                          style: TextStyle(
                             fontFamily: 'Inter',
+                            fontSize: 14,
                             color: Colors.black,
-                            fontSize: 13,
-                          )),
-                    );
-                  }).toList(),
+                          ),
+                        );
+                      } else if (col['type'] == 'actions') {
+                        // Render actions column
+                        return content = widget.actionsBuilder != null
+                            ? widget.actionsBuilder!(row)
+                            : const SizedBox();
+                      } else {
+                        // Default text content
+                        content = Text(
+                          value.toString(),
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        );
+                      }
+
+                      return col['width'] != null
+                          ? SizedBox(
+                              width: col['width'],
+                              child: content,
+                            )
+                          : Expanded(child: content);
+                    }).toList(),
+                  ],
                 ),
               );
             },
@@ -235,7 +329,7 @@ class FilterButton extends StatelessWidget {
                   color: Color(0xFF462521),
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Inter',
-                  fontSize: 12,
+                  fontSize: 14,
                 ),
               ),
               SizedBox(width: 8),

@@ -77,12 +77,26 @@ class _ManageUsersPageState extends State<ManageUsersPage>
       "sortable": true,
       "type": "string"
     },
-    {"label": "Role", "column": "role", "sortable": true, "type": "string"},
+    {
+      "label": "Role",
+      "column": "role",
+      "sortable": true,
+      "type": "string",
+      "width": 140
+    },
     {
       "label": "Created At",
       "column": "createdAt",
       "sortable": true,
-      "type": "date"
+      "type": "date",
+      "width": 110,
+    },
+    {
+      "label": "",
+      "column": "actions",
+      "sortable": false,
+      "type": "actions",
+      "width": 180,
     },
   ];
 
@@ -106,6 +120,7 @@ class _ManageUsersPageState extends State<ManageUsersPage>
         appBar: AppBarWithMenuAndTitle(title: "Manage Users"),
         drawer: AdminDrawer(),
         body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Search Bar
             Container(
@@ -151,18 +166,49 @@ class _ManageUsersPageState extends State<ManageUsersPage>
             Expanded(
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 23),
-                child: Column(
-                  children: [
-                    Expanded(
-                      // Wrap CustomDataTable in Expanded to provide bounded height
-                      child: CustomDataTable(
-                        data: users,
-                        columns: columns,
-                        rowsPerPage: 15,
-                        filters: filters,
-                      ),
-                    ),
+                child: CustomDataTable(
+                  data: users,
+                  columns: columns,
+                  filters: filters,
+                  rowsPerPage: 5,
+                  dropdowns: [
+                    {
+                      "row": "role",
+                      "options": [
+                        {"label": "Customer", "value": 1},
+                        {"label": "Employee", "value": 2},
+                        {"label": "Admin", "value": 3},
+                      ],
+                    },
                   ],
+                  actionsBuilder: (row) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.visibility,
+                              color: Color(0xFFCA2E55)),
+                          onPressed: () {
+                            // Handle view action
+                          },
+                        ),
+                        IconButton(
+                          icon:
+                              const Icon(Icons.edit, color: Color(0xFFCA2E55)),
+                          onPressed: () {
+                            // Handle edit action
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete,
+                              color: Color(0xFFCA2E55)),
+                          onPressed: () {
+                            // Handle delete action
+                          },
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
