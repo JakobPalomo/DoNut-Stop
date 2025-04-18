@@ -38,7 +38,6 @@ dependencies:
     firebase_auth: ^5.5.2
     firebase_auth_web: ^5.8.12
     cloud_firestore: ^5.6.6
-    firebase_storage: ^11.0.16
     toastification: ^3.0.2
     shared_preferences: ^2.5.3
     intl: ^0.18.0

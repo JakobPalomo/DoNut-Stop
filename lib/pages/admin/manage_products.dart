@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/components/buttons.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/main.dart';
 import 'package:itelec_quiz_one/pages/admin/add_edit_products.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
-import 'package:itelec_quiz_one/pages/sample_catalog.dart';
+import 'dart:convert'; // For Base64 encoding
 
 class ManageProductsPage extends StatefulWidget {
   const ManageProductsPage({super.key});
@@ -33,63 +31,77 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
       home: Scaffold(
         appBar: AppBarWithMenuAndTitle(title: "Manage Products"),
         drawer: AdminDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              // Title and Add Product Button
-              Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceBetween, // Space between title and button
-                crossAxisAlignment:
-                    CrossAxisAlignment.center, // Align items vertically
-                children: [
-                  // Title
-                  Flexible(
-                    child: Text(
-                      "Products",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 25,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF462521),
-                      ),
-                      overflow: TextOverflow
-                          .ellipsis, // Prevent overflow for long titles
-                    ),
-                  ),
-
-                  // Add Product Button
-                  GradientButton(
-                    text: "Add a Product",
-                    onPressed: () {
-                      print("Add a Product button pressed");
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AddEditProductPage(),
+        body: CustomScrollView(
+          slivers: [
+            // Sliver for Title and Add Product Button
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Title
+                    Flexible(
+                      child: Text(
+                        "Products",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 25,
+                          fontWeight: FontWeight.w900,
+                          color: Color(0xFF462521),
                         ),
-                      );
-                    },
-                  ),
-                ],
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+
+                    // Add Product Button
+                    GradientButton(
+                      text: "Add a Product",
+                      onPressed: () {
+                        print("Add a Product button pressed");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AddEditProductPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(height: 20),
-              // Product List Section
-              Expanded(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _productsCollection.snapshots(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text('No products found.'));
-                    }
-                    final products = snapshot.data!.docs;
-                    return ListView.builder(
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
+            ),
+
+            // Sliver for Product List Section
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              sliver: StreamBuilder<QuerySnapshot>(
+                stream: _productsCollection.snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return SliverFillRemaining(
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return SliverFillRemaining(
+                      child: const Center(
+                          child: Text(
+                        'No products found.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFC7A889),
+                        ),
+                      )),
+                    );
+                  }
+                  final products = snapshot.data!.docs;
+
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
                         final product = products[index];
                         final productId = product.id;
 
@@ -119,42 +131,208 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                           'image_path': productImagePath,
                         };
 
-                        return ListTile(
-                          title: Text(productName),
-                          subtitle: Text(
-                              'Price: ₱${productPrice.toStringAsFixed(2)}'),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit,
-                                    color: Color(0xFFCA2E55)),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddEditProductPage(
-                                          isEditing: true,
-                                          product: passedProduct),
-                                    ),
-                                  );
-                                },
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFEEE1),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.delete,
-                                    color: Color(0xFFCA2E55)),
-                                onPressed: () => _deleteProduct(productId),
+                            ],
+                          ),
+                          padding: const EdgeInsets.fromLTRB(5, 5, 10, 5),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Leading Image
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: SizedBox(
+                                  width: 90,
+                                  height: 90,
+                                  child: productImagePath != null &&
+                                          productImagePath!
+                                              .startsWith('data:image/')
+                                      ? Image.memory(
+                                          base64Decode(productImagePath!
+                                              .split(',')
+                                              .last),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          productImagePath ??
+                                              'assets/front_donut/fdonut1.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(width: 15),
+
+                              // Main content (Title, Subtitle)
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      productName,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF462521),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      '₱${productPrice.toStringAsFixed(2)}',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFF462521),
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    productDescription != null &&
+                                            productDescription.isNotEmpty
+                                        ? Text(
+                                            productDescription,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontFamily: 'Inter',
+                                              color: Colors.black,
+                                            ),
+                                          )
+                                        : const SizedBox.shrink(),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+
+                              // Trailing buttons
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit,
+                                        color: Color(0xFFCA2E55)),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              AddEditProductPage(
+                                            isEditing: true,
+                                            product: passedProduct,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Color(0xFFCA2E55)),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            backgroundColor: Colors.white,
+                                            titlePadding:
+                                                const EdgeInsets.all(0),
+                                            actionsAlignment:
+                                                MainAxisAlignment.center,
+                                            title: Container(
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                color: Color(0xFFCA2E55),
+                                                borderRadius:
+                                                    const BorderRadius.only(
+                                                  topLeft: Radius.circular(20),
+                                                  topRight: Radius.circular(20),
+                                                ),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20,
+                                                      vertical: 10),
+                                              child: const Text(
+                                                "Confirm Deletion",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Inter',
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                            content: Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  20, 15, 20, 5),
+                                              child: Text(
+                                                "Are you sure you want to delete this product?",
+                                                style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: 'Inter',
+                                                ),
+                                              ),
+                                            ),
+                                            actions: [
+                                              CustomOutlinedButton(
+                                                text: "Cancel",
+                                                bgColor: Colors.white,
+                                                textColor: Color(0xFFCA2E55),
+                                                onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                },
+                                              ),
+                                              const SizedBox(width: 10),
+                                              GradientButton(
+                                                text: "Delete",
+                                                onPressed: () {
+                                                  _deleteProduct(productId);
+                                                  Navigator.of(context).pop();
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text(
+                                                          "Product deleted successfully."),
+                                                      backgroundColor:
+                                                          Colors.green,
+                                                      duration:
+                                                          Duration(seconds: 2),
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         );
                       },
-                    );
-                  },
-                ),
+                      childCount: products.length,
+                    ),
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
