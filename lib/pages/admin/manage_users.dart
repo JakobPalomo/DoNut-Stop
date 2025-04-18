@@ -46,29 +46,13 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
   ];
   // Table data
   final List<Map<String, dynamic>> users = [
-    {"username": "alice", "role": "Admin", "createdAt": "2024-01-10T10:30:00"},
-    {"username": "bob", "role": "Customer", "createdAt": "2024-03-05T14:20:00"},
-    {
-      "username": "carol",
-      "role": "Employee",
-      "createdAt": "2023-12-22T09:15:00"
-    },
-    {
-      "username": "dave",
-      "role": "Customer",
-      "createdAt": "2024-02-28T17:45:00"
-    },
-    {"username": "eve", "role": "Admin", "createdAt": "2024-01-01T12:00:00"},
-    {
-      "username": "frank",
-      "role": "Employee",
-      "createdAt": "2024-03-15T08:30:00"
-    },
-    {
-      "username": "grace",
-      "role": "Customer",
-      "createdAt": "2023-11-10T11:10:00"
-    },
+    {"username": "alice", "role": 3, "created_at": "2024-01-10T10:30:00"},
+    {"username": "bob", "role": 1, "created_at": "2024-03-05T14:20:00"},
+    {"username": "carol", "role": 2, "created_at": "2023-12-22T09:15:00"},
+    {"username": "dave", "role": 1, "created_at": "2024-02-28T17:45:00"},
+    {"username": "eve", "role": 3, "created_at": "2024-01-01T12:00:00"},
+    {"username": "frank", "role": 2, "created_at": "2024-03-15T08:30:00"},
+    {"username": "grace", "role": 1, "created_at": "2023-11-10T11:10:00"},
   ];
 
   final List<Map<String, dynamic>> columns = [
@@ -88,7 +72,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     },
     {
       "label": "Created At",
-      "column": "createdAt",
+      "column": "created_at",
       "sortable": true,
       "type": "date",
       "width": 110,
@@ -99,6 +83,16 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
       "sortable": false,
       "type": "actions",
       "width": 120,
+    },
+  ];
+  final List<Map<String, Object>> dropdowns = [
+    {
+      "row": "role",
+      "options": [
+        {"label": "Customer", "value": 1},
+        {"label": "Employee", "value": 2},
+        {"label": "Admin", "value": 3},
+      ],
     },
   ];
 
@@ -179,16 +173,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                   filters: filters,
                   rowsPerPage: 5,
                   searchQuery: _searchController.text, // Pass the search query
-                  dropdowns: [
-                    {
-                      "row": "role",
-                      "options": [
-                        {"label": "Customer", "value": 1},
-                        {"label": "Employee", "value": 2},
-                        {"label": "Admin", "value": 3},
-                      ],
-                    },
-                  ],
+                  dropdowns: dropdowns,
                   actionsBuilder: (row) {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.end,

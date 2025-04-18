@@ -51,7 +51,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
       } else {
         // Count rows matching the filter's value
         filter['count'] =
-            widget.data.where((row) => row['role'] == filter['label']).length;
+            widget.data.where((row) => row['role'] == filter['value']).length;
       }
     }
   }
@@ -66,7 +66,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
         final selectedFilter = widget.filters
             .firstWhere((filter) => filter['value'] == activeFilterValue);
         filteredData = widget.data
-            .where((row) => row['role'] == selectedFilter['label'])
+            .where((row) => row['role'] == selectedFilter['value'])
             .toList();
       }
 
@@ -286,26 +286,35 @@ class _CustomDataTableState extends State<CustomDataTable> {
                             // Check if the column matches a dropdown configuration
                             final dropdownConfig = widget.dropdowns.firstWhere(
                               (dropdown) => dropdown['row'] == col['column'],
-                              orElse: () => <String, dynamic>{},
+                              orElse: () => <String,
+                                  Object>{}, // Ensure the default type matches
                             );
 
                             if (dropdownConfig.isNotEmpty) {
                               // Render dropdown for the column
                               final options = dropdownConfig['options']
-                                  as List<Map<String, dynamic>>;
-                              content = DropdownButton2<String>(
-                                value: value,
+                                  as List<Map<String, Object>>;
+                              final selectedOption = options.firstWhere(
+                                (option) => option['value'] == value,
+                                orElse: () => {'label': 'Unknown', 'value': ''},
+                              );
+
+                              content = DropdownButton2<int>(
+                                value: value
+                                    as int?, // Ensure the value is cast to int
                                 isExpanded: false,
                                 items: options.map((option) {
-                                  return DropdownMenuItem<String>(
-                                    value: option['label'],
-                                    child: Text(option['label']),
+                                  return DropdownMenuItem<int>(
+                                    value: option['value']
+                                        as int, // Ensure the value is an int
+                                    child: Text(option['label'] as String),
                                   );
                                 }).toList(),
                                 onChanged: (newVal) {
                                   if (newVal != null) {
                                     setState(() {
-                                      row[col['column']] = newVal;
+                                      row[col['column']] =
+                                          newVal; // Update the integer value
                                       _updateFilterCounts();
                                       _applyFilter();
                                     });
