@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_donuts.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_products.dart';
 import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/favorites.dart';
@@ -141,8 +141,9 @@ class AppBarWithMenuAndTitle extends StatelessWidget
 class AppBarWithBackAndTitle extends StatelessWidget
     implements PreferredSizeWidget {
   final String? title;
+  final Function? onBackPressed;
 
-  const AppBarWithBackAndTitle({this.title, super.key});
+  const AppBarWithBackAndTitle({this.title, this.onBackPressed, super.key});
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
@@ -170,9 +171,10 @@ class AppBarWithBackAndTitle extends StatelessWidget
             width: 20,
             height: 20,
           ),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: onBackPressed as VoidCallback? ??
+              () {
+                Navigator.of(context).pop();
+              },
         ),
       ),
     );
@@ -268,8 +270,8 @@ class AdminDrawer extends StatelessWidget {
       drawerItems: [
         _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
             ManageOrdersPage(), context),
-        _buildDrawerItem("Manage Donuts", 'assets/icons/managedonuts.png',
-            ManageDonutsPage(), context),
+        _buildDrawerItem("Manage Products", 'assets/icons/managedonuts.png',
+            ManageProductsPage(), context),
         _buildDrawerItem("Manage Users", 'assets/icons/manageusers.png',
             ManageUsersPage(), context),
         _buildDrawerItem(
@@ -286,7 +288,8 @@ class AdminDrawer extends StatelessWidget {
           ),
           leading: Container(
             padding: EdgeInsets.only(left: 15, right: 5),
-            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+            child:
+                Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
           onTap: () => _logout(context),
         ),
@@ -318,7 +321,8 @@ class EmployeeDrawer extends StatelessWidget {
           ),
           leading: Container(
             padding: EdgeInsets.only(left: 15, right: 5),
-            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+            child:
+                Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
           onTap: () => _logout(context),
         ),
@@ -356,7 +360,8 @@ class UserDrawer extends StatelessWidget {
           ),
           leading: Container(
             padding: EdgeInsets.only(left: 15, right: 5),
-            child: Image.asset('assets/icons/logout.png', width: 24, height: 24),
+            child:
+                Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
           onTap: () => _logout(context),
         ),
