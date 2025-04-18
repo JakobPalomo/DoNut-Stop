@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:itelec_quiz_one/components/buttons.dart';
 import 'package:itelec_quiz_one/components/data_table.dart';
 import 'package:itelec_quiz_one/components/pagination.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
@@ -18,6 +19,8 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
 
   void _deleteUser(String id) async {
     await _usersCollection.doc(id).delete();
+    // Trigger the onDataChanged callback to update the filter counts
+    setState(() {});
   }
 
   // Filter data
@@ -182,6 +185,10 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                     }
 
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      // Update filter counts to 0 if no users are found
+                      for (var filter in filters) {
+                        filter['count'] = 0;
+                      }
                       return const Center(child: Text('No users found.'));
                     }
 
@@ -191,6 +198,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                       // Ensure created_at and modified_at are formatted as strings
                       return {
                         ...data,
+                        "id": doc.id,
                         "created_at": data['created_at'] is Timestamp
                             ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
                                 .format(data['created_at'].toDate())
@@ -201,6 +209,19 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                             : "2024-01-10T10:30:00",
                       };
                     }).toList();
+
+                    // Dynamically update filter counts
+                    for (var filter in filters) {
+                      if (filter['value'] == 0) {
+                        // "All" filter
+                        filter['count'] = users.length;
+                      } else {
+                        // Role-specific filters
+                        filter['count'] = users
+                            .where((user) => user['role'] == filter['value'])
+                            .length;
+                      }
+                    }
 
                     return CustomDataTable(
                       data: users,
@@ -231,7 +252,77 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                               icon: const Icon(Icons.delete,
                                   color: Color(0xFFCA2E55)),
                               onPressed: () {
-                                // Handle delete action
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      backgroundColor: Colors.white,
+                                      titlePadding: const EdgeInsets.all(0),
+                                      actionsAlignment:
+                                          MainAxisAlignment.center,
+                                      title: Container(
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          color: Color(0xFFCA2E55),
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(20),
+                                            topRight: Radius.circular(20),
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 10),
+                                        child: const Text(
+                                          "Confirm Deletion",
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Inter',
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                      content: Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(20, 15, 20, 5),
+                                        child: Text(
+                                          "Are you sure you want to delete this user?",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w500,
+                                            fontFamily: 'Inter',
+                                          ),
+                                        ),
+                                      ),
+                                      actions: [
+                                        CustomOutlinedButton(
+                                          text: "Cancel",
+                                          bgColor: Colors.white,
+                                          textColor: Color(0xFFCA2E55),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        const SizedBox(width: 10),
+                                        GradientButton(
+                                          text: "Delete",
+                                          onPressed: () {
+                                            _deleteUser(row['id']);
+                                            Navigator.of(context).pop();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    "User deleted successfully."),
+                                                backgroundColor: Colors.green,
+                                                duration: Duration(seconds: 2),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                             ),
                           ],
