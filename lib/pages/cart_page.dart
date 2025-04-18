@@ -11,6 +11,7 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   int itemCount = 1;
   List<Map<String, dynamic>> cartItems = [];
+  double totalAmount = 0.0;
 
   @override
   void initState() {
@@ -22,8 +23,6 @@ class _CartPageState extends State<CartPage> {
     try {
       String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1";
 
-      print("Fetched User ID: $userId");
-
       // Fetch cart items from the user's cart collection
       QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
           .collection('users')
@@ -32,12 +31,11 @@ class _CartPageState extends State<CartPage> {
           .get();
 
       List<Map<String, dynamic>> items = [];
+      double total = 0.0;
 
       for (var cartDoc in cartSnapshot.docs) {
         String productId =
             (cartDoc.data() as Map<String, dynamic>)['product_id'];
-
-        print("Cart Item: ${cartDoc.data()}");
 
         // Fetch product details from the donuts collection
         DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
@@ -46,17 +44,17 @@ class _CartPageState extends State<CartPage> {
             .get();
 
         if (productSnapshot.exists) {
-          print("Product Details: ${productSnapshot.data()}");
+          var productData = productSnapshot.data() as Map<String, dynamic>;
+          items.add(productData);
 
-          items.add(productSnapshot.data() as Map<String, dynamic>);
-        } else {
-          print(
-              "Product with ID $productId does not exist in the products collection.");
+          // Calculate total amount
+          total += (productData['price'] ?? 0) * itemCount;
         }
       }
 
       setState(() {
         cartItems = items;
+        totalAmount = total;
       });
     } catch (e) {
       print("Error fetching cart items: $e");
@@ -113,11 +111,6 @@ class _CartPageState extends State<CartPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Image.network(
-                        //   item['imageUrl'],
-                        //   width: 80,
-                        //   height: 80,
-                        // ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -157,7 +150,10 @@ class _CartPageState extends State<CartPage> {
                                       color: Color(0xFFFF7171), size: 12),
                                   onPressed: () {
                                     setState(() {
-                                      if (itemCount > 1) itemCount--;
+                                      if (itemCount > 1) {
+                                        itemCount--;
+                                        totalAmount -= item['price'];
+                                      }
                                     });
                                   },
                                 ),
@@ -194,6 +190,7 @@ class _CartPageState extends State<CartPage> {
                                   onPressed: () {
                                     setState(() {
                                       itemCount++;
+                                      totalAmount += item['price'];
                                     });
                                   },
                                 ),
@@ -205,6 +202,70 @@ class _CartPageState extends State<CartPage> {
                     ),
                   );
                 },
+              ),
+            ),
+            // Total and Checkout Button
+            Container(
+              padding: EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: Offset(0, -5),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Total Amount
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Total",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFF462521),
+                        ),
+                      ),
+                      Text(
+                        "₱${totalAmount.toStringAsFixed(2)}",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF462521),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Checkout Button
+                  ElevatedButton(
+                    onPressed: () {
+                      // Handle checkout logic here
+                      print("Proceeding to checkout...");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 15),
+                      backgroundColor: Color(0xFFDC345E),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: Text(
+                      "Checkout",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
