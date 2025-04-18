@@ -9,8 +9,8 @@ class CustomDataTable extends StatefulWidget {
   final int rowsPerPage;
   final List<Map<String, dynamic>> filters;
   final List<Map<String, dynamic>> dropdowns;
-  final Widget Function(Map<String, dynamic> row)?
-      actionsBuilder; // Custom actions for each row
+  final String searchQuery;
+  final Widget Function(Map<String, dynamic> row)? actionsBuilder;
 
   const CustomDataTable({
     super.key,
@@ -19,6 +19,7 @@ class CustomDataTable extends StatefulWidget {
     this.rowsPerPage = 5,
     this.filters = const [],
     this.dropdowns = const [],
+    this.searchQuery = '',
     this.actionsBuilder,
   });
 
@@ -65,6 +66,16 @@ class _CustomDataTableState extends State<CustomDataTable> {
             .where((row) => row['role'] == selectedFilter['label'])
             .toList();
       }
+
+      // Apply search query
+      if (widget.searchQuery.isNotEmpty) {
+        filteredData = filteredData
+            .where((row) => row.values.any((value) => value
+                .toString()
+                .toLowerCase()
+                .contains(widget.searchQuery.toLowerCase())))
+            .toList();
+      }
     });
   }
 
@@ -74,6 +85,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
 
   @override
   Widget build(BuildContext context) {
+    _applyFilter();
+
     final startIndex = (page - 1) * widget.rowsPerPage;
     final endIndex =
         (startIndex + widget.rowsPerPage).clamp(0, filteredData.length);
@@ -129,11 +142,10 @@ class _CustomDataTableState extends State<CustomDataTable> {
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
                   child: Row(children: [
                     ...widget.columns
-                        .where((col) =>
-                            col['type'] != 'actions') // Exclude actions column
+                        .where((col) => col['type'] != 'actions')
                         .map<Widget>((col) {
                       return SizedBox(
-                        width: col['width'], // Apply column width
+                        width: col['width'],
                         child: Text(
                           col['label'],
                           style: const TextStyle(
@@ -155,8 +167,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
             SizedBox(
               width: widget.columns.firstWhere(
                 (col) => col['type'] == 'actions',
-                orElse: () => {'width': 100}, // Default width if not found
-              )['width'], // Fixed width for actions column
+                orElse: () => {'width': 100},
+              )['width'],
               child: Container(
                 color: const Color(0xFFDC345E),
                 padding:
@@ -198,9 +210,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                         ),
                         child: Row(children: [
                           ...widget.columns
-                              .where((col) =>
-                                  col['type'] !=
-                                  'actions') // Exclude actions column
+                              .where((col) => col['type'] != 'actions')
                               .map((col) {
                             final value = row[col['column']];
                             Widget content;
@@ -290,7 +300,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                             }
 
                             return SizedBox(
-                              width: col['width'], // Apply column width
+                              width: col['width'],
                               child: content,
                             );
                           }).toList(),
@@ -304,9 +314,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
                   SizedBox(
                     width: widget.columns.firstWhere(
                       (col) => col['type'] == 'actions',
-                      orElse: () =>
-                          {'width': 130}, // Default width if not found
-                    )['width'], // Get the width of the "actions" column
+                      orElse: () => {'width': 130},
+                    )['width'],
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(

@@ -10,8 +10,9 @@ class ManageUsersPage extends StatefulWidget {
   State<ManageUsersPage> createState() => _ManageUsersPageState();
 }
 
-class _ManageUsersPageState extends State<ManageUsersPage>
-    with SingleTickerProviderStateMixin {
+class _ManageUsersPageState extends State<ManageUsersPage> {
+  final TextEditingController _searchController = TextEditingController();
+
   // Filter data
   final List<Map<String, dynamic>> filters = [
     {
@@ -108,6 +109,7 @@ class _ManageUsersPageState extends State<ManageUsersPage>
 
   @override
   void dispose() {
+    _searchController.dispose(); // Dispose the controller to avoid memory leaks
     super.dispose();
   }
 
@@ -138,6 +140,10 @@ class _ManageUsersPageState extends State<ManageUsersPage>
                     ),
                   ),
                   child: TextField(
+                    controller: _searchController,
+                    onChanged: (query) {
+                      setState(() {}); // Trigger a rebuild to pass the query
+                    },
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       filled: true,
@@ -172,6 +178,7 @@ class _ManageUsersPageState extends State<ManageUsersPage>
                   columns: columns,
                   filters: filters,
                   rowsPerPage: 5,
+                  searchQuery: _searchController.text, // Pass the search query
                   dropdowns: [
                     {
                       "row": "role",
