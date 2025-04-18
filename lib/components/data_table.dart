@@ -31,6 +31,9 @@ class _CustomDataTableState extends State<CustomDataTable> {
   late List<Map<String, dynamic>> filteredData;
   int page = 1;
   int activeFilterValue = 0; // Default to "All"
+  late List<Map<String, dynamic>> sortedData;
+  String? sortedColumn;
+  bool ascending = true;
 
   @override
   void initState() {
@@ -76,6 +79,47 @@ class _CustomDataTableState extends State<CustomDataTable> {
                 .contains(widget.searchQuery.toLowerCase())))
             .toList();
       }
+
+      // Apply sorting to the filtered data
+      if (sortedColumn != null) {
+        filteredData.sort((a, b) {
+          final aValue = a[sortedColumn!];
+          final bValue = b[sortedColumn!];
+
+          int comparison;
+          switch (widget.columns
+              .firstWhere((col) => col['column'] == sortedColumn)['type']) {
+            case 'number':
+              comparison = (aValue as num).compareTo(bValue as num);
+              break;
+            case 'date':
+              comparison =
+                  DateTime.parse(aValue).compareTo(DateTime.parse(bValue));
+              break;
+            default:
+              comparison = aValue.toString().compareTo(bValue.toString());
+          }
+
+          return ascending ? comparison : -comparison;
+        });
+      }
+    });
+  }
+
+  void _sortData(String column, String type) {
+    setState(() {
+      if (sortedColumn == column) {
+        ascending = !ascending;
+      } else {
+        sortedColumn = column;
+        ascending = true;
+      }
+
+      // Reset to the first page
+      page = 1;
+
+      // Reapply filter and sorting
+      _applyFilter();
     });
   }
 
@@ -140,25 +184,49 @@ class _CustomDataTableState extends State<CustomDataTable> {
                   color: const Color(0xFFDC345E),
                   padding:
                       const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                  child: Row(children: [
-                    ...widget.columns
-                        .where((col) => col['type'] != 'actions')
-                        .map<Widget>((col) {
-                      return SizedBox(
-                        width: col['width'],
-                        child: Text(
-                          col['label'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontFamily: 'Inter',
+                  child: Row(
+                    children: [
+                      ...widget.columns
+                          .where((col) =>
+                              col['type'] !=
+                              'actions') // Exclude actions column
+                          .map((col) {
+                        return InkWell(
+                          onTap: col['sortable']
+                              ? () => _sortData(col['column'], col['type'])
+                              : null,
+                          child: SizedBox(
+                            width: col['width'], // Apply column width
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  col['label'],
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontFamily: 'Inter',
+                                  ),
+                                ),
+                                if (sortedColumn == col['column'])
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 10),
+                                    child: Icon(
+                                      ascending
+                                          ? Icons.arrow_upward
+                                          : Icons.arrow_downward,
+                                      size: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                              ],
+                            ),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                    SizedBox(width: 1),
-                  ]),
+                        );
+                      }).toList(),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -167,8 +235,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
             SizedBox(
               width: widget.columns.firstWhere(
                 (col) => col['type'] == 'actions',
-                orElse: () => {'width': 100},
-              )['width'],
+                orElse: () => {'width': 100}, // Default width if not found
+              )['width'], // Fixed width for actions column
               child: Container(
                 color: const Color(0xFFDC345E),
                 padding:
