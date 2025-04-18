@@ -6,6 +6,8 @@ import 'package:itelec_quiz_one/components/pagination.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/pages/admin/view_edit_user.dart';
+import 'package:toastification/toastification.dart';
 
 class ManageUsersPage extends StatefulWidget {
   @override
@@ -20,7 +22,37 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
   void _deleteUser(String id) async {
     await _usersCollection.doc(id).delete();
     // Trigger the onDataChanged callback to update the filter counts
-    setState(() {});
+    // setState(() {});
+    toastification.show(
+      context: context,
+      title: Text('User Deleted'),
+      description: Text('User has been deleted successfully.'),
+      type: ToastificationType.success,
+      autoCloseDuration: const Duration(seconds: 4),
+    );
+  }
+
+  void _updateUserRole(String id, int newRole) async {
+    // Fetch the current role from Firestore
+    final userDoc = await _usersCollection.doc(id).get();
+    final currentRole = (userDoc.data() as Map<String, dynamic>?)?['role'];
+
+    // Check if the role is already the same
+    if (currentRole == newRole) {
+      return;
+    }
+
+    // Proceed with the update if the role has changed
+    await _usersCollection.doc(id).update({'role': newRole});
+
+    // Show a success message
+    toastification.show(
+      context: context,
+      title: Text('User Updated'),
+      description: Text('User role has been updated successfully.'),
+      type: ToastificationType.success,
+      autoCloseDuration: const Duration(seconds: 4),
+    );
   }
 
   // Filter data
@@ -181,7 +213,14 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                   stream: _usersCollection.snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                          backgroundColor: Color(0xFFFF7171),
+                          strokeWidth: 5.0,
+                        ),
+                      );
                     }
 
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -189,16 +228,39 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                       for (var filter in filters) {
                         filter['count'] = 0;
                       }
-                      return const Center(child: Text('No users found.'));
+                      return const Center(
+                          child: Text(
+                        'No users found.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFC7A889),
+                        ),
+                      ));
                     }
 
-                    final users = snapshot.data!.docs.map((doc) {
+                    // Fetch users and their subcollections
+                    final usersFuture =
+                        Future.wait(snapshot.data!.docs.map((doc) async {
                       final data = doc.data() as Map<String, dynamic>;
 
-                      // Ensure created_at and modified_at are formatted as strings
+                      // Fetch the locations subcollection
+                      final locationsSnapshot =
+                          await doc.reference.collection('locations').get();
+                      final locations =
+                          locationsSnapshot.docs.map((locationDoc) {
+                        return {
+                          ...locationDoc.data(),
+                          "id": locationDoc.id,
+                        };
+                      }).toList();
+
+                      // Combine user data with locations
                       return {
                         ...data,
                         "id": doc.id,
+                        "locations":
+                            locations, // Include locations with their document IDs
                         "created_at": data['created_at'] is Timestamp
                             ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
                                 .format(data['created_at'].toDate())
@@ -208,124 +270,168 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                                 .format(data['modified_at'].toDate())
                             : "2024-01-10T10:30:00",
                       };
-                    }).toList();
+                    }).toList());
 
-                    // Dynamically update filter counts
-                    for (var filter in filters) {
-                      if (filter['value'] == 0) {
-                        // "All" filter
-                        filter['count'] = users.length;
-                      } else {
-                        // Role-specific filters
-                        filter['count'] = users
-                            .where((user) => user['role'] == filter['value'])
-                            .length;
-                      }
-                    }
+                    return FutureBuilder<List<Map<String, dynamic>>>(
+                      future: usersFuture,
+                      builder: (context, usersSnapshot) {
+                        if (usersSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                  Color(0xFFDC345E)),
+                              backgroundColor: Color(0xFFFF7171),
+                              strokeWidth: 5.0,
+                            ),
+                          );
+                        }
 
-                    return CustomDataTable(
-                      data: users,
-                      columns: columns,
-                      filters: filters,
-                      rowsPerPage: 10,
-                      searchQuery: _searchController.text,
-                      dropdowns: dropdowns,
-                      actionsBuilder: (row) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.visibility,
-                                  color: Color(0xFFCA2E55)),
-                              onPressed: () {
-                                // Handle view action
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.edit,
-                                  color: Color(0xFFCA2E55)),
-                              onPressed: () {
-                                // Handle edit action
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.delete,
-                                  color: Color(0xFFCA2E55)),
-                              onPressed: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      backgroundColor: Colors.white,
-                                      titlePadding: const EdgeInsets.all(0),
-                                      actionsAlignment:
-                                          MainAxisAlignment.center,
-                                      title: Container(
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Color(0xFFCA2E55),
-                                          borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(20),
-                                            topRight: Radius.circular(20),
-                                          ),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 10),
-                                        child: const Text(
-                                          "Confirm Deletion",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Inter',
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                      content: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(20, 15, 20, 5),
-                                        child: Text(
-                                          "Are you sure you want to delete this user?",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
-                                            fontFamily: 'Inter',
-                                          ),
-                                        ),
-                                      ),
-                                      actions: [
-                                        CustomOutlinedButton(
-                                          text: "Cancel",
-                                          bgColor: Colors.white,
-                                          textColor: Color(0xFFCA2E55),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        const SizedBox(width: 10),
-                                        GradientButton(
-                                          text: "Delete",
-                                          onPressed: () {
-                                            _deleteUser(row['id']);
-                                            Navigator.of(context).pop();
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(
-                                              const SnackBar(
-                                                content: Text(
-                                                    "User deleted successfully."),
-                                                backgroundColor: Colors.green,
-                                                duration: Duration(seconds: 2),
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      ],
+                        if (!usersSnapshot.hasData ||
+                            usersSnapshot.data!.isEmpty) {
+                          return const Center(child: Text('No users found.'));
+                        }
+
+                        final users = usersSnapshot.data!;
+
+                        // Dynamically update filter counts
+                        for (var filter in filters) {
+                          if (filter['value'] == 0) {
+                            // "All" filter
+                            filter['count'] = users.length;
+                          } else {
+                            // Role-specific filters
+                            filter['count'] = users
+                                .where(
+                                    (user) => user['role'] == filter['value'])
+                                .length;
+                          }
+                        }
+
+                        return CustomDataTable(
+                          data: users,
+                          columns: columns,
+                          filters: filters,
+                          rowsPerPage: 10,
+                          searchQuery: _searchController.text,
+                          dropdowns: dropdowns,
+                          onRoleChanged: (row, newRole) {
+                            _updateUserRole(row['id'], newRole);
+                          },
+                          actionsBuilder: (row) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.visibility,
+                                      color: Color(0xFFCA2E55)),
+                                  onPressed: () {
+                                    // Handle view action
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ViewEditUserPage(user: row)),
                                     );
                                   },
-                                );
-                              },
-                            ),
-                          ],
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.edit,
+                                      color: Color(0xFFCA2E55)),
+                                  onPressed: () {
+                                    // Handle edit action
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ViewEditUserPage(
+                                                  isEditing: true, user: row)),
+                                    );
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete,
+                                      color: Color(0xFFCA2E55)),
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          backgroundColor: Colors.white,
+                                          titlePadding: const EdgeInsets.all(0),
+                                          actionsAlignment:
+                                              MainAxisAlignment.center,
+                                          title: Container(
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              color: Color(0xFFCA2E55),
+                                              borderRadius:
+                                                  const BorderRadius.only(
+                                                topLeft: Radius.circular(20),
+                                                topRight: Radius.circular(20),
+                                              ),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20, vertical: 10),
+                                            child: const Text(
+                                              "Confirm Deletion",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Inter',
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          content: Padding(
+                                            padding: EdgeInsets.fromLTRB(
+                                                20, 15, 20, 5),
+                                            child: Text(
+                                              "Are you sure you want to delete this user?",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                                fontFamily: 'Inter',
+                                              ),
+                                            ),
+                                          ),
+                                          actions: [
+                                            CustomOutlinedButton(
+                                              text: "Cancel",
+                                              bgColor: Colors.white,
+                                              textColor: Color(0xFFCA2E55),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                            const SizedBox(width: 10),
+                                            GradientButton(
+                                              text: "Delete",
+                                              onPressed: () {
+                                                _deleteUser(row['id']);
+                                                Navigator.of(context).pop();
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text(
+                                                        "User deleted successfully."),
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    duration:
+                                                        Duration(seconds: 2),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          },
                         );
                       },
                     );

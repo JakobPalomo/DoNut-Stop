@@ -93,12 +93,25 @@ class _ProductManagementPageState extends State<ProductManagementPage> {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
                             return const Center(
-                                child: CircularProgressIndicator());
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFFDC345E)),
+                                backgroundColor: Color(0xFFFF7171),
+                                strokeWidth: 5.0,
+                              ),
+                            );
                           }
                           if (!snapshot.hasData ||
                               snapshot.data!.docs.isEmpty) {
                             return const Center(
-                                child: Text('No products found.'));
+                                child: Text(
+                              'No products found.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFC7A889),
+                              ),
+                            ));
                           }
                           final products = snapshot.data!.docs;
                           return ListView.builder(

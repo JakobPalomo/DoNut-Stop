@@ -442,7 +442,8 @@ class CatalogPageTodaysOffers extends StatefulWidget {
   const CatalogPageTodaysOffers({super.key});
 
   @override
-  _CatalogPageTodaysOffersState createState() => _CatalogPageTodaysOffersState();
+  _CatalogPageTodaysOffersState createState() =>
+      _CatalogPageTodaysOffersState();
 }
 
 class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
@@ -499,7 +500,8 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                       borderRadius: BorderRadius.circular(20),
                       splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -668,7 +670,8 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                       borderRadius: BorderRadius.circular(20),
                       splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -704,11 +707,28 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                             .collection('products')
                             .snapshots(),
                         builder: (context, snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(child: CircularProgressIndicator());
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFFDC345E)),
+                                backgroundColor: Color(0xFFFF7171),
+                                strokeWidth: 5.0,
+                              ),
+                            );
                           }
-                          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                            return const Center(child: Text('No donuts found.'));
+                          if (!snapshot.hasData ||
+                              snapshot.data!.docs.isEmpty) {
+                            return const Center(
+                                child: Text(
+                              'No donuts found.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFC7A889),
+                              ),
+                            ));
                           }
                           final donuts = snapshot.data!.docs;
                           final images = [
@@ -725,7 +745,8 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                               return DonutSelectionWidget(
                                 image: image,
                                 title: donut['name'],
-                                newPrice: '₱${donut['price'].toStringAsFixed(2)}',
+                                newPrice:
+                                    '₱${donut['price'].toStringAsFixed(2)}',
                               );
                             }),
                           );

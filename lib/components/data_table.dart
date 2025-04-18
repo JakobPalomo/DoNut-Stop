@@ -11,6 +11,8 @@ class CustomDataTable extends StatefulWidget {
   final List<Map<String, dynamic>> dropdowns;
   final String searchQuery;
   final Widget Function(Map<String, dynamic> row)? actionsBuilder;
+  final void Function(Map<String, dynamic> row, int newRole)?
+      onRoleChanged; // New callback
 
   const CustomDataTable({
     super.key,
@@ -21,6 +23,7 @@ class CustomDataTable extends StatefulWidget {
     this.dropdowns = const [],
     this.searchQuery = '',
     this.actionsBuilder,
+    this.onRoleChanged, // Accept the callback
   });
 
   @override
@@ -162,6 +165,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                     onTap: () {
                       setState(() {
                         activeFilterValue = filter['value'];
+                        page = 1;
                         _applyFilter();
                       });
                     },
@@ -314,10 +318,15 @@ class _CustomDataTableState extends State<CustomDataTable> {
                                   if (newVal != null) {
                                     setState(() {
                                       row[col['column']] =
-                                          newVal; // Update the integer value
+                                          newVal; // Update the local value
                                       _updateFilterCounts();
                                       _applyFilter();
                                     });
+
+                                    // Trigger the onRoleChanged callback to update the database
+                                    if (widget.onRoleChanged != null) {
+                                      widget.onRoleChanged!(row, newVal);
+                                    }
                                   }
                                 },
                                 underline: SizedBox(),

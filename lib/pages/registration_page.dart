@@ -228,7 +228,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               children: isRequired
                   ? [
                       TextSpan(
-                        text: '*',
+                        text: ' *',
                         style: TextStyle(color: Color(0xFFEC2023)),
                       ),
                     ]

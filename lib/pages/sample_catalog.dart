@@ -97,10 +97,25 @@ class _CatalogPageState extends State<CatalogPage> {
             stream: _donutsCollection.snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor:
+                        AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                    backgroundColor: Color(0xFFFF7171),
+                    strokeWidth: 5.0,
+                  ),
+                );
               }
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(child: Text('No donuts found.'));
+                return const Center(
+                    child: Text(
+                  'No donuts found.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFFC7A889),
+                  ),
+                ));
               }
               final donuts = snapshot.data!.docs;
               return ListView.builder(

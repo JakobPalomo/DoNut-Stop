@@ -81,7 +81,14 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return SliverFillRemaining(
-                      child: const Center(child: CircularProgressIndicator()),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                          backgroundColor: Color(0xFFFF7171),
+                          strokeWidth: 5.0,
+                        ),
+                      ),
                     );
                   }
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
