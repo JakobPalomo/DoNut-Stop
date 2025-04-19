@@ -394,7 +394,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                 ),
                                 SizedBox(width: 10),
                                 Text(
-                                  '₱${widget.order['total_price']?.toStringAsFixed(2) ?? '0.00'}',
+                                  '₱${widget.order['total_amount']?.toStringAsFixed(2) ?? '0.00'}',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: Color(0xFF462521),

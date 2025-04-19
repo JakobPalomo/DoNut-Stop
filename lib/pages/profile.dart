@@ -54,9 +54,9 @@ class _ProfilePageState extends State<ProfilePage> {
   Map<String, dynamic> user = {};
 
   final List<Map<String, dynamic>> roles = [
-    {'value': 0, 'label': 'Admin'},
-    {'value': 1, 'label': 'Customer'},
-    {'value': 2, 'label': 'Technician'},
+    {'value': 1, 'label': 'Customer', 'drawer': UserDrawer()},
+    {'value': 2, 'label': 'Employee', 'drawer': EmployeeDrawer()},
+    {'value': 3, 'label': 'Admin', 'drawer': AdminDrawer()},
   ];
 
   String? _validateRequiredField(String? value) {
@@ -651,7 +651,10 @@ class _ProfilePageState extends State<ProfilePage> {
           : AppBarWithMenuAndTitle(title: "My Profile"),
       drawer: isEditing
           ? null
-          : UserDrawer(), // or AdminDrawer() or EmployeeDrawer()
+          : roles.firstWhere(
+              (role) => role['value'] == selectedRole,
+              orElse: () => {'drawer': UserDrawer()},
+            )['drawer'],
       body: CustomScrollView(
         slivers: [
           // Profile Image Section

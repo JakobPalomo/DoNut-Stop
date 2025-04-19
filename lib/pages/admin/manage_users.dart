@@ -121,6 +121,41 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
       "width": 110,
     },
     {
+      "label": "First Name",
+      "column": "first_name",
+      "sortable": true,
+      "type": "string",
+      "width": 120
+    },
+    {
+      "label": "Last Name",
+      "column": "last_name",
+      "sortable": true,
+      "type": "string",
+      "width": 120
+    },
+    {
+      "label": "Email Address",
+      "column": "email",
+      "sortable": true,
+      "type": "string",
+      "width": 200
+    },
+    {
+      "label": "Contact No.",
+      "column": "contact_no",
+      "sortable": false,
+      "type": "string",
+      "width": 110
+    },
+    {
+      "label": "Address",
+      "column": "address",
+      "sortable": true,
+      "type": "string",
+      "width": 500
+    },
+    {
       "label": "",
       "column": "actions",
       "sortable": false,
@@ -261,11 +296,27 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                           };
                         }).toList();
 
-                        // Combine user data with locations
+                        // Find the main location and format the address
+                        final mainLocation = locations.firstWhere(
+                          (location) => location['main_location'] == true,
+                          orElse: () => {},
+                        );
+
+                        final formattedAddress = mainLocation.isNotEmpty
+                            ? "${mainLocation['house_no_building_street'] ?? ''}, "
+                                "Brgy. ${mainLocation['barangay'] ?? ''}, "
+                                "${mainLocation['city_municipality'] ?? ''}, "
+                                "${mainLocation['state_province'] ?? ''}, "
+                                "${mainLocation['zip']?.toString() ?? ''}"
+                            : 'No address available';
+
+                        // Combine user data with locations and formatted address
                         return {
                           ...data,
                           "id": doc.id,
                           "locations": locations,
+                          "address":
+                              formattedAddress, // Add the formatted address
                           "created_at": data['created_at'] is Timestamp
                               ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
                                   .format(data['created_at'].toDate())

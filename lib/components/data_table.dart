@@ -286,7 +286,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                           ...widget.columns
                               .where((col) => col['type'] != 'actions')
                               .map((col) {
-                            final value = row[col['column']];
+                            final value = row[col['column']] ?? '';
                             Widget content;
 
                             // Check if the column matches a dropdown configuration

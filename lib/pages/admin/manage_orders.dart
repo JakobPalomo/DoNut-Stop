@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/pages/admin/view_order.dart';
 import 'package:toastification/toastification.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ManageOrdersPage extends StatefulWidget {
   @override
@@ -20,6 +21,19 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
   final TextEditingController _searchController = TextEditingController();
+
+  int selectedRole = 1; // Default to 1 (Customer)
+
+  final List<Map<String, dynamic>> roles = [
+    {'value': 1, 'label': 'Customer', 'drawer': UserDrawer()},
+    {'value': 2, 'label': 'Employee', 'drawer': EmployeeDrawer()},
+    {'value': 3, 'label': 'Admin', 'drawer': AdminDrawer()},
+  ];
+
+  final List<Map<String, dynamic>> paymentMethods = [
+    {'value': 1, 'label': 'Cash on Delivery'},
+    {'value': 2, 'label': 'GCash'},
+  ];
 
   void _updateOrderStatus(String id, int newOrderStatus) async {
     // Fetch the current order status from Firestore
@@ -152,6 +166,34 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
       "width": 150,
     },
     {
+      "label": "Total Amount (₱)",
+      "column": "total_amount",
+      "sortable": true,
+      "type": "number",
+      "width": 150,
+    },
+    {
+      "label": "Purchased By",
+      "column": "purchased_by",
+      "sortable": true,
+      "type": "string",
+      "width": 240,
+    },
+    {
+      "label": "Payment Method",
+      "column": "payment_method_string",
+      "sortable": true,
+      "type": "string",
+      "width": 200,
+    },
+    {
+      "label": "Delivery Location",
+      "column": "delivery_location_address",
+      "sortable": true,
+      "type": "string",
+      "width": 500,
+    },
+    {
       "label": "",
       "column": "actions",
       "sortable": false,
@@ -173,6 +215,42 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
   @override
   void initState() {
     super.initState();
+    _initializeSelectedRole();
+  }
+
+  Future<void> _initializeSelectedRole() async {
+    try {
+      // Get the authenticated user's UID
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception("No authenticated user found.");
+      }
+
+      final userId = currentUser.uid;
+
+      // Fetch the user's main document
+      final userDoc = await _usersCollection.doc(userId).get();
+      if (!userDoc.exists) {
+        throw Exception("User document not found.");
+      }
+
+      final userData = userDoc.data() as Map<String, dynamic>;
+
+      // Set the selectedRole based on the user's role
+      setState(() {
+        selectedRole = userData['role'] ?? 1; // Default to 1 (Customer)
+      });
+
+      print("User role initialized: $selectedRole");
+    } catch (e) {
+      print("Error initializing selectedRole: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to fetch user role."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -189,7 +267,10 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
       home: Scaffold(
         backgroundColor: Color(0xFFFFE0B6),
         appBar: AppBarWithMenuAndTitle(title: "Manage Orders"),
-        drawer: AdminDrawer(),
+        drawer: roles.firstWhere(
+          (role) => role['value'] == selectedRole,
+          orElse: () => {'drawer': EmployeeDrawer()},
+        )['drawer'],
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -291,6 +372,20 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                         };
                       }).toList();
 
+                      final userData = await _findUserById(data['user_id']);
+                      final deliveryLocation = data['delivery_location'];
+                      final formattedAddress = deliveryLocation.isNotEmpty
+                          ? "${deliveryLocation['house_no_building_street'] ?? ''}, "
+                              "Brgy. ${deliveryLocation['barangay'] ?? ''}, "
+                              "${deliveryLocation['city_municipality'] ?? ''}, "
+                              "${deliveryLocation['state_province'] ?? ''}, "
+                              "${deliveryLocation['zip']?.toString() ?? ''}"
+                          : 'No address available';
+                      final paymentMethodString = paymentMethods.firstWhere(
+                        (method) => method['value'] == data['payment_method'],
+                        orElse: () => {'label': 'Unknown'},
+                      )['label'];
+
                       // Combine orders data with products_ordered
                       return {
                         ...data,
@@ -302,7 +397,11 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                                     data['datetime_purchased']
                                         .toDate()) // Correct field
                                 : "2024-01-10T10:30:00",
-                        "user_data": await _findUserById(data['user_id']),
+                        "user_data": userData,
+                        "purchased_by":
+                            "${userData['first_name']} ${userData['last_name']}",
+                        "payment_method_string": paymentMethodString,
+                        "delivery_location_address": formattedAddress,
                       };
                     }).toList());
 

@@ -307,8 +307,8 @@ class EmployeeDrawer extends StatelessWidget {
     return CustomDrawer(
       drawerHeader: DrawerHeaderWidget(),
       drawerItems: [
-        _buildDrawerItem(
-            "Manage Orders", 'assets/icons/manageorders.png', MyApp(), context),
+        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
+            ManageOrdersPage(), context),
         _buildDrawerItem(
             "Profile", 'assets/icons/profile.png', ProfilePage(), context),
         ListTile(
@@ -367,9 +367,6 @@ class UserDrawer extends StatelessWidget {
           ),
           onTap: () => logout(context),
         ),
-        SizedBox(height: 20),
-        _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
-            ManageOrdersPage(), context),
       ],
     );
   }
