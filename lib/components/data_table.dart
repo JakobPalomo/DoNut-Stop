@@ -53,8 +53,9 @@ class _CustomDataTableState extends State<CustomDataTable> {
         filter['count'] = widget.data.length;
       } else {
         // Count rows matching the filter's value
+        final column = widget.dropdowns[0]['row'];
         filter['count'] =
-            widget.data.where((row) => row['role'] == filter['value']).length;
+            widget.data.where((row) => row[column] == filter['value']).length;
       }
     }
   }
@@ -68,8 +69,9 @@ class _CustomDataTableState extends State<CustomDataTable> {
         // Filter rows based on the selected filter's value
         final selectedFilter = widget.filters
             .firstWhere((filter) => filter['value'] == activeFilterValue);
+        final column = widget.dropdowns[0]['row'];
         filteredData = widget.data
-            .where((row) => row['role'] == selectedFilter['value'])
+            .where((row) => row[column] == selectedFilter['value'])
             .toList();
       }
 
@@ -332,7 +334,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                                 underline: SizedBox(),
                                 buttonStyleData: ButtonStyleData(
                                   height: 40,
-                                  width: 120,
+                                  width: col['width'] - 20 ?? 120,
                                   padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(6),
@@ -342,7 +344,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                                 ),
                                 dropdownStyleData: DropdownStyleData(
                                   maxHeight: 500,
-                                  width: 120,
+                                  width: col['width'] - 20 ?? 120,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(6),
                                     color: Colors.white,

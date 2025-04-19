@@ -289,7 +289,13 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
 
                         if (!usersSnapshot.hasData ||
                             usersSnapshot.data!.isEmpty) {
-                          return const Center(child: Text('No users found.'));
+                          return const Center(
+                              child: Text('No users found.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFFC7A889),
+                                  )));
                         }
 
                         final users = usersSnapshot.data!;
