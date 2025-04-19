@@ -14,7 +14,7 @@ class _CatalogPageState extends State<CatalogPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final CollectionReference _donutsCollection =
-      FirebaseFirestore.instance.collection('donuts');
+  FirebaseFirestore.instance.collection('donuts');
 
   void _createDonut() async {
     if (_nameController.text.isNotEmpty && _priceController.text.isNotEmpty) {
@@ -100,7 +100,7 @@ class _CatalogPageState extends State<CatalogPage> {
                 return const Center(
                   child: CircularProgressIndicator(
                     valueColor:
-                        AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                    AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
                     backgroundColor: Color(0xFFFF7171),
                     strokeWidth: 5.0,
                   ),
@@ -109,13 +109,13 @@ class _CatalogPageState extends State<CatalogPage> {
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return const Center(
                     child: Text(
-                  'No donuts found.',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFC7A889),
-                  ),
-                ));
+                      'No donuts found.',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFC7A889),
+                      ),
+                    ));
               }
               final donuts = snapshot.data!.docs;
               return ListView.builder(
@@ -166,7 +166,7 @@ class _CatalogPageState extends State<CatalogPage> {
                                           donut.id,
                                           _nameController.text,
                                           double.tryParse(
-                                                  _priceController.text) ??
+                                              _priceController.text) ??
                                               0.0,
                                         );
                                         _nameController.clear();
@@ -356,11 +356,13 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ProductPage()),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ProductPage(productId: 'sampleId')),
               );
             },
             borderRadius:
-                BorderRadius.circular(16), // Ensures ripple follows shape
+            BorderRadius.circular(16), // Ensures ripple follows shape
             splashColor: Colors.brown.withOpacity(0.2), // Ripple effect color
             child: Ink(
               decoration: BoxDecoration(
@@ -494,13 +496,15 @@ class DonutSelectionWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProductPage()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProductPage(productId: 'sampleId')),
                   );
                 },
                 borderRadius:
-                    BorderRadius.circular(16), // Ensures ripple follows shape
+                BorderRadius.circular(16), // Ensures ripple follows shape
                 splashColor:
-                    Colors.brown.withOpacity(0.2), // Ripple effect color
+                Colors.brown.withOpacity(0.2), // Ripple effect color
                 child: Ink(
                   decoration: BoxDecoration(
                     color: Color(0xFFFFEEE1), // Background color inside Ink
@@ -553,7 +557,9 @@ class DonutSelectionWidget extends StatelessWidget {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProductPage()),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ProductPage(productId: 'sampleId')),
                   );
                 },
                 child: Image.asset(
@@ -609,10 +615,10 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                       },
                       borderRadius: BorderRadius.circular(20),
                       splashColor:
-                          Colors.white.withOpacity(0.3), // White ripple effect
+                      Colors.white.withOpacity(0.3), // White ripple effect
                       child: Padding(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -645,7 +651,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut5.png",
                     title: "Strawberry Wheel",
                     description:
-                        "These Baked Strawberry Donuts are filled with fresh strawberries and rainbow sprinkles.",
+                    "These Baked Strawberry Donuts are filled with fresh strawberries and rainbow sprinkles.",
                     oldPrice: "₱90",
                     newPrice: "₱76",
                     isFavInitial: true,
@@ -654,7 +660,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut11.png",
                     title: "Chocolate Glaze",
                     description:
-                        "Moist and fluffy baked chocolate donuts full of chocolate flavor.",
+                    "Moist and fluffy baked chocolate donuts full of chocolate flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -663,7 +669,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut9.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked cotton candy flavored-donuts with a splash of colorful sprinkles.",
+                    "Moist and fluffy baked cotton candy flavored-donuts with a splash of colorful sprinkles.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -672,7 +678,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut10.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -681,7 +687,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut1.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -690,7 +696,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut2.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -699,7 +705,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut3.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -708,7 +714,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut4.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -717,7 +723,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut5.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -726,7 +732,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut6.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -735,7 +741,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut7.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -744,7 +750,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                     image: "assets/front_donut/fdonut8.png",
                     title: "Matcha Rainbow",
                     description:
-                        "Moist and fluffy baked matcha donuts full of matcha flavor.",
+                    "Moist and fluffy baked matcha donuts full of matcha flavor.",
                     oldPrice: "₱50",
                     newPrice: "₱40",
                     isFavInitial: false,
@@ -779,7 +785,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       padding:
-                          EdgeInsets.symmetric(vertical: 18, horizontal: 50),
+                      EdgeInsets.symmetric(vertical: 18, horizontal: 50),
                     ),
                     child: Text(
                       "Back to Top",
@@ -810,7 +816,7 @@ class CatalogPageTodaysOffers extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         padding:
-                            EdgeInsets.symmetric(vertical: 18, horizontal: 30),
+                        EdgeInsets.symmetric(vertical: 18, horizontal: 30),
                       ),
                       child: Text(
                         "More Today's Offers",
@@ -870,10 +876,10 @@ class CatalogPageDonuts extends StatelessWidget {
                       },
                       borderRadius: BorderRadius.circular(20),
                       splashColor:
-                          Colors.white.withOpacity(0.3), // White ripple effect
+                      Colors.white.withOpacity(0.3), // White ripple effect
                       child: Padding(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -997,7 +1003,7 @@ class CatalogPageDonuts extends StatelessWidget {
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
                         backgroundColor:
-                            Colors.transparent, // transparent background
+                        Colors.transparent, // transparent background
                         shadowColor: Colors.transparent, // No shadow effect
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
