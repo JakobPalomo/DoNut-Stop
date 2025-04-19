@@ -92,6 +92,19 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
     return degrees * (3.1415926535897932 / 180);
   }
 
+  double _calculateSubtotal(List<Map<String, dynamic>> productsOrdered) {
+    double total = 0.0;
+
+    for (var product in productsOrdered) {
+      final price = product['price'] ?? 0.0; // Default to 0.0 if price is null
+      final quantity =
+          product['quantity'] ?? 0; // Default to 0 if quantity is null
+      total += price * quantity;
+    }
+
+    return total;
+  }
+
   Widget _buildDropdown({
     required String label,
     required int value,
@@ -375,36 +388,123 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          Expanded(child: Container()),
-                          Container(
-                            padding: const EdgeInsets.only(right: 5),
-                            alignment: Alignment.centerRight,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Total Amount:",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xFF462521),
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w500,
+                          Expanded(
+                            child: Container(
+                              padding: const EdgeInsets.only(right: 5),
+                              alignment: Alignment.centerRight,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex:
+                                            2, // Label side takes 2 parts of the space
+                                        child: Text(
+                                          "Subtotal:",
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF462521),
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex:
+                                            1, // Amount side takes 1 part of the space
+                                        child: Text(
+                                          '₱${_calculateSubtotal(widget.order['products_ordered'])?.toStringAsFixed(2) ?? '0.00'}',
+                                          textAlign: TextAlign
+                                              .right, // Align the amount to the right
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF462521),
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                                SizedBox(width: 10),
-                                Text(
-                                  '₱${widget.order['total_amount']?.toStringAsFixed(2) ?? '0.00'}',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    color: Color(0xFF462521),
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.w800,
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex:
+                                            2, // Label side takes 2 parts of the space
+                                        child: Text(
+                                          "Shipping Fee:",
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF462521),
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex:
+                                            1, // Amount side takes 1 part of the space
+                                        child: Text(
+                                          '₱${widget.order['shipping_fee']?.toStringAsFixed(2) ?? '0.00'}',
+                                          textAlign: TextAlign
+                                              .right, // Align the amount to the right
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF462521),
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ],
+                                  Container(
+                                    height: 1,
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        flex:
+                                            2, // Label side takes 2 parts of the space
+                                        child: Text(
+                                          "Total Amount:",
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFF462521),
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex:
+                                            1, // Amount side takes 1 part of the space
+                                        child: Text(
+                                          '₱${widget.order['total_amount']?.toStringAsFixed(2) ?? '0.00'}',
+                                          textAlign: TextAlign
+                                              .right, // Align the amount to the right
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: Color(0xFFE23F61),
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ],

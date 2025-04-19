@@ -841,6 +841,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       "${user['first_name'] ?? ''} ${user['last_name'] ?? ''}",
                       style: TextStyle(
                         fontSize: 25,
+                        fontFamily: 'Inter',
                         fontWeight: FontWeight.w800,
                         color: Color(0xFF462521),
                       )),

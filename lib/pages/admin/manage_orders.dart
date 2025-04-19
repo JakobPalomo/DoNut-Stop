@@ -177,14 +177,14 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
       "column": "purchased_by",
       "sortable": true,
       "type": "string",
-      "width": 240,
+      "width": 200,
     },
     {
       "label": "Payment Method",
       "column": "payment_method_string",
       "sortable": true,
       "type": "string",
-      "width": 200,
+      "width": 130,
     },
     {
       "label": "Delivery Location",

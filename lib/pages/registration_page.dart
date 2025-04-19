@@ -228,10 +228,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } catch (e) {
+        // Extract the error message
+        String errorMessage = e.toString();
+        if (errorMessage.contains('] ')) {
+          errorMessage =
+              errorMessage.split('] ').last; // Get the part after "] "
+        }
+
+        // Show the error message in a SnackBar
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Registration failed: ${e.toString()}'),
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );
@@ -323,9 +331,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 children: [
                   const SizedBox(height: 20),
                   const Text(
-                    "Let's Sign Up!",
+                    "Let's sign up!",
                     style: TextStyle(
-                      fontSize: 24,
+                      fontSize: 30,
+                      fontFamily: 'Inter',
                       fontWeight: FontWeight.w900,
                       color: Color(0xFF462521),
                     ),
