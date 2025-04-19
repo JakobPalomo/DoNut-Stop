@@ -65,7 +65,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
       for (var cartDoc in cartSnapshot.docs) {
         String productId =
             (cartDoc.data() as Map<String, dynamic>)['product_id'];
-        int quantity = (cartDoc.data() as Map<String, dynamic>)['quantity'] ?? 1; // Get quantity
+        int quantity = (cartDoc.data() as Map<String, dynamic>)['quantity'] ?? 1;
 
         // Fetch product details from the donuts collection
         DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
@@ -75,11 +75,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
         if (productSnapshot.exists) {
           var productData = productSnapshot.data() as Map<String, dynamic>;
-          productData['quantity'] = quantity; 
+          productData['quantity'] = quantity;
+          productData['subtotal'] = (productData['price'] ?? 0) * quantity;
           items.add(productData);
 
           // Calculate total amount
-          total += (productData['price'] ?? 0) * itemCount;
+          total += productData['subtotal'];
         }
       }
 
@@ -381,7 +382,7 @@ Widget build(BuildContext context) {
                         ),
                       ),
                       Text(
-                        "₱50.00",
+                        "₱30.00",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -428,7 +429,7 @@ Widget build(BuildContext context) {
                         ),
                       ),
                       Text(
-                        "₱${(totalAmount + 50).toStringAsFixed(2)}",
+                        "₱${(totalAmount + 30).toStringAsFixed(2)}",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w800,
