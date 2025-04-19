@@ -35,9 +35,10 @@ class _CartPageState extends State<CartPage> {
       double total = 0.0;
 
       for (var cartDoc in cartSnapshot.docs) {
+        String cartId = cartDoc.id;
         String productId =
             (cartDoc.data() as Map<String, dynamic>)['product_id'];
-
+        int quantity = (cartDoc.data() as Map<String, dynamic>)['quantity'] ?? 1;
         // Fetch product details from the donuts collection
         DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
             .collection('products')
@@ -46,10 +47,13 @@ class _CartPageState extends State<CartPage> {
 
         if (productSnapshot.exists) {
           var productData = productSnapshot.data() as Map<String, dynamic>;
+          productData['cart_id'] = cartId;
+          productData['quantity'] = quantity;
+          productData['subtotal'] = (productData['price'] ?? 0) * quantity;
           items.add(productData);
 
           // Calculate total amount
-          total += (productData['price'] ?? 0) * itemCount;
+          total += productData['subtotal'];
         }
       }
 
@@ -62,6 +66,26 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
+  Future<void> updateCartItemQuantity(String userId, String cartId, int newQuantity) async {
+    try {
+      DocumentReference cartItemRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('cart')
+          .doc(cartId);
+  
+      DocumentSnapshot cartItemSnapshot = await cartItemRef.get();
+  
+      if (cartItemSnapshot.exists) {
+        await cartItemRef.update({'quantity': newQuantity});
+        print("Cart item updated: cartId=$cartId, newQuantity=$newQuantity");
+      } else {
+        print("Cart item with cartId=$cartId does not exist.");
+      }
+    } catch (e) {
+      print("Error updating cart item quantity: $e");
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -162,26 +186,32 @@ class _CartPageState extends State<CartPage> {
                                 child: IconButton(
                                   icon: Icon(Icons.remove,
                                       color: Color(0xFFFF7171), size: 12),
-                                  onPressed: () {
+                                  onPressed: () async {
+                                  if (item['quantity'] > 1) {
                                     setState(() {
-                                      if (itemCount > 1) {
-                                        itemCount--;
-                                        totalAmount -= item['price'];
-                                      }
+                                      item['quantity']--; // Decrease quantity in the UI
+                                      totalAmount -= item['price']; // Update total amount
                                     });
-                                  },
+                                    print("Updating cart_id: ${item['cart_id']} with quantity: ${item['quantity']}");
+                                    await updateCartItemQuantity(
+                                      "O5XpBhLgOGTHaLn5Oub9hRrwEhq1", // Replace with dynamic userId if needed
+                                      item['cart_id'], // Use cart_id instead of product_id
+                                      item['quantity'], // Update the new quantity
+                                    );
+                                  }
+                                },
                                 ),
                               ),
                             ),
                             SizedBox(width: 10),
                             Text(
-                              "$itemCount",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF462521),
-                              ),
+                            "${item['quantity']}", // Display the updated quantity
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF462521),
                             ),
+                          ),
                             SizedBox(width: 10),
                             Container(
                               decoration: BoxDecoration(
@@ -201,12 +231,18 @@ class _CartPageState extends State<CartPage> {
                                 child: IconButton(
                                   icon: Icon(Icons.add,
                                       color: Color(0xFF462521), size: 12),
-                                  onPressed: () {
-                                    setState(() {
-                                      itemCount++;
-                                      totalAmount += item['price'];
-                                    });
-                                  },
+                                  onPressed: () async {
+                                  setState(() {
+                                    item['quantity']++; // Increase quantity in the UI
+                                    totalAmount += item['price']; // Update total amount
+                                  });
+                                  print("Updating cart_id: ${item['cart_id']} with quantity: ${item['quantity']}");
+                                  await updateCartItemQuantity(
+                                    "O5XpBhLgOGTHaLn5Oub9hRrwEhq1", // Replace with dynamic userId if needed
+                                    item['cart_id'], // Use cart_id instead of product_id
+                                    item['quantity'], // Update the new quantity
+                                  );
+                                },
                                 ),
                               ),
                             ),
