@@ -447,7 +447,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                         flex:
                                             1, // Amount side takes 1 part of the space
                                         child: Text(
-                                          '₱${widget.order['shipping_fee']?.toStringAsFixed(2) ?? '0.00'}',
+                                          '₱${widget.order['shipping_fee']?.toStringAsFixed(2) ?? '30.00'}',
                                           textAlign: TextAlign
                                               .right, // Align the amount to the right
                                           style: const TextStyle(
