@@ -175,7 +175,6 @@ class _ProfilePageState extends State<ProfilePage> {
       final formattedUserData = {
         ...userData,
         "id": userId,
-        "email": currentUser.email ?? userData['email'],
         "locations": locations,
         "created_at": userData['created_at'] is Timestamp
             ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
@@ -232,86 +231,137 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<String?> _promptForPassword() async {
-    String password = '';
+    final controller = TextEditingController();
+    bool obscureText = true;
+
     return showDialog<String>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          titlePadding: const EdgeInsets.all(0),
-          actionsAlignment: MainAxisAlignment.center,
-          title: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Color(0xFFCA2E55),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(20),
-                topRight: Radius.circular(20),
-              ),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            child: const Text(
-              "Re-enter Password",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Inter',
-                color: Colors.white,
-              ),
-            ),
-          ),
-          content: Padding(
-            padding: EdgeInsets.fromLTRB(10, 15, 20, 5),
-            child: SizedBox(
-              height: 165,
-              child: Column(children: [
-                Text(
-                  "Please enter your password to reauthenticate your account. A verification email will be sent, and your new email address will only take effect after it's confirmed.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    fontFamily: 'Inter',
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              titlePadding: const EdgeInsets.all(0),
+              actionsAlignment: MainAxisAlignment.center,
+              title: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Color(0xFFCA2E55),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
                   ),
                 ),
-                SizedBox(height: 10),
-                _buildPasswordField(
-                    "Password", "Enter your password", true, passwordController,
-                    validator: _validatePassword),
-              ]),
-            ),
-          ),
-          actions: [
-            CustomOutlinedButton(
-              text: "Cancel",
-              bgColor: Colors.white,
-              textColor: Color(0xFFCA2E55),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            const SizedBox(width: 10),
-            GradientButton(
-              text: "Submit",
-              onPressed: () => Navigator.pop(context, password),
-            ),
-          ],
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: const Text(
+                  "Re-enter Password",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Inter',
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              content: Padding(
+                padding: const EdgeInsets.fromLTRB(10, 15, 20, 5),
+                child: SizedBox(
+                  height: 80,
+                  child: Column(
+                    children: [
+                      const Text(
+                        "Please enter your password to reauthenticate your account.",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Inter',
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        controller: controller,
+                        obscureText: obscureText,
+                        decoration: InputDecoration(
+                          hintText: "Enter your password",
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(color: Colors.black26),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                            borderSide: const BorderSide(
+                                color: Color(0xFFCA2E55), width: 2.0),
+                          ),
+                          filled: true,
+                          fillColor: Colors.white,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.grey,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                obscureText = !obscureText;
+                              });
+                            },
+                          ),
+                        ),
+                        cursorColor: const Color(0xFFCA2E55),
+                        style: const TextStyle(
+                            fontFamily: 'Inter', color: Colors.black),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(255)
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                CustomOutlinedButton(
+                  text: "Cancel",
+                  bgColor: Colors.white,
+                  textColor: const Color(0xFFCA2E55),
+                  onPressed: () =>
+                      Navigator.of(context).pop(null), // Return null on cancel
+                ),
+                const SizedBox(width: 10),
+                GradientButton(
+                  text: "Submit",
+                  onPressed: () {
+                    final password = controller.text.trim();
+                    print("Password entered in dialog: $password");
+                    Navigator.of(context)
+                        .pop(password); // Return the entered password
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
-  Future<void> _reauthenticateUser(User currentUser) async {
+  Future<void> _reauthenticateUser(User currentUser, String password) async {
     try {
-      // Prompt the user to reauthenticate
       final credential = EmailAuthProvider.credential(
         email: currentUser.email!,
-        password: passwordController.text,
+        password: password,
       );
       await currentUser.reauthenticateWithCredential(credential);
       print("User reauthenticated successfully.");
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'wrong-password') {
+        throw Exception("Incorrect password. Please try again.");
+      } else {
+        throw Exception("${e.message}");
+      }
     } catch (e) {
-      print("Error reauthenticating user: $e");
-      throw Exception("Failed to reauthenticate user.");
+      throw Exception("Unexpected error during reauthentication.");
     }
   }
 
@@ -326,17 +376,18 @@ class _ProfilePageState extends State<ProfilePage> {
       // Check if the email has changed
       if (emailController.text != user['email']) {
         final password = await _promptForPassword();
+        print("Password entered: $password");
         if (password == null || password.isEmpty) {
           throw Exception("Password is required for reauthentication.");
         }
-
-        passwordController.text = password; // Temporarily store it
-        await _reauthenticateUser(currentUser);
-        await currentUser.verifyBeforeUpdateEmail(emailController.text);
+        await _reauthenticateUser(currentUser, password);
+        await currentUser.updateEmail(emailController.text);
+        Future.delayed(Duration.zero, () => passwordController.clear());
+        print("Firebase Auth email updated.");
       }
 
       // Update the user's main document in the 'users' collection
-      await _firestore.collection('users').doc(user['id']).update({
+      await _firestore.collection('users').doc(currentUser.uid).update({
         'first_name': firstNameController.text,
         'last_name': lastNameController.text,
         'username': usernameController.text,
@@ -410,13 +461,19 @@ class _ProfilePageState extends State<ProfilePage> {
       );
     } catch (e) {
       // Reset the controller values to the original user data
-      _resetUserData();
+      // _resetUserData();
+
+      // Extract the error message
+      String errorMessage = e.toString();
+      if (errorMessage.contains('] ')) {
+        errorMessage = errorMessage.split('] ').last; // Get the part after "] "
+      }
 
       // Show error message
       print("Error updating Firestore data: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to update user data."),
+        SnackBar(
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
         ),
       );
@@ -1072,11 +1129,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                           }
                                           // Save the changes to Firestore
                                           await updateFirestoreData();
-
-                                          // Toggle view/edit mode
-                                          setState(() {
-                                            isEditing = false;
-                                          });
                                         }
                                       },
                                     ),
