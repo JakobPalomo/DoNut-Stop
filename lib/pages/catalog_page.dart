@@ -184,6 +184,7 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
 class OfferSelectionWidget extends StatefulWidget {
   final String image, title, description, newPrice;
   final bool isFavInitial;
+  final VoidCallback? onFavoriteToggle;
 
   OfferSelectionWidget({
     required this.image,
@@ -191,6 +192,7 @@ class OfferSelectionWidget extends StatefulWidget {
     required this.description,
     required this.newPrice,
     this.isFavInitial = false,
+    this.onFavoriteToggle,
   });
 
   @override
@@ -269,6 +271,9 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                             setState(() {
                               isFav = !isFav;
                             });
+                            if (widget.onFavoriteToggle != null) {
+                              widget.onFavoriteToggle!();
+                            }
                           },
                           padding: EdgeInsets.all(5),
                           constraints: BoxConstraints(),
@@ -528,72 +533,90 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
               Expanded(
                 child: SizedBox(
                   height: 375,
-                  child: ListView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      SizedBox(width: 35),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut5.png",
-                        title: "Strawberry Wheel",
-                        description:
-                            "These Baked Strawberry Donuts are filled with fresh strawberries and rainbow sprinkles.",
-                        newPrice: "₱76",
-                        isFavInitial: true,
-                      ),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut11.png",
-                        title: "Chocolate Glaze",
-                        description:
-                            "Moist and fluffy baked chocolate donuts full of chocolate flavor.",
-                        newPrice: "₱40",
-                        isFavInitial: false,
-                      ),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut9.png",
-                        title: "Matcha Rainbow",
-                        description:
-                            "Moist and fluffy baked cotton candy flavored-donuts with a splash of colorful sprinkles.",
-                        newPrice: "₱40",
-                        isFavInitial: false,
-                      ),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut10.png",
-                        title: "Matcha Rainbow",
-                        description:
-                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                        newPrice: "₱40",
-                        isFavInitial: false,
-                      ),
-                      SizedBox(width: 20),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut11.png",
-                        title: "Matcha Rainbow",
-                        description:
-                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                        newPrice: "₱40",
-                        isFavInitial: false,
-                      ),
-                      SizedBox(width: 20),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut12.png",
-                        title: "Matcha Rainbow",
-                        description:
-                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                        newPrice: "₱40",
-                        isFavInitial: false,
-                      ),
-                      SizedBox(width: 20),
-                      OfferSelectionWidget(
-                        image: "assets/front_donut/fdonut13.png",
-                        title: "Matcha Rainbow",
-                        description:
-                            "Moist and fluffy baked matcha donuts full of matcha flavor.",
-                        newPrice: "₱40",
-                        isFavInitial: false,
-                      ),
-                      SizedBox(width: 20),
-                    ],
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('products')
+                        .orderBy('name', descending: true) // Reverse order
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFDC345E)),
+                            backgroundColor: Color(0xFFFF7171),
+                            strokeWidth: 5.0,
+                          ),
+                        );
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(
+                            child: Text(
+                          'No offers found.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFC7A889),
+                          ),
+                        ));
+                      }
+                      final offers = snapshot.data!.docs;
+                      final userId = FirebaseAuth.instance.currentUser?.uid;
+
+                      return ListView.builder(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: offers.length,
+                        itemBuilder: (context, index) {
+                          final offer = offers[index];
+                          final productId = offer.id;
+
+                          return StreamBuilder<DocumentSnapshot>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(userId)
+                                .snapshots(),
+                            builder: (context, userSnapshot) {
+                              if (!userSnapshot.hasData) {
+                                return const SizedBox();
+                              }
+
+                              final userFavorites =
+                                  userSnapshot.data!['favorites'] ?? [];
+                              final isFavorited =
+                                  userFavorites.contains(productId);
+
+                              return OfferSelectionWidget(
+                                image:
+                                    "assets/front_donut/fdonut${index + 1}.png",
+                                title: offer['name'],
+                                description: offer['description'],
+                                newPrice:
+                                    '₱${offer['price'].toStringAsFixed(2)}',
+                                isFavInitial: isFavorited,
+                                onFavoriteToggle: () async {
+                                  final userDoc = FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(userId);
+
+                                  if (isFavorited) {
+                                    await userDoc.update({
+                                      'favorites':
+                                          FieldValue.arrayRemove([productId])
+                                    });
+                                  } else {
+                                    await userDoc.update({
+                                      'favorites':
+                                          FieldValue.arrayUnion([productId])
+                                    });
+                                  }
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
               ),
