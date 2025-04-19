@@ -13,6 +13,8 @@ import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
 import 'package:itelec_quiz_one/pages/admin/manage_orders.dart'; // Corrected package name
 import 'package:itelec_quiz_one/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:toastification/toastification.dart';
 
 class AppBarWithSearchAndCart extends StatelessWidget
     implements PreferredSizeWidget {
@@ -291,7 +293,7 @@ class AdminDrawer extends StatelessWidget {
             child:
                 Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
-          onTap: () => _logout(context),
+          onTap: () => logout(context),
         ),
       ],
     );
@@ -324,7 +326,7 @@ class EmployeeDrawer extends StatelessWidget {
             child:
                 Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
-          onTap: () => _logout(context),
+          onTap: () => logout(context),
         ),
       ],
     );
@@ -363,7 +365,7 @@ class UserDrawer extends StatelessWidget {
             child:
                 Image.asset('assets/icons/logout.png', width: 24, height: 24),
           ),
-          onTap: () => _logout(context),
+          onTap: () => logout(context),
         ),
         SizedBox(height: 20),
         _buildDrawerItem("Manage Orders", 'assets/icons/manageorders.png',
@@ -390,13 +392,38 @@ class GuestDrawer extends StatelessWidget {
   }
 }
 
-Future<void> _logout(BuildContext context) async {
-  final prefs = await SharedPreferences.getInstance();
-  await prefs.remove('role'); // Clear the role from shared preferences
-  await prefs.clear(); // Clear all shared preferences
+Future<void> logout(BuildContext context) async {
+  try {
+    // Log out the Firebase authenticated user
+    await FirebaseAuth.instance.signOut();
 
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(builder: (context) => LoginPage()),
-  );
+    // Clear shared preferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear(); // Clear all shared preferences
+
+    // Navigate to the Login Page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+
+    // Show a success message
+    toastification.show(
+      context: context,
+      title: Text('Logged out successfully'),
+      description: Text('You have been logged out.'),
+      type: ToastificationType.success,
+      autoCloseDuration: const Duration(seconds: 4),
+    );
+  } catch (e) {
+    // Handle errors
+    print("Error during logout: $e");
+    toastification.show(
+      context: context,
+      title: Text('Error logging out'),
+      description: Text('An error occurred while logging out.'),
+      type: ToastificationType.error,
+      autoCloseDuration: const Duration(seconds: 4),
+    );
+  }
 }

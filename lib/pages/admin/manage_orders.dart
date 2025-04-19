@@ -262,7 +262,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                       }
                       return const Center(
                           child: Text(
-                        'No orders found1.',
+                        'No orders found.',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -324,7 +324,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                         if (!ordersSnapshot.hasData ||
                             ordersSnapshot.data!.isEmpty) {
                           return const Center(
-                              child: Text('No orders found2.',
+                              child: Text('No orders found.',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,

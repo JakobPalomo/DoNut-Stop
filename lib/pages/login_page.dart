@@ -76,39 +76,47 @@ class _LoginPageState extends State<LoginPage> {
           password: passwordController.text,
         );
 
-        // Retrieve the username from Firestore
+        // Retrieve the user document from Firestore
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredential.user!.uid)
             .get();
 
-        if (userDoc.exists) {
-          String username = userDoc['username'];
-          int role = userDoc['role']; // Assuming 'role' is stored in Firestore
+        if (!userDoc.exists || userDoc['is_deleted'] == true) {
+          // If user document doesn't exist or is marked as deleted
+          await FirebaseAuth.instance.signOut(); // Prevent access
 
-          // Save the username in SharedPreferences for session-wide access
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('username', username);
-          await prefs.setInt('role', role); // Save the role
+          String errorMessage = 'Invalid credentials.';
+          print('This account has been deactivated.');
 
-          if (role == 3) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => ManageOrdersPage()),
-            );
-            return;
-          } else if (role == 1) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => CatalogPage()),
-            );
-            return;
-          }
+          setState(() {
+            _errorText = errorMessage;
+          });
+
+          toastification.show(
+            context: context,
+            title: Text('Login Failed'),
+            description: Text(errorMessage),
+            type: ToastificationType.error,
+            autoCloseDuration: const Duration(seconds: 4),
+          );
+
+          return;
         }
 
+        // Continue if the user document is valid
+        String username = userDoc['username'];
+        int role = userDoc['role'];
+
+        // Save the username in SharedPreferences for session-wide access
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('username', username);
+        await prefs.setInt('role', role);
+
         setState(() {
-          _errorText = null; // Clear the error message on successful login
+          _errorText = null; // Clear the error
         });
+
         toastification.show(
           context: context,
           title: Text('Login Successful'),
@@ -116,10 +124,19 @@ class _LoginPageState extends State<LoginPage> {
           type: ToastificationType.success,
           autoCloseDuration: const Duration(seconds: 4),
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => CatalogPage()),
-        );
+
+        // Navigate based on role
+        if (role == 2 || role == 3) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CatalogPage()),
+          );
+        }
       } on FirebaseAuthException catch (e) {
         String errorMessage;
         if (e.code == 'user-not-found') {
@@ -127,11 +144,13 @@ class _LoginPageState extends State<LoginPage> {
         } else if (e.code == 'wrong-password') {
           errorMessage = 'Wrong password provided.';
         } else {
-          errorMessage = 'Login failed: invalid email or password';
+          errorMessage = 'Invalid credentials.';
         }
+
         setState(() {
           _errorText = errorMessage;
         });
+
         toastification.show(
           context: context,
           title: Text('Login Failed'),

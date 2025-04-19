@@ -617,7 +617,7 @@ class _ViewEditUserPageState extends State<ViewEditUserPage> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: 25),
                     child: Text(
-                        "${widget.user['first_name'] ?? ''} ${widget.user['last_name'] ?? 'Asherbigge Biggieboo'}",
+                        "${widget.user['first_name'] ?? ''} ${widget.user['last_name'] ?? ''}",
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w800,
@@ -676,30 +676,32 @@ class _ViewEditUserPageState extends State<ViewEditUserPage> {
                                     ],
                                   ),
                                 ]),
-                                _buildTextField(
-                                  "Username",
-                                  "Your username",
-                                  true,
-                                  usernameController,
-                                  validator: _validateRequiredField,
-                                  keyboardType: TextInputType.text,
-                                  inputFormatters: [
-                                    FilteringTextInputFormatter.allow(
-                                        RegExp(r'[a-zA-Z0-9_-]')),
-                                    LengthLimitingTextInputFormatter(50),
-                                  ],
-                                ),
-                                _buildTextField(
-                                  "Email address",
-                                  "Your email address",
-                                  true,
-                                  emailController,
-                                  validator: _validateEmail,
-                                  keyboardType: TextInputType.emailAddress,
-                                  inputFormatters: [
-                                    LengthLimitingTextInputFormatter(255),
-                                  ],
-                                ),
+                                Row(children: [
+                                  _buildTextField(
+                                    "Username",
+                                    "Your username",
+                                    true,
+                                    usernameController,
+                                    validator: _validateRequiredField,
+                                    keyboardType: TextInputType.text,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.allow(
+                                          RegExp(r'[a-zA-Z0-9_-]')),
+                                      LengthLimitingTextInputFormatter(50),
+                                    ],
+                                  ),
+                                ]),
+                                // _buildTextField(
+                                //   "Email address",
+                                //   "Your email address",
+                                //   true,
+                                //   emailController,
+                                //   validator: _validateEmail,
+                                //   keyboardType: TextInputType.emailAddress,
+                                //   inputFormatters: [
+                                //     LengthLimitingTextInputFormatter(255),
+                                //   ],
+                                // ),
                                 Row(children: [
                                   _buildTextField(
                                     "Contact Number",
@@ -806,12 +808,16 @@ class _ViewEditUserPageState extends State<ViewEditUserPage> {
                                               .hasMatch(value)) {
                                             return 'Enter a valid ZIP Code (numbers only)';
                                           }
+                                          if (value.length > 4) {
+                                            return 'ZIP Code must be a maximum of 4 digits';
+                                          }
                                           return null;
                                         },
                                         keyboardType: TextInputType.number,
                                         inputFormatters: [
                                           FilteringTextInputFormatter
                                               .digitsOnly,
+                                          LengthLimitingTextInputFormatter(4),
                                         ],
                                       ),
                                     ),

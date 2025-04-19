@@ -20,7 +20,8 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
   final TextEditingController _searchController = TextEditingController();
 
   void _deleteUser(String id) async {
-    await _usersCollection.doc(id).delete();
+    // await _usersCollection.doc(id).delete();
+    await _usersCollection.doc(id).update({'is_deleted': true});
     // Trigger the onDataChanged callback to update the filter counts
     // setState(() {});
     toastification.show(
@@ -240,37 +241,42 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                     }
 
                     // Fetch users and their subcollections
-                    final usersFuture =
-                        Future.wait(snapshot.data!.docs.map((doc) async {
-                      final data = doc.data() as Map<String, dynamic>;
+                    final usersFuture = Future.wait(
+                      snapshot.data!.docs.where((doc) {
+                        final data = doc.data() as Map<String, dynamic>;
 
-                      // Fetch the locations subcollection
-                      final locationsSnapshot =
-                          await doc.reference.collection('locations').get();
-                      final locations =
-                          locationsSnapshot.docs.map((locationDoc) {
+                        // If `is_deleted` is missing or false, include the doc
+                        return !(data['is_deleted'] == true);
+                      }).map((doc) async {
+                        final data = doc.data() as Map<String, dynamic>;
+
+                        // Fetch the locations subcollection
+                        final locationsSnapshot =
+                            await doc.reference.collection('locations').get();
+                        final locations =
+                            locationsSnapshot.docs.map((locationDoc) {
+                          return {
+                            ...locationDoc.data(),
+                            "id": locationDoc.id,
+                          };
+                        }).toList();
+
+                        // Combine user data with locations
                         return {
-                          ...locationDoc.data(),
-                          "id": locationDoc.id,
+                          ...data,
+                          "id": doc.id,
+                          "locations": locations,
+                          "created_at": data['created_at'] is Timestamp
+                              ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                                  .format(data['created_at'].toDate())
+                              : "2024-01-10T10:30:00",
+                          "modified_at": data['modified_at'] is Timestamp
+                              ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                                  .format(data['modified_at'].toDate())
+                              : "2024-01-10T10:30:00",
                         };
-                      }).toList();
-
-                      // Combine user data with locations
-                      return {
-                        ...data,
-                        "id": doc.id,
-                        "locations":
-                            locations, // Include locations with their document IDs
-                        "created_at": data['created_at'] is Timestamp
-                            ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                                .format(data['created_at'].toDate())
-                            : "2024-01-10T10:30:00",
-                        "modified_at": data['modified_at'] is Timestamp
-                            ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
-                                .format(data['modified_at'].toDate())
-                            : "2024-01-10T10:30:00",
-                      };
-                    }).toList());
+                      }).toList(),
+                    );
 
                     return FutureBuilder<List<Map<String, dynamic>>>(
                       future: usersFuture,

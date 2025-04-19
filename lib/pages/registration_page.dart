@@ -84,6 +84,25 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   List<UserInformation> submittedData = [];
   int? _editingIndex;
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('users');
+
+  Future<String?> _validateUniqueUsername(String? value) async {
+    if (value == null || value.isEmpty) {
+      return 'Username is required';
+    }
+
+    // Query Firestore to check if the username exists
+    final querySnapshot =
+        await _usersCollection.where('username', isEqualTo: value).get();
+
+    // Check if the username exists and is not the current user's username
+    if (querySnapshot.docs.isNotEmpty) {
+      return 'Username is already taken';
+    }
+
+    return null; // Username is unique
+  }
 
   void _clearForm() {
     firstNameController.clear();
@@ -137,14 +156,31 @@ class _RegistrationPageState extends State<RegistrationPage> {
         _editingIndex = null;
         _clearForm();
       });
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Update successful!')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Update successful!'),
+        backgroundColor: Colors.green,
+      ));
     }
   }
 
   Future<void> _registerUser() async {
     if (_formKey.currentState!.validate()) {
       try {
+        final usernameError =
+            await _validateUniqueUsername(usernameController.text);
+        if (usernameError != null) {
+          // Show error manually
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(usernameError),
+                backgroundColor: Colors.red,
+              ),
+            );
+          });
+          return;
+        }
+
         UserCredential userCredential =
             await _auth.createUserWithEmailAndPassword(
           email: emailController.text,
@@ -160,6 +196,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
           'role': 1,
           'created_at': Timestamp.now(),
           'modified_at': Timestamp.now(),
+          'is_deleted': false,
         });
 
         // Add location as a subcollection
@@ -191,13 +228,14 @@ class _RegistrationPageState extends State<RegistrationPage> {
           MaterialPageRoute(builder: (context) => LoginPage()),
         );
       } catch (e) {
-        toastification.show(
-          context: context,
-          title: Text('Registration Failed'),
-          description: Text('Error: ${e.toString()}'),
-          type: ToastificationType.error,
-          autoCloseDuration: const Duration(seconds: 4),
-        );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration failed: ${e.toString()}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        });
       }
     }
   }
@@ -271,47 +309,34 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Donut Stop Registration",
-      debugShowCheckedModeBanner: false, // Remove debug ribbon
-      theme: ThemeData(
-        primarySwatch: Colors.pink,
-        fontFamily: 'Inter',
-        inputDecorationTheme: const InputDecorationTheme(
-          border: OutlineInputBorder(),
-          filled: true,
-          fillColor: Colors.white,
-        ),
-      ),
-      home: Scaffold(
-        appBar: AppBarWithMenuAndTitle(title: "Registration"),
-        backgroundColor: const Color(0xFFFFE0B6),
-        drawer: GuestDrawer(),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const RegPageImgSection(),
-              Container(
-                color: Colors.white,
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    const Text(
-                      "Let's Sign Up!",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        color: Color(0xFF462521),
-                      ),
+    return Scaffold(
+      appBar: AppBarWithMenuAndTitle(title: "Registration"),
+      backgroundColor: const Color(0xFFFFE0B6),
+      drawer: GuestDrawer(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const RegPageImgSection(),
+            Container(
+              color: Colors.white,
+              child: Column(
+                children: [
+                  const SizedBox(height: 20),
+                  const Text(
+                    "Let's Sign Up!",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF462521),
                     ),
-                    if (_editingIndex == null) RegPageTxtFieldSection(),
-                    RegPageBtnFieldSection(onRegisterUser: _registerUser),
-                    _buildSubmittedDataList(),
-                  ],
-                ),
+                  ),
+                  if (_editingIndex == null) RegPageTxtFieldSection(),
+                  RegPageBtnFieldSection(onRegisterUser: _registerUser),
+                  _buildSubmittedDataList(),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -430,11 +455,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       if (!RegExp(r'^\d+$').hasMatch(value)) {
                         return 'Enter a valid ZIP Code (numbers only)';
                       }
+                      if (value.length > 4) {
+                        return 'ZIP Code must be a maximum of 4 digits';
+                      }
                       return null;
                     },
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(4),
                     ],
                   ),
                 ),
@@ -674,11 +703,15 @@ class RegPageTxtFieldSection extends StatelessWidget {
                         if (!RegExp(r'^\d+$').hasMatch(value)) {
                           return 'Enter a valid ZIP Code (numbers only)';
                         }
+                        if (value.length > 4) {
+                          return 'ZIP Code must be a maximum of 4 digits';
+                        }
                         return null;
                       },
                       keyboardType: TextInputType.number,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(4),
                       ],
                     ),
                   ),

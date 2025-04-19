@@ -212,9 +212,9 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              fontSize: 13,
+                                              fontSize: 15,
                                               fontFamily: 'Inter',
-                                              color: Colors.black,
+                                              color: Color(0xFF462521),
                                             ),
                                           )
                                         : const SizedBox.shrink(),
