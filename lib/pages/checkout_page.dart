@@ -20,34 +20,64 @@ class _CheckoutPageState extends State<CheckoutPage> {
     super.initState();
     fetchCartItems();
     fetchUserAddress();
+    fetchUserName();
   }
-  Future<void> fetchUserAddress() async {
-    try {
-      String userId = "EVotCwhDcQPJnn43wdypHtHES1M2";
+ Future<void> fetchUserAddress() async {
+  try {
+    String userId = "EVotCwhDcQPJnn43wdypHtHES1M2";
 
-      // Fetch user details from the users collection
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
+    // Fetch the user's location document from the locations subcollection
+    QuerySnapshot locationSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('locations')
+        .get();
 
-      if (userSnapshot.exists) {
-        var userData = userSnapshot.data() as Map<String, dynamic>;
-        fullName =
-            "${userData['firstName'] ?? "Unknown First Name"} ${userData['lastName'] ?? "Unknown Last Name"}";
-        String city = userData['city'] ?? "Unknown City";
-        String district = userData['district'] ?? "Unknown District";
-        String zip = userData['zip'] ?? "Unknown ZIP";
+    if (locationSnapshot.docs.isNotEmpty) {
+      var locationData = locationSnapshot.docs.first.data() as Map<String, dynamic>;
 
-        setState(() {
-          userAddress = "$city, $district, $zip"; // Combine city, district, and zip
-        });
-      }
-    } catch (e) {
-      print("Error fetching user address: $e");
+      String stateProvince = locationData['state_province']?.toString() ?? "Unknown State/Province";
+      String cityMunicipality = locationData['city_municipality']?.toString() ?? "Unknown City/Municipality";
+      String barangay = locationData['barangay']?.toString() ?? "Unknown Barangay";
+      String houseNoBuildingStreet = locationData['house_no_building_street']?.toString() ?? "Unknown Address";
+      String zip = locationData['zip']?.toString() ?? "Unknown ZIP";
+
+      setState(() {
+        userAddress = "$houseNoBuildingStreet, $barangay, $cityMunicipality, $stateProvince, $zip";
+      });
+    } else {
+      print("No location data found for userId=$userId");
     }
+  } catch (e) {
+    print("Error fetching user address: $e");
   }
+}
+Future<void> fetchUserName() async {
+  try {
+    String userId = "EVotCwhDcQPJnn43wdypHtHES1M2"; // Replace with dynamic userId if needed
 
+    // Fetch the user's document from the users collection
+    DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .get();
+
+    if (userSnapshot.exists) {
+      var userData = userSnapshot.data() as Map<String, dynamic>;
+
+      String firstName = userData['first_name']?.toString() ?? "Unknown First Name";
+      String lastName = userData['last_name']?.toString() ?? "Unknown Last Name";
+
+      setState(() {
+        fullName = "$firstName $lastName";
+      });
+    } else {
+      print("No user data found for userId=$userId");
+    }
+  } catch (e) {
+    print("Error fetching user name: $e");
+  }
+}
   Future<void> fetchCartItems() async {
     try {
       String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1";
