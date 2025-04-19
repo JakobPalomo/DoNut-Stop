@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProductPage extends StatefulWidget {
   final String image;
@@ -34,7 +35,38 @@ class _ProductPageState extends State<ProductPage> {
     isFav = widget.isFavInitial;
   }
 
-  @override
+  Future<void> addToCart(String userId, String productId, int quantity) async {
+  try {
+    // Reference to the user's cart subcollection
+    CollectionReference cartRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('cart');
+
+    // Check if the product already exists in the cart
+    QuerySnapshot existingProduct = await cartRef
+        .where('product_id', isEqualTo: productId)
+        .get();
+
+    if (existingProduct.docs.isNotEmpty) {
+      // If the product already exists, update the quantity
+      DocumentReference productDoc = existingProduct.docs.first.reference;
+      int currentQuantity = existingProduct.docs.first['quantity'];
+      await productDoc.update({'quantity': currentQuantity + quantity});
+      print("Product quantity updated in the cart.");
+    } else {
+      // If the product does not exist, add it to the cart
+      await cartRef.add({
+        'product_id': productId,
+        'quantity': quantity,
+      });
+      print("Product added to the cart.");
+    }
+  } catch (e) {
+    print("Error adding product to cart: $e");
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -191,24 +223,30 @@ class _ProductPageState extends State<ProductPage> {
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    shadowColor: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    padding: EdgeInsets.symmetric(vertical: 25),
+                                  onPressed: () async {
+                                  String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1"; // Replace with dynamic userId
+                                  String productId = "48ZJFWSLjNfNMNq6ooJA"; // Replace with the actual product ID
+                                  int quantity = 1; // Replace with the desired quantity or use the QuantitySelector value
+
+                                  await addToCart(userId, productId, quantity);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(100),
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      "Add to Cart",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
+                                  padding: EdgeInsets.symmetric(vertical: 25),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    "Add to Cart",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: Colors.white,
                                     ),
                                   ),
+                                ),
                                 ),
                               ),
                             ],

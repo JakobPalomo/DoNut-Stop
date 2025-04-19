@@ -24,7 +24,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
  Future<void> fetchUserAddress() async {
   try {
-    String userId = "EVotCwhDcQPJnn43wdypHtHES1M2";
+    String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1";
 
     // Fetch the user's location document from the locations subcollection
     QuerySnapshot locationSnapshot = await FirebaseFirestore.instance
@@ -122,6 +122,71 @@ Future<void> fetchUserName() async {
       print("Error fetching cart items: $e");
     }
   }
+
+Future<void> placeOrder() async {
+  try {
+    String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1"; // Replace with dynamic userId if needed
+    String refNo = DateTime.now().millisecondsSinceEpoch.toString(); // Unique reference number
+    double totalPrice = totalAmount + 30; // Add shipping fee
+    Timestamp datetimePurchased = Timestamp.now();
+
+    // Create the order document
+    DocumentReference orderRef = await FirebaseFirestore.instance
+        .collection('orders')
+        .add({
+      'ref_no': refNo,
+      'total_price': totalPrice,
+      'user_id': userId,
+      'payment_method': 1, // Default to COD
+      'datetime_purchased': datetimePurchased,
+      'order_status': 1, // Default to "for delivery"
+      'delivery_location': {
+        'state_province': userAddress.split(', ')[3],
+        'city_municipality': userAddress.split(', ')[2],
+        'barangay': userAddress.split(', ')[1],
+        'zip': userAddress.split(', ')[4],
+        'house_no_building_street': userAddress.split(', ')[0],
+      },
+    });
+
+    // Add products to the products_ordered sub-collection
+    for (var item in cartItems) {
+      await orderRef.collection('products_ordered').add({
+        'product_id': item['product_id'],
+        'quantity': item['quantity'],
+        'price': item['price'],
+        'name': item['name'],
+        'image': item['image'],
+      });
+    }
+
+    // Remove items from the cart
+    QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('cart')
+        .get();
+
+    if (cartSnapshot.docs.isNotEmpty) {
+      for (var cartDoc in cartSnapshot.docs) {
+        print("Deleting cart item: ${cartDoc.id}"); // Debug log
+        await cartDoc.reference.delete();
+      }
+      print("Cart cleared successfully.");
+    } else {
+      print("No items found in the cart to delete.");
+    }
+
+    // Show success message
+    print("Order placed successfully with ref_no: $refNo");
+    setState(() {
+      cartItems.clear();
+      totalAmount = 0.0;
+    });
+  } catch (e) {
+    print("Error placing order: $e");
+  }
+}
 
 @override
 Widget build(BuildContext context) {
@@ -472,8 +537,9 @@ Widget build(BuildContext context) {
                   // Place Order Button
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
+                       onPressed: () async {                        
                         print("Order placed with $selectedPaymentMethod");
+                        await placeOrder();
                       },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.symmetric(horizontal: 50, vertical: 15),
