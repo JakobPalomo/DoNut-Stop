@@ -148,6 +148,9 @@ class _CheckoutPageState extends State<CheckoutPage> {
       double totalPrice = totalAmount + 30; // Add shipping fee
       Timestamp datetimePurchased = Timestamp.now();
 
+      // Extract the zip code as a number
+      int zipCode = int.tryParse(userAddress.split(', ')[4]) ?? 0;
+
       // Create the order document
       DocumentReference orderRef =
           await FirebaseFirestore.instance.collection('orders').add({
@@ -162,7 +165,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           'state_province': userAddress.split(', ')[3],
           'city_municipality': userAddress.split(', ')[2],
           'barangay': userAddress.split(', ')[1],
-          'zip': userAddress.split(', ')[4],
+          'zip': zipCode,
           'house_no_building_street': userAddress.split(', ')[0],
         },
       });
