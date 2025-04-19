@@ -311,19 +311,19 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                 child: SizedBox(
                                   width: 70,
                                   height: 70,
-                                  child: item['image_path'] != null &&
-                                          item['image_path']
+                                  child: item['image'] != null &&
+                                          item['image']
                                               .toString()
                                               .startsWith('data:image/')
                                       ? Image.memory(
-                                          base64Decode(item['image_path']
+                                          base64Decode(item['image']
                                               .toString()
                                               .split(',')
                                               .last),
                                           fit: BoxFit.cover,
                                         )
                                       : Image.asset(
-                                          item['image_path'] ??
+                                          item['image'] ??
                                               'assets/front_donut/fdonut1.png',
                                           fit: BoxFit.cover,
                                         ),

@@ -57,7 +57,7 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
         'name': nameController.text,
         'price': double.tryParse(priceController.text) ?? 0.0,
         'description': descriptionController.text,
-        'image_path': _base64Image ?? '',
+        'image': _base64Image ?? '',
         'created_at': Timestamp.now(),
         'created_by': _auth.currentUser?.uid,
         'modified_at': Timestamp.now(),
@@ -73,7 +73,7 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
       'name': newName,
       'price': newPrice,
       'description': description,
-      'image_path': _base64Image ?? widget.product['image_path'] ?? '',
+      'image': _base64Image ?? widget.product['image'] ?? '',
       'modified_at': Timestamp.now(),
       'modified_by': _auth.currentUser?.uid,
     });
@@ -145,20 +145,21 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
                     padding: const EdgeInsets.symmetric(vertical: 15),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
-                      child: widget.product['image_path'] != null &&
-                              widget.product['image_path']!
-                                  .startsWith('data:image/')
+                      child: widget.product['image'] != null &&
+                              widget.product['image']!.isNotEmpty &&
+                              widget.product['image']!.startsWith('data:image/')
                           ? Image.memory(
-                              base64Decode(widget.product['image_path']!
-                                  .split(',')
-                                  .last),
+                              base64Decode(
+                                  widget.product['image']!.split(',').last),
                               width: double.infinity,
                               height: 260,
                               fit: BoxFit.contain,
                             )
                           : Image.asset(
-                              widget.product['image_path'] ??
-                                  'assets/front_donut/fdonut1.png',
+                              widget.product['image'] != null &&
+                                      widget.product['image']!.isNotEmpty
+                                  ? widget.product['image']!
+                                  : 'assets/front_donut/fdonut1.png',
                               width: double.infinity,
                               height: 260,
                               fit: BoxFit.contain,

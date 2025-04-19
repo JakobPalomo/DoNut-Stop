@@ -126,8 +126,8 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                                 ? product.get('description') ?? ''
                                 : '';
                         final productImagePath =
-                            product.data().toString().contains('image_path')
-                                ? product.get('image_path')
+                            product.data().toString().contains('image')
+                                ? product.get('image')
                                 : null;
 
                         final passedProduct = {
@@ -135,7 +135,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                           'name': productName,
                           'price': productPrice,
                           'description': productDescription,
-                          'image_path': productImagePath,
+                          'image': productImagePath,
                         };
 
                         return Container(
@@ -162,17 +162,19 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                                   width: 90,
                                   height: 90,
                                   child: productImagePath != null &&
-                                          productImagePath!
+                                          productImagePath.isNotEmpty &&
+                                          productImagePath
                                               .startsWith('data:image/')
                                       ? Image.memory(
-                                          base64Decode(productImagePath!
-                                              .split(',')
-                                              .last),
+                                          base64Decode(
+                                              productImagePath.split(',').last),
                                           fit: BoxFit.cover,
                                         )
                                       : Image.asset(
-                                          productImagePath ??
-                                              'assets/front_donut/fdonut1.png',
+                                          productImagePath != null &&
+                                                  productImagePath.isNotEmpty
+                                              ? productImagePath
+                                              : 'assets/front_donut/fdonut1.png',
                                           fit: BoxFit.cover,
                                         ),
                                 ),
