@@ -228,14 +228,16 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ProductPage(
-                        image: widget.image,
-                        title: widget.title,
-                        description: widget.description,
-                        newPrice: widget.newPrice)),
+                      productId: widget.title,
+                      image: widget.image,
+                      title: widget.title,
+                      description: widget.description,
+                      newPrice: widget.newPrice,
+                    )),
               );
             },
             borderRadius:
-                BorderRadius.circular(16), // Ensures ripple follows shape
+            BorderRadius.circular(16), // Ensures ripple follows shape
             splashColor: Colors.brown.withOpacity(0.2), // Ripple effect color
             child: Ink(
               decoration: BoxDecoration(
@@ -364,13 +366,17 @@ class DonutSelectionWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductPage(
-                            image: image, title: title, newPrice: newPrice)),
+                          productId: title,
+                          image: image,
+                          title: title,
+                          newPrice: newPrice,
+                        )),
                   );
                 },
                 borderRadius:
-                    BorderRadius.circular(16), // Ensures ripple follows shape
+                BorderRadius.circular(16), // Ensures ripple follows shape
                 splashColor:
-                    Colors.brown.withOpacity(0.2), // Ripple effect color
+                Colors.brown.withOpacity(0.2), // Ripple effect color
                 child: Ink(
                   decoration: BoxDecoration(
                     color: Color(0xFFFFEEE1), // Background color inside Ink
@@ -425,7 +431,11 @@ class DonutSelectionWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductPage(
-                            image: image, title: title, newPrice: newPrice)),
+                          productId: title,
+                          image: image,
+                          title: title,
+                          newPrice: newPrice,
+                        )),
                   );
                 },
                 child: Image.asset(
@@ -506,7 +516,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                       splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -552,13 +562,13 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                       if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                         return const Center(
                             child: Text(
-                          'No offers found.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFC7A889),
-                          ),
-                        ));
+                              'No offers found.',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFFC7A889),
+                              ),
+                            ));
                       }
                       final offers = snapshot.data!.docs;
                       final userId = FirebaseAuth.instance.currentUser?.uid;
@@ -584,15 +594,15 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                               final userFavorites =
                                   userSnapshot.data!['favorites'] ?? [];
                               final isFavorited =
-                                  userFavorites.contains(productId);
+                              userFavorites.contains(productId);
 
                               return OfferSelectionWidget(
                                 image:
-                                    "assets/front_donut/fdonut${index + 1}.png",
+                                "assets/front_donut/fdonut${index + 1}.png",
                                 title: offer['name'],
                                 description: offer['description'],
                                 newPrice:
-                                    '₱${offer['price'].toStringAsFixed(2)}',
+                                '₱${offer['price'].toStringAsFixed(2)}',
                                 isFavInitial: isFavorited,
                                 onFavoriteToggle: () async {
                                   final userDoc = FirebaseFirestore.instance
@@ -602,12 +612,12 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                                   if (isFavorited) {
                                     await userDoc.update({
                                       'favorites':
-                                          FieldValue.arrayRemove([productId])
+                                      FieldValue.arrayRemove([productId])
                                     });
                                   } else {
                                     await userDoc.update({
                                       'favorites':
-                                          FieldValue.arrayUnion([productId])
+                                      FieldValue.arrayUnion([productId])
                                     });
                                   }
                                 },
@@ -694,7 +704,7 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                       splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
                         padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -745,13 +755,13 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                               snapshot.data!.docs.isEmpty) {
                             return const Center(
                                 child: Text(
-                              'No donuts found.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFFC7A889),
-                              ),
-                            ));
+                                  'No donuts found.',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFFC7A889),
+                                  ),
+                                ));
                           }
                           final donuts = snapshot.data!.docs;
                           final images = [
@@ -769,7 +779,7 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                                 image: image,
                                 title: donut['name'],
                                 newPrice:
-                                    '₱${donut['price'].toStringAsFixed(2)}',
+                                '₱${donut['price'].toStringAsFixed(2)}',
                               );
                             }),
                           );
