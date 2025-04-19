@@ -47,26 +47,40 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
 
   Widget _buildOrderDetail(String label, String value) {
     return Container(
-      alignment: Alignment.centerLeft,
-      child: Column(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Color(0xFFD8CFC9),
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xFF462521),
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w800,
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xFF462521),
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.black,
-              fontFamily: 'Inter',
+          const SizedBox(width: 15),
+          Expanded(
+            flex: 2,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+                fontFamily: 'Inter',
+              ),
             ),
           ),
         ],
@@ -172,102 +186,216 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
         body: CustomScrollView(
           slivers: [
             // Order Details Section
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Container(
-                width: double.infinity,
-                child: Center(
-                  child: Container(
-                    constraints: BoxConstraints(maxWidth: 800),
-                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        // Order Details
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          padding: EdgeInsets.all(20),
-                          child: Column(children: [
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: _buildOrderDetail("Reference No.",
-                                          widget.order['ref_no'] ?? '-')),
-                                  Expanded(
-                                      child: _buildOrderDetail(
-                                          "Date and Time of Order",
-                                          widget.order['datetime_purchased'] ??
-                                              '-')),
-                                ]),
-                            SizedBox(height: 20),
-                            Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                      child: _buildOrderDetail(
-                                          "Payment Method",
-                                          paymentMethods.firstWhere(
-                                                (option) =>
-                                                    option['value'] ==
-                                                    (widget.order[
-                                                            'payment_method'] ??
-                                                        1),
-                                                orElse: () =>
-                                                    {'label': 'Unknown'},
-                                              )['label'] ??
-                                              'Cash on Delivery')),
-                                  Expanded(
-                                      child: _buildOrderDetail(
-                                          "Order Status",
-                                          orderStatuses.firstWhere(
-                                                (option) =>
-                                                    option['value'] ==
-                                                    (widget.order[
-                                                            'order_status'] ??
-                                                        1),
-                                                orElse: () =>
-                                                    {'label': 'Unknown'},
-                                              )['label'] ??
-                                              'For Delivery')),
-                                ]),
-                            SizedBox(height: 20),
-                            Row(children: [
-                              Expanded(
-                                child: _buildOrderDetail(
-                                  "Delivery Location",
-                                  "${widget.order['delivery_location']?['house_no_building_street'] ?? ''}, "
-                                      "Brgy. ${widget.order['delivery_location']?['barangay'] ?? ''}, "
-                                      "${widget.order['delivery_location']?['city_municipality'] ?? ''}, "
-                                      "${widget.order['delivery_location']?['state_province'] ?? ''}, "
-                                      "${widget.order['delivery_location']?['zip']?.toString() ?? ''}",
-                                ),
-                              ),
-                              Expanded(
-                                child: _buildOrderDetail(
-                                  "Purchased By",
-                                  "${widget.order['user_data']?['first_name'] ?? ''} ${widget.order['user_data']?['last_name'] ?? ''}",
-                                ),
-                              ),
-                            ]),
-                          ]),
+            SliverToBoxAdapter(
+              child: Center(
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: 800),
+                  padding: EdgeInsets.fromLTRB(20, 50, 20, 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Order Details",
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Color(0xFF462521),
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w900,
                         ),
-                        SizedBox(height: 20),
-                        // Order Items
-                        Container(
-                          padding: EdgeInsets.all(20),
-                          child: Column(children: [
-                            Row(
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFFFEEE1),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          children: [
+                            _buildOrderDetail(
+                              "Reference No.",
+                              widget.order['ref_no'] ?? '-',
+                            ),
+                            _buildOrderDetail(
+                              "Date and Time of Order",
+                              widget.order['datetime_purchased'] ?? '-',
+                            ),
+                            _buildOrderDetail(
+                              "Payment Method",
+                              paymentMethods.firstWhere(
+                                    (option) =>
+                                        option['value'] ==
+                                        (widget.order['payment_method'] ?? 1),
+                                    orElse: () => {'label': 'Unknown'},
+                                  )['label'] ??
+                                  'Cash on Delivery',
+                            ),
+                            _buildOrderDetail(
+                              "Order Status",
+                              orderStatuses.firstWhere(
+                                    (option) =>
+                                        option['value'] ==
+                                        (widget.order['order_status'] ?? 1),
+                                    orElse: () => {'label': 'Unknown'},
+                                  )['label'] ??
+                                  'For Delivery',
+                            ),
+                            _buildOrderDetail(
+                              "Delivery Location",
+                              "${widget.order['delivery_location']?['house_no_building_street'] ?? ''}, "
+                                  "Brgy. ${widget.order['delivery_location']?['barangay'] ?? ''}, "
+                                  "${widget.order['delivery_location']?['city_municipality'] ?? ''}, "
+                                  "${widget.order['delivery_location']?['state_province'] ?? ''}, "
+                                  "${widget.order['delivery_location']?['zip']?.toString() ?? ''}",
+                            ),
+                            _buildOrderDetail(
+                              "Purchased By",
+                              "${widget.order['user_data']?['first_name'] ?? ''} ${widget.order['user_data']?['last_name'] ?? ''}",
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Order Items Section
+            SliverToBoxAdapter(
+              child: Center(
+                child: Container(
+                  constraints: BoxConstraints(maxWidth: 800),
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Order Items",
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Color(0xFF462521),
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      ...widget.order['products_ordered'].map<Widget>((item) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: Color(0xFFFFEEE1),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 10,
+                                offset: const Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.fromLTRB(5, 5, 25, 5),
+                          margin: const EdgeInsets.symmetric(vertical: 8),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Leading Image
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(16),
+                                child: SizedBox(
+                                  width: 70,
+                                  height: 70,
+                                  child: item['image_path'] != null &&
+                                          item['image_path']
+                                              .toString()
+                                              .startsWith('data:image/')
+                                      ? Image.memory(
+                                          base64Decode(item['image_path']
+                                              .toString()
+                                              .split(',')
+                                              .last),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          item['image_path'] ??
+                                              'assets/front_donut/fdonut1.png',
+                                          fit: BoxFit.cover,
+                                        ),
+                                ),
+                              ),
+                              const SizedBox(width: 15),
+
+                              // Main content (Title, Subtitle)
+                              Expanded(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['name'] ?? 'Unnamed Product',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF462521),
+                                      ),
+                                    ),
+                                    Text(
+                                      '₱${item['price']?.toStringAsFixed(2) ?? '0.00'}',
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        fontFamily: 'Inter',
+                                        fontWeight: FontWeight.w800,
+                                        color: Color(0xFF462521),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
+                              Text(
+                                'x ${item['quantity']?.toString() ?? '-'}',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF462521),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(child: Container()),
+                          Container(
+                            padding: const EdgeInsets.only(right: 5),
+                            alignment: Alignment.centerRight,
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Order Items",
-                                  style: TextStyle(
+                                  "Total Amount:",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: Color(0xFF462521),
+                                    fontFamily: 'Inter',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Text(
+                                  '₱${widget.order['total_price']?.toStringAsFixed(2) ?? '0.00'}',
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     color: Color(0xFF462521),
                                     fontFamily: 'Inter',
@@ -276,38 +404,10 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 20),
-                            ...widget.order['products_ordered']
-                                .map<Widget>((item) {
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  //image_path
-                                  Expanded(
-                                      child: _buildOrderDetail(
-                                          "Product Name", item['name'] ?? '-')),
-                                  Expanded(
-                                      child: _buildOrderDetail("Quantity",
-                                          item['quantity']?.toString() ?? '-')),
-                                  Expanded(
-                                      child: _buildOrderDetail("Price",
-                                          item['price']?.toString() ?? '-')),
-                                ],
-                              );
-                            }).toList(),
-                            Row(children: [
-                              Expanded(
-                                child: _buildOrderDetail(
-                                    "Total Amount",
-                                    widget.order['total_price']?.toString() ??
-                                        '-'),
-                              ),
-                            ])
-                          ]),
-                        ),
-                      ],
-                    ),
+                          )
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
