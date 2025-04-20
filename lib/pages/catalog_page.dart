@@ -184,15 +184,16 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
 }
 
 class OfferSelectionWidget extends StatefulWidget {
-  final String image, title, description, newPrice;
+  final String image, title, description, newPrice, productId;
   final bool isFavInitial;
-  final VoidCallback? onFavoriteToggle;
+  final Future<void> Function()? onFavoriteToggle;
 
   OfferSelectionWidget({
     required this.image,
     required this.title,
     required this.description,
     required this.newPrice,
+    required this.productId,
     this.isFavInitial = false,
     this.onFavoriteToggle,
   });
@@ -215,7 +216,7 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
     return Container(
       margin: EdgeInsets.only(right: 20),
       child: MouseRegion(
-        cursor: SystemMouseCursors.click, // Shows pointer cursor on hover
+        cursor: SystemMouseCursors.click,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -229,21 +230,22 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => ProductPage(
-                          productId: widget.title,
-                          image: widget.image,
-                          title: widget.title,
-                          description: widget.description,
-                          newPrice: widget.newPrice,
-                        )),
+                  builder: (context) => ProductPage(
+                    productId: widget.productId,
+                    image: widget.image,
+                    title: widget.title,
+                    description: widget.description,
+                    newPrice: widget.newPrice,
+                    isFavInitial: isFav,
+                  ),
+                ),
               );
             },
-            borderRadius:
-                BorderRadius.circular(16), // Ensures ripple follows shape
-            splashColor: Colors.brown.withOpacity(0.2), // Ripple effect color
+            borderRadius: BorderRadius.circular(16),
+            splashColor: Colors.brown.withOpacity(0.2),
             child: Ink(
               decoration: BoxDecoration(
-                color: Color(0xFFFFEEE1), // Background color inside Ink
+                color: Color(0xFFFFEEE1),
                 borderRadius: BorderRadius.circular(16),
               ),
               width: 230,
@@ -254,23 +256,24 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                       Container(
                         padding: EdgeInsets.fromLTRB(10, 45, 10, 0),
                         child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: widget.image.isNotEmpty &&
-                                    widget.image.startsWith('data:image/')
-                                ? Image.memory(
-                                    base64Decode(widget.image.split(',').last),
-                                    fit: BoxFit.contain,
-                                    width: 180,
-                                    height: 180,
-                                  )
-                                : Image.asset(
-                                    width: 180,
-                                    height: 180,
-                                    widget.image.isNotEmpty
-                                        ? widget.image
-                                        : 'assets/front_donut/fdonut1.png',
-                                    fit: BoxFit.contain,
-                                  )),
+                          borderRadius: BorderRadius.circular(10),
+                          child: widget.image.isNotEmpty &&
+                                  widget.image.startsWith('data:image/')
+                              ? Image.memory(
+                                  base64Decode(widget.image.split(',').last),
+                                  fit: BoxFit.contain,
+                                  width: 180,
+                                  height: 180,
+                                )
+                              : Image.asset(
+                                  width: 180,
+                                  height: 180,
+                                  widget.image.isNotEmpty
+                                      ? widget.image
+                                      : 'assets/front_donut/fdonut1.png',
+                                  fit: BoxFit.contain,
+                                ),
+                        ),
                       ),
                       Positioned(
                         top: 10,
@@ -280,12 +283,12 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                             isFav ? Icons.favorite : Icons.favorite_border,
                             color: Color(0xFFCA2E55),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             setState(() {
                               isFav = !isFav;
                             });
                             if (widget.onFavoriteToggle != null) {
-                              widget.onFavoriteToggle!();
+                              await widget.onFavoriteToggle!();
                             }
                           },
                           padding: EdgeInsets.all(5),
@@ -350,12 +353,14 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
 }
 
 class DonutSelectionWidget extends StatelessWidget {
-  final String image, title, newPrice;
+  final String image, title, newPrice, productId, description;
 
   DonutSelectionWidget({
+    required this.productId,
     required this.image,
     required this.title,
     required this.newPrice,
+    required this.description,
   });
 
   @override
@@ -376,12 +381,14 @@ class DonutSelectionWidget extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => ProductPage(
-                              productId: title,
-                              image: image,
-                              title: title,
-                              newPrice: newPrice,
-                            )),
+                      builder: (context) => ProductPage(
+                        productId: productId,
+                        image: image,
+                        title: title,
+                        description: "",
+                        newPrice: newPrice,
+                      ),
+                    ),
                   );
                 },
                 borderRadius:
@@ -445,12 +452,14 @@ class DonutSelectionWidget extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ProductPage(
-                                    productId: title,
-                                    image: image,
-                                    title: title,
-                                    newPrice: newPrice,
-                                  )),
+                            builder: (context) => ProductPage(
+                              productId: productId,
+                              image: image,
+                              title: title,
+                              description: "",
+                              newPrice: newPrice,
+                            ),
+                          ),
                         );
                       },
                       child: image.isNotEmpty && image.startsWith('data:image/')
@@ -491,6 +500,43 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
   Map<String, dynamic>? userData;
+
+  Future<void> toggleFavoriteStatus(String userId, String productId,
+      Map<String, dynamic> userData, bool isFav) async {
+    try {
+      DocumentReference userRef =
+          FirebaseFirestore.instance.collection('users').doc(userId);
+      List<dynamic> favorites = userData['favorites'] ?? [];
+
+      if (favorites.contains(productId)) {
+        // Remove from favorites
+        favorites.remove(productId);
+        await userRef.update({'favorites': favorites});
+        print("Product removed from favorites.");
+      } else {
+        // Add to favorites
+        favorites.add(productId);
+        await userRef.update({'favorites': favorites});
+        print("Product added to favorites.");
+      }
+
+      // Refresh user data
+      final updatedUserDoc = await userRef.get();
+      final updatedUserData = updatedUserDoc.data() as Map<String, dynamic>;
+
+      setState(() {
+        userData['favorites'] = updatedUserData['favorites'];
+      });
+    } catch (e) {
+      print("Error toggling favorite status: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to update favorites."),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void initState() {
@@ -537,7 +583,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
       );
     }
 
-    final userFavorites = userData!['favorites'] ?? [];
+    var userFavorites = userData!['favorites'] ?? [];
 
     return Padding(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
@@ -638,30 +684,26 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                         itemBuilder: (context, index) {
                           final offer = offers[index];
                           final productId = offer.id;
-                          final isFavorited = userFavorites.contains(productId);
 
                           return OfferSelectionWidget(
-                            image: offer['image'] ?? "",
+                            productId: productId,
+                            image: offer['image'],
                             title: offer['name'],
                             description: offer['description'],
                             newPrice: '₱${offer['price'].toStringAsFixed(2)}',
-                            isFavInitial: isFavorited,
+                            isFavInitial: userFavorites.contains(productId),
                             onFavoriteToggle: () async {
-                              final userDoc = FirebaseFirestore.instance
-                                  .collection('users')
-                                  .doc(userData!['id']);
+                              await toggleFavoriteStatus(
+                                userData!['id'],
+                                productId,
+                                userData as Map<String, dynamic>,
+                                userFavorites.contains(productId),
+                              );
 
-                              if (isFavorited) {
-                                await userDoc.update({
-                                  'favorites':
-                                      FieldValue.arrayRemove([productId])
-                                });
-                              } else {
-                                await userDoc.update({
-                                  'favorites':
-                                      FieldValue.arrayUnion([productId])
-                                });
-                              }
+                              // Refresh userFavorites
+                              setState(() {
+                                userFavorites = userData!['favorites'] ?? [];
+                              });
                             },
                           );
                         },
@@ -851,9 +893,11 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                           final image = images[index % images.length];
 
                           return DonutSelectionWidget(
+                            productId: productId,
                             image: donut['image'] ?? "",
                             title: donut['name'],
                             newPrice: '₱${donut['price'].toStringAsFixed(2)}',
+                            description: donut['description'],
                           );
                         },
                       );

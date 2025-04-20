@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProductPage extends StatefulWidget {
   final String productId; // Add productId parameter
@@ -32,12 +34,37 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   @override
-  late bool isFav;
+  bool isFav = false;
+  int quantity = 1;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final CollectionReference usersCollection =
+      FirebaseFirestore.instance.collection('users');
+  Map<String, dynamic> userData = {};
+  String userId = '';
 
   @override
   void initState() {
     super.initState();
     isFav = widget.isFavInitial;
+    _initializeUserData();
+  }
+
+  Future<void> _initializeUserData() async {
+    try {
+      final data =
+          await fetchAuthenticatedUserData(auth, usersCollection, context);
+      if (data != null) {
+        setState(() {
+          userData = data;
+          userId = data["id"];
+          final userFavorites = userData['favorites'] ?? [];
+          isFav =
+              userFavorites.contains(widget.productId) || widget.isFavInitial;
+        });
+      }
+    } catch (e) {
+      print("Error initializing user data: $e");
+    }
   }
 
   Future<void> addToCart(String userId, String productId, int quantity) async {
@@ -68,6 +95,12 @@ class _ProductPageState extends State<ProductPage> {
       }
     } catch (e) {
       print("Error adding product to cart: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to add product to cart."),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -75,23 +108,33 @@ class _ProductPageState extends State<ProductPage> {
     try {
       DocumentReference userRef =
           FirebaseFirestore.instance.collection('users').doc(userId);
-
-      DocumentSnapshot userSnapshot = await userRef.get();
-      List<dynamic> favorites = userSnapshot['favorites'] ?? [];
+      List<dynamic> favorites = userData['favorites'] ?? [];
 
       if (favorites.contains(productId)) {
         // Remove from favorites
         favorites.remove(productId);
         await userRef.update({'favorites': favorites});
         print("Product removed from favorites.");
+        setState(() {
+          isFav = false;
+        });
       } else {
         // Add to favorites
         favorites.add(productId);
         await userRef.update({'favorites': favorites});
         print("Product added to favorites.");
+        setState(() {
+          isFav = true;
+        });
       }
     } catch (e) {
       print("Error toggling favorite status: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to update favorites."),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -107,7 +150,23 @@ class _ProductPageState extends State<ProductPage> {
       home: Scaffold(
         backgroundColor: Color(0xFFFFE0B6), // Background color
         appBar: AppBarWithBackAndTitle(
-          backgroundColor: Color(0xFFFFE0B5),
+          backgroundColor: Colors.transparent,
+          onBackPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CatalogPage(),
+              ),
+            );
+          },
+          trailingWidget: Container(
+            padding: EdgeInsets.only(left: 10),
+            child: IconButton(
+              icon: Icon(Icons.shopping_cart, color: Color(0xFF2F090B)),
+              onPressed: () => Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => CartPage())),
+            ),
+          ),
         ),
         body: Column(
           children: [
@@ -177,11 +236,6 @@ class _ProductPageState extends State<ProductPage> {
                                 color: Color(0xFFCA2E55),
                               ),
                               onPressed: () async {
-                                setState(() {
-                                  isFav = !isFav;
-                                });
-                                String userId =
-                                    "O5XpBhLgOGTHaLn5Oub9hRrwEhq1"; // Replace with dynamic userId
                                 await toggleFavoriteStatus(
                                     userId, widget.productId);
                               },
@@ -227,7 +281,14 @@ class _ProductPageState extends State<ProductPage> {
                                     color: Colors.black,
                                   ),
                                 ),
-                                QuantitySelector(),
+                                QuantitySelector(
+                                  quantity: quantity,
+                                  onQuantityChanged: (newQuantity) {
+                                    setState(() {
+                                      quantity = newQuantity;
+                                    });
+                                  },
+                                ),
                               ],
                             )),
                         SizedBox(height: 20),
@@ -268,13 +329,29 @@ class _ProductPageState extends State<ProductPage> {
                                 ),
                                 child: ElevatedButton(
                                   onPressed: () async {
-                                    String userId =
-                                        "O5XpBhLgOGTHaLn5Oub9hRrwEhq1"; // Replace with dynamic userId
-                                    int quantity =
-                                        1; // Replace with the desired quantity or use the QuantitySelector value
+                                    try {
+                                      // Fetch authenticated user data
+                                      final auth = FirebaseAuth.instance;
+                                      final userId = auth.currentUser?.uid;
 
-                                    await addToCart(
-                                        userId, widget.productId, quantity);
+                                      if (userId == null) {
+                                        throw Exception("User not logged in.");
+                                      }
+
+                                      // Use the quantity from the QuantitySelector
+                                      await addToCart(
+                                          userId, widget.productId, quantity);
+                                    } catch (e) {
+                                      print("Error adding to cart: $e");
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                              "Failed to add product to cart."),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
@@ -311,52 +388,59 @@ class _ProductPageState extends State<ProductPage> {
   }
 }
 
-class QuantitySelector extends StatefulWidget {
-  @override
-  _QuantitySelectorState createState() => _QuantitySelectorState();
-}
+class QuantitySelector extends StatelessWidget {
+  final int quantity;
+  final Function(int) onQuantityChanged;
 
-class _QuantitySelectorState extends State<QuantitySelector> {
-  int quantity = 1; // Initial quantity
-
-  void increaseQuantity() {
-    setState(() {
-      quantity++; // Increase quantity
-    });
-  }
-
-  void decreaseQuantity() {
-    if (quantity > 1) {
-      // Prevent negative values
-      setState(() {
-        quantity--; // Decrease quantity
-      });
-    }
-  }
+  QuantitySelector({required this.quantity, required this.onQuantityChanged});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black26),
-        borderRadius: BorderRadius.circular(8),
-      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            icon: Icon(Icons.remove, color: Colors.black),
-            onPressed: decreaseQuantity, // Decrease on click
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black26),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.remove, color: Colors.black),
+              onPressed: () {
+                if (quantity > 1) {
+                  onQuantityChanged(quantity - 1); // Decrease quantity
+                }
+              },
+            ),
           ),
           SizedBox(width: 10),
-          Text(
-            "$quantity", // Display current quantity
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              "$quantity", // Display current quantity
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter'),
+            ),
           ),
           SizedBox(width: 10),
-          IconButton(
-            icon: Icon(Icons.add, color: Colors.black),
-            onPressed: increaseQuantity, // Increase on click
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.add, color: Colors.white),
+              onPressed: () {
+                onQuantityChanged(quantity + 1); // Increase quantity
+              },
+            ),
           ),
         ],
       ),

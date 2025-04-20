@@ -145,9 +145,14 @@ class AppBarWithBackAndTitle extends StatelessWidget
   final String? title;
   final Function? onBackPressed;
   final Color? backgroundColor;
+  final Widget? trailingWidget;
 
   const AppBarWithBackAndTitle(
-      {this.title, this.onBackPressed, this.backgroundColor, super.key});
+      {this.title,
+      this.onBackPressed,
+      this.backgroundColor,
+      this.trailingWidget,
+      super.key});
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
@@ -155,16 +160,21 @@ class AppBarWithBackAndTitle extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(
-        title ?? "",
-        style: TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
-          color: backgroundColor ?? Color(0xFF462521),
+      title: Row(children: [
+        Text(
+          title ?? "",
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF462521),
+          ),
         ),
-      ),
-      backgroundColor: Color(0xFFEDC690),
+        Expanded(child: Container()),
+        // Trailing widget (if any)
+        if (trailingWidget != null) trailingWidget!,
+      ]),
+      backgroundColor: backgroundColor ?? Color(0xFFEDC690),
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: Container(
