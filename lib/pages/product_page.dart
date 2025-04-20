@@ -64,6 +64,12 @@ class _ProductPageState extends State<ProductPage> {
       }
     } catch (e) {
       print("Error initializing user data: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to fetch user data."),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
