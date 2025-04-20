@@ -9,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'dart:convert'; // For Base64 encoding
 
 class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});
@@ -228,16 +230,16 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                 context,
                 MaterialPageRoute(
                     builder: (context) => ProductPage(
-                      productId: widget.title,
-                      image: widget.image,
-                      title: widget.title,
-                      description: widget.description,
-                      newPrice: widget.newPrice,
-                    )),
+                          productId: widget.title,
+                          image: widget.image,
+                          title: widget.title,
+                          description: widget.description,
+                          newPrice: widget.newPrice,
+                        )),
               );
             },
             borderRadius:
-            BorderRadius.circular(16), // Ensures ripple follows shape
+                BorderRadius.circular(16), // Ensures ripple follows shape
             splashColor: Colors.brown.withOpacity(0.2), // Ripple effect color
             child: Ink(
               decoration: BoxDecoration(
@@ -250,16 +252,25 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                   Stack(
                     children: [
                       Container(
-                        padding: EdgeInsets.fromLTRB(10, 40, 10, 0),
+                        padding: EdgeInsets.fromLTRB(10, 45, 10, 0),
                         child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            widget.image,
-                            width: 180,
-                            height: 180,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                            borderRadius: BorderRadius.circular(10),
+                            child: widget.image.isNotEmpty &&
+                                    widget.image.startsWith('data:image/')
+                                ? Image.memory(
+                                    base64Decode(widget.image.split(',').last),
+                                    fit: BoxFit.contain,
+                                    width: 180,
+                                    height: 180,
+                                  )
+                                : Image.asset(
+                                    width: 180,
+                                    height: 180,
+                                    widget.image.isNotEmpty
+                                        ? widget.image
+                                        : 'assets/front_donut/fdonut1.png',
+                                    fit: BoxFit.contain,
+                                  )),
                       ),
                       Positioned(
                         top: 10,
@@ -285,7 +296,7 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                   ),
                   SizedBox(width: 12),
                   Container(
-                    padding: EdgeInsets.fromLTRB(20, 30, 20, 20),
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -301,7 +312,7 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                         ),
                         Text(
                           widget.description,
-                          maxLines: 3,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontFamily: 'Inter',
@@ -356,8 +367,8 @@ class DonutSelectionWidget extends StatelessWidget {
         clipBehavior: Clip.none, // Allows image to extend outside the container
         children: [
           // Donut Info Container (with ripple effect)
-          Padding(
-            padding: const EdgeInsets.only(top: 70),
+          Positioned(
+            top: 120,
             child: Material(
               color: Colors.transparent, // Prevents ripple from being hidden
               child: InkWell(
@@ -366,17 +377,17 @@ class DonutSelectionWidget extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                         builder: (context) => ProductPage(
-                          productId: title,
-                          image: image,
-                          title: title,
-                          newPrice: newPrice,
-                        )),
+                              productId: title,
+                              image: image,
+                              title: title,
+                              newPrice: newPrice,
+                            )),
                   );
                 },
                 borderRadius:
-                BorderRadius.circular(16), // Ensures ripple follows shape
+                    BorderRadius.circular(16), // Ensures ripple follows shape
                 splashColor:
-                Colors.brown.withOpacity(0.2), // Ripple effect color
+                    Colors.brown.withOpacity(0.2), // Ripple effect color
                 child: Ink(
                   decoration: BoxDecoration(
                     color: Color(0xFFFFEEE1), // Background color inside Ink
@@ -385,7 +396,7 @@ class DonutSelectionWidget extends StatelessWidget {
                   child: Container(
                     width: 200,
                     margin: EdgeInsets.only(
-                        top: 40), // Ensures image extends outside
+                        top: 20), // Ensures image extends outside
                     padding: EdgeInsets.all(20),
                     child: Column(
                       children: [
@@ -419,30 +430,44 @@ class DonutSelectionWidget extends StatelessWidget {
           ),
 
           // Donut Image (Clickable but no ripple effect)
-          Positioned(
-            top: -15, // Moves the image slightly upwards
-            left: 20,
-            right: 20,
-            child: MouseRegion(
-              cursor: SystemMouseCursors.click, // Shows pointer cursor
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ProductPage(
-                          productId: title,
-                          image: image,
-                          title: title,
-                          newPrice: newPrice,
-                        )),
-                  );
-                },
-                child: Image.asset(
-                  image,
-                  width: 180,
-                  height: 180,
-                  fit: BoxFit.contain,
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Positioned(
+                top: -15, // Moves the image slightly upwards
+                left: 20,
+                right: 20,
+                child: MouseRegion(
+                  cursor: SystemMouseCursors.click, // Shows pointer cursor
+                  child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProductPage(
+                                    productId: title,
+                                    image: image,
+                                    title: title,
+                                    newPrice: newPrice,
+                                  )),
+                        );
+                      },
+                      child: image.isNotEmpty && image.startsWith('data:image/')
+                          ? Image.memory(
+                              base64Decode(image.split(',').last),
+                              fit: BoxFit.contain,
+                              width: 180,
+                              height: 180,
+                            )
+                          : Image.asset(
+                              width: 180,
+                              height: 180,
+                              image.isNotEmpty
+                                  ? image
+                                  : 'assets/front_donut/fdonut1.png',
+                              fit: BoxFit.contain,
+                            )),
                 ),
               ),
             ),
@@ -463,6 +488,26 @@ class CatalogPageTodaysOffers extends StatefulWidget {
 
 class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
   final ScrollController _scrollController = ScrollController();
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('users');
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final auth = FirebaseAuth.instance;
+    final data =
+        await fetchAuthenticatedUserData(auth, _usersCollection, context);
+    if (data != null) {
+      setState(() {
+        userData = data;
+      });
+    }
+  }
 
   void _scrollLeft() {
     _scrollController.animateTo(
@@ -482,6 +527,18 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
 
   @override
   Widget build(BuildContext context) {
+    if (userData == null) {
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+          backgroundColor: Color(0xFFFF7171),
+          strokeWidth: 5.0,
+        ),
+      );
+    }
+
+    final userFavorites = userData!['favorites'] ?? [];
+
     return Padding(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
       child: Column(
@@ -516,7 +573,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                       splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
                         padding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -542,11 +599,11 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
               ),
               Expanded(
                 child: SizedBox(
-                  height: 375,
+                  height: 355,
                   child: StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('products')
-                        .orderBy('name', descending: true) // Reverse order
+                        .orderBy('name', descending: true)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -561,17 +618,18 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                       }
                       if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                         return const Center(
-                            child: Text(
-                              'No offers found.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFFC7A889),
-                              ),
-                            ));
+                          child: Text(
+                            'No offers found.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFC7A889),
+                            ),
+                          ),
+                        );
                       }
+
                       final offers = snapshot.data!.docs;
-                      final userId = FirebaseAuth.instance.currentUser?.uid;
 
                       return ListView.builder(
                         controller: _scrollController,
@@ -580,48 +638,30 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                         itemBuilder: (context, index) {
                           final offer = offers[index];
                           final productId = offer.id;
+                          final isFavorited = userFavorites.contains(productId);
 
-                          return StreamBuilder<DocumentSnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(userId)
-                                .snapshots(),
-                            builder: (context, userSnapshot) {
-                              if (!userSnapshot.hasData) {
-                                return const SizedBox();
-                              }
+                          return OfferSelectionWidget(
+                            image: offer['image'] ?? "",
+                            title: offer['name'],
+                            description: offer['description'],
+                            newPrice: '₱${offer['price'].toStringAsFixed(2)}',
+                            isFavInitial: isFavorited,
+                            onFavoriteToggle: () async {
+                              final userDoc = FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(userData!['id']);
 
-                              final userFavorites =
-                                  userSnapshot.data!['favorites'] ?? [];
-                              final isFavorited =
-                              userFavorites.contains(productId);
-
-                              return OfferSelectionWidget(
-                                image:
-                                "assets/front_donut/fdonut${index + 1}.png",
-                                title: offer['name'],
-                                description: offer['description'],
-                                newPrice:
-                                '₱${offer['price'].toStringAsFixed(2)}',
-                                isFavInitial: isFavorited,
-                                onFavoriteToggle: () async {
-                                  final userDoc = FirebaseFirestore.instance
-                                      .collection('users')
-                                      .doc(userId);
-
-                                  if (isFavorited) {
-                                    await userDoc.update({
-                                      'favorites':
+                              if (isFavorited) {
+                                await userDoc.update({
+                                  'favorites':
                                       FieldValue.arrayRemove([productId])
-                                    });
-                                  } else {
-                                    await userDoc.update({
-                                      'favorites':
+                                });
+                              } else {
+                                await userDoc.update({
+                                  'favorites':
                                       FieldValue.arrayUnion([productId])
-                                    });
-                                  }
-                                },
-                              );
+                                });
+                              }
                             },
                           );
                         },
@@ -651,6 +691,26 @@ class CatalogPageDonuts extends StatefulWidget {
 
 class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
   final ScrollController _scrollController = ScrollController();
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('users');
+  Map<String, dynamic>? userData;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    final auth = FirebaseAuth.instance;
+    final data =
+        await fetchAuthenticatedUserData(auth, _usersCollection, context);
+    if (data != null) {
+      setState(() {
+        userData = data;
+      });
+    }
+  }
 
   void _scrollLeft() {
     _scrollController.animateTo(
@@ -670,6 +730,18 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
 
   @override
   Widget build(BuildContext context) {
+    if (userData == null) {
+      return const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+          backgroundColor: Color(0xFFFF7171),
+          strokeWidth: 5.0,
+        ),
+      );
+    }
+
+    final userFavorites = userData!['favorites'] ?? [];
+
     return Padding(
       padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
       child: Column(
@@ -704,7 +776,7 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                       splashColor: Colors.white.withOpacity(0.3),
                       child: Padding(
                         padding:
-                        EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         child: Text(
                           "See More",
                           style: TextStyle(
@@ -730,62 +802,62 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
               ),
               Expanded(
                 child: SizedBox(
-                  height: 235,
-                  child: ListView(
-                    controller: _scrollController,
-                    scrollDirection: Axis.horizontal,
-                    children: [
-                      StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('products')
-                            .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Color(0xFFDC345E)),
-                                backgroundColor: Color(0xFFFF7171),
-                                strokeWidth: 5.0,
-                              ),
-                            );
-                          }
-                          if (!snapshot.hasData ||
-                              snapshot.data!.docs.isEmpty) {
-                            return const Center(
-                                child: Text(
-                                  'No donuts found.',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFFC7A889),
-                                  ),
-                                ));
-                          }
-                          final donuts = snapshot.data!.docs;
-                          final images = [
-                            "assets/front_donut/fdonut8.png",
-                            "assets/front_donut/fdonut7.png",
-                            "assets/front_donut/fdonut6.png",
-                            "assets/front_donut/fdonut21.png",
-                            "assets/front_donut/fdonut22.png",
-                          ];
-                          return Row(
-                            children: List.generate(donuts.length, (index) {
-                              final donut = donuts[index];
-                              final image = images[index % images.length];
-                              return DonutSelectionWidget(
-                                image: image,
-                                title: donut['name'],
-                                newPrice:
-                                '₱${donut['price'].toStringAsFixed(2)}',
-                              );
-                            }),
+                  height: 265,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('products')
+                        .snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFDC345E)),
+                            backgroundColor: Color(0xFFFF7171),
+                            strokeWidth: 5.0,
+                          ),
+                        );
+                      }
+                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'No donuts found.',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFC7A889),
+                            ),
+                          ),
+                        );
+                      }
+
+                      final donuts = snapshot.data!.docs;
+                      final images = [
+                        "assets/front_donut/fdonut8.png",
+                        "assets/front_donut/fdonut7.png",
+                        "assets/front_donut/fdonut6.png",
+                        "assets/front_donut/fdonut21.png",
+                        "assets/front_donut/fdonut22.png",
+                      ];
+
+                      return ListView.builder(
+                        controller: _scrollController,
+                        scrollDirection: Axis.horizontal,
+                        itemCount: donuts.length,
+                        itemBuilder: (context, index) {
+                          final donut = donuts[index];
+                          final productId = donut.id;
+                          final isFavorited = userFavorites.contains(productId);
+                          final image = images[index % images.length];
+
+                          return DonutSelectionWidget(
+                            image: donut['image'] ?? "",
+                            title: donut['name'],
+                            newPrice: '₱${donut['price'].toStringAsFixed(2)}',
                           );
                         },
-                      ),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -798,5 +870,101 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
         ],
       ),
     );
+  }
+}
+
+Future<Map<String, dynamic>?> fetchAuthenticatedUserData(FirebaseAuth auth,
+    CollectionReference usersCollection, BuildContext context) async {
+  try {
+    // Get the authenticated user's UID
+    final currentUser = auth.currentUser;
+    if (currentUser == null) {
+      throw Exception("No authenticated user found.");
+    }
+
+    final userId = currentUser.uid;
+    print("Authenticated user ID: $userId");
+
+    // Fetch the user's main document
+    final userDoc = await usersCollection.doc(userId).get();
+    if (!userDoc.exists) {
+      throw Exception("User document not found.");
+    }
+
+    final userData = userDoc.data() as Map<String, dynamic>;
+
+    // Fetch the locations subcollection
+    final locationsSnapshot =
+        await usersCollection.doc(userId).collection('locations').get();
+    final locations = locationsSnapshot.docs.map((locationDoc) {
+      return {
+        ...locationDoc.data(),
+        "id": locationDoc.id,
+      };
+    }).toList();
+
+    // Fetch the cart subcollection
+    final cartSnapshot =
+        await usersCollection.doc(userId).collection('cart').get();
+    final cart = cartSnapshot.docs.map((cartDoc) {
+      return {
+        ...cartDoc.data(),
+        "id": cartDoc.id,
+      };
+    }).toList();
+
+    // Combine user data with locations and format timestamps
+    final formattedUserData = {
+      ...userData,
+      "id": userId,
+      "locations": locations,
+      "cart": cart,
+      "favorites": userData['favorites'] is List
+          ? List<String>.from(userData['favorites'])
+          : [],
+      "created_at": userData['created_at'] is Timestamp
+          ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+              .format(userData['created_at'].toDate())
+          : "2024-01-10T10:30:00",
+      "modified_at": userData['modified_at'] is Timestamp
+          ? DateFormat("yyyy-MM-dd'T'HH:mm:ss")
+              .format(userData['modified_at'].toDate())
+          : "2024-01-10T10:30:00",
+    };
+
+    // Populate location controllers where main_location is true
+    if (formattedUserData['locations'] != null &&
+        formattedUserData['locations'] is List) {
+      final mainLocation = (formattedUserData['locations'] as List)
+          .cast<Map<String, dynamic>>()
+          .firstWhere(
+            (location) => location['main_location'] == true,
+            orElse: () => <String, dynamic>{},
+          );
+      final formattedAddress = mainLocation.isNotEmpty
+          ? "${mainLocation['house_no_building_street'] ?? ''}, "
+              "Brgy. ${mainLocation['barangay'] ?? ''}, "
+              "${mainLocation['city_municipality'] ?? ''}, "
+              "${mainLocation['state_province'] ?? ''}, "
+              "${mainLocation['zip']?.toString() ?? ''}"
+          : 'No address available';
+
+      if (mainLocation.isNotEmpty) {
+        formattedUserData['main_location'] = mainLocation;
+        formattedUserData['address'] = formattedAddress;
+      }
+    }
+
+    print("User data fetched successfully: $formattedUserData");
+    return formattedUserData;
+  } catch (e) {
+    print("Error fetching user data: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Failed to fetch user data."),
+        backgroundColor: Colors.red,
+      ),
+    );
+    return null;
   }
 }

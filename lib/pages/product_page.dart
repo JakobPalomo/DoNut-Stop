@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class ProductPage extends StatefulWidget {
   final String productId; // Add productId parameter
@@ -17,7 +19,7 @@ class ProductPage extends StatefulWidget {
     this.image = "assets/front_donut/fdonut5.png",
     this.title = "Strawberry Sprimkle",
     this.description =
-    "Strawberry Sprinkles doni is a treat you can't resist! With a soft, fluffy base coated in rich strawberry glaze and topped with colorful ssprinkle, every bite is a perfect  balance of sweetness.",
+        "Strawberry Sprinkles doni is a treat you can't resist! With a soft, fluffy base coated in rich strawberry glaze and topped with colorful ssprinkle, every bite is a perfect  balance of sweetness.",
     this.oldPrice = "₱90",
     this.newPrice = "₱76",
     this.isFavInitial = false,
@@ -47,9 +49,8 @@ class _ProductPageState extends State<ProductPage> {
           .collection('cart');
 
       // Check if the product already exists in the cart
-      QuerySnapshot existingProduct = await cartRef
-          .where('product_id', isEqualTo: productId)
-          .get();
+      QuerySnapshot existingProduct =
+          await cartRef.where('product_id', isEqualTo: productId).get();
 
       if (existingProduct.docs.isNotEmpty) {
         // If the product already exists, update the quantity
@@ -73,7 +74,7 @@ class _ProductPageState extends State<ProductPage> {
   Future<void> toggleFavoriteStatus(String userId, String productId) async {
     try {
       DocumentReference userRef =
-      FirebaseFirestore.instance.collection('users').doc(userId);
+          FirebaseFirestore.instance.collection('users').doc(userId);
 
       DocumentSnapshot userSnapshot = await userRef.get();
       List<dynamic> favorites = userSnapshot['favorites'] ?? [];
@@ -105,20 +106,32 @@ class _ProductPageState extends State<ProductPage> {
       ),
       home: Scaffold(
         backgroundColor: Color(0xFFFFE0B6), // Background color
-        appBar: AppBarWithBackAndTitle(),
+        appBar: AppBarWithBackAndTitle(
+          backgroundColor: Color(0xFFFFE0B5),
+        ),
         body: Column(
           children: [
             // Donut Image Section
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(20),
-                child: Image.asset(
-                  widget.image,
-                  width: 250,
-                  height: 250,
-                  fit: BoxFit.contain,
-                ),
+                child: widget.image.isNotEmpty &&
+                        widget.image.startsWith('data:image/')
+                    ? Image.memory(
+                        base64Decode(widget.image.split(',').last),
+                        fit: BoxFit.contain,
+                        width: 330,
+                        height: 330,
+                      )
+                    : Image.asset(
+                        width: 330,
+                        height: 330,
+                        widget.image.isNotEmpty
+                            ? widget.image
+                            : 'assets/front_donut/fdonut1.png',
+                        fit: BoxFit.contain,
+                      ),
               ),
             ),
             SizedBox(height: 20),
@@ -169,7 +182,8 @@ class _ProductPageState extends State<ProductPage> {
                                 });
                                 String userId =
                                     "O5XpBhLgOGTHaLn5Oub9hRrwEhq1"; // Replace with dynamic userId
-                                await toggleFavoriteStatus(userId, widget.productId);
+                                await toggleFavoriteStatus(
+                                    userId, widget.productId);
                               },
                             ),
                           ],
@@ -257,9 +271,10 @@ class _ProductPageState extends State<ProductPage> {
                                     String userId =
                                         "O5XpBhLgOGTHaLn5Oub9hRrwEhq1"; // Replace with dynamic userId
                                     int quantity =
-                                    1; // Replace with the desired quantity or use the QuantitySelector value
+                                        1; // Replace with the desired quantity or use the QuantitySelector value
 
-                                    await addToCart(userId, widget.productId, quantity);
+                                    await addToCart(
+                                        userId, widget.productId, quantity);
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Colors.transparent,
@@ -267,8 +282,7 @@ class _ProductPageState extends State<ProductPage> {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(100),
                                     ),
-                                    padding:
-                                    EdgeInsets.symmetric(vertical: 25),
+                                    padding: EdgeInsets.symmetric(vertical: 25),
                                   ),
                                   child: Center(
                                     child: Text(
@@ -348,31 +362,4 @@ class _QuantitySelectorState extends State<QuantitySelector> {
       ),
     );
   }
-}
-
-class AppBarWithBackAndTitle extends StatelessWidget implements PreferredSizeWidget {
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Color(0xFFEDC690), // Updated background color
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: () {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => CatalogPage()),
-          );
-        },
-      ),
-      title: Text(
-        'Product Page',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
-  @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
 }

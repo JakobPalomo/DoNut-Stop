@@ -144,8 +144,10 @@ class AppBarWithBackAndTitle extends StatelessWidget
     implements PreferredSizeWidget {
   final String? title;
   final Function? onBackPressed;
+  final Color? backgroundColor;
 
-  const AppBarWithBackAndTitle({this.title, this.onBackPressed, super.key});
+  const AppBarWithBackAndTitle(
+      {this.title, this.onBackPressed, this.backgroundColor, super.key});
 
   @override
   Size get preferredSize => Size.fromHeight(56.0);
@@ -159,7 +161,7 @@ class AppBarWithBackAndTitle extends StatelessWidget
           fontFamily: 'Inter',
           fontSize: 20,
           fontWeight: FontWeight.w800,
-          color: Color(0xFF462521),
+          color: backgroundColor ?? Color(0xFF462521),
         ),
       ),
       backgroundColor: Color(0xFFEDC690),
