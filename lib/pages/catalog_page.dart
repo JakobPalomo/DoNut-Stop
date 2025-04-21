@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
@@ -405,7 +407,7 @@ class DonutSelectionWidget extends StatelessWidget {
                     width: 200,
                     margin: EdgeInsets.only(
                         top: 20), // Ensures image extends outside
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.symmetric(vertical: 20, horizontal: 5),
                     child: Column(
                       children: [
                         SizedBox(height: 30), // Space for donut image
@@ -501,6 +503,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
   Map<String, dynamic>? userData;
+  Timer? _scrollTimer;
 
   Future<void> toggleFavoriteStatus(String userId, String productId,
       Map<String, dynamic> userData, bool isFav, String name) async {
@@ -553,6 +556,31 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
         autoCloseDuration: const Duration(seconds: 4),
       );
     }
+  }
+
+  void _startScrollingLeft() {
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      _scrollController.animateTo(
+        _scrollController.offset - 100, // Adjust the scroll step
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+    });
+  }
+
+  void _startScrollingRight() {
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      _scrollController.animateTo(
+        _scrollController.offset + 100, // Adjust the scroll step
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+    });
+  }
+
+  void _stopScrolling() {
+    _scrollTimer?.cancel();
+    _scrollTimer = null;
   }
 
   @override
@@ -654,88 +682,150 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
             ),
           ),
           SizedBox(height: 10),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back_ios),
-                onPressed: _scrollLeft,
-              ),
-              Expanded(
-                child: SizedBox(
-                  height: 355,
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('products')
-                        .orderBy('name', descending: true)
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFFDC345E)),
-                            backgroundColor: Color(0xFFFF7171),
-                            strokeWidth: 5.0,
-                          ),
-                        );
+          Stack(children: [
+            // Donut selection list with margin
+            SizedBox(
+              height: 355,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('products')
+                    .orderBy('name', descending: true)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                        backgroundColor: Color(0xFFFF7171),
+                        strokeWidth: 5.0,
+                      ),
+                    );
+                  }
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No products found.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Color(0xFFC7A889),
+                        ),
+                      ),
+                    );
+                  }
+
+                  final offers = snapshot.data!.docs;
+
+                  return ListView.builder(
+                    controller: _scrollController,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: offers.length + 2,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        // left padding
+                        return const SizedBox(width: 50);
                       }
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'No offers found.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFC7A889),
-                            ),
-                          ),
-                        );
+                      if (index == offers.length + 1) {
+                        // right padding
+                        return const SizedBox(width: 32);
                       }
 
-                      final offers = snapshot.data!.docs;
+                      final offer = offers[index - 1];
+                      final productId = offer.id;
 
-                      return ListView.builder(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: offers.length,
-                        itemBuilder: (context, index) {
-                          final offer = offers[index];
-                          final productId = offer.id;
-
-                          return OfferSelectionWidget(
-                            productId: productId,
-                            image: offer['image'],
-                            title: offer['name'],
-                            description: offer['description'],
-                            newPrice: '₱${offer['price'].toStringAsFixed(2)}',
-                            isFavInitial: userFavorites.contains(productId),
-                            onFavoriteToggle: () async {
-                              await toggleFavoriteStatus(
-                                userData!['id'],
-                                productId,
-                                userData as Map<String, dynamic>,
-                                userFavorites.contains(productId),
-                                offer['name'],
-                              );
-
-                              // Refresh userFavorites
-                              setState(() {
-                                userFavorites = userData!['favorites'] ?? [];
-                              });
-                            },
+                      return OfferSelectionWidget(
+                        productId: productId,
+                        image: offer['image'],
+                        title: offer['name'],
+                        description: offer['description'],
+                        newPrice: '₱${offer['price'].toStringAsFixed(2)}',
+                        isFavInitial: userFavorites.contains(productId),
+                        onFavoriteToggle: () async {
+                          await toggleFavoriteStatus(
+                            userData!['id'],
+                            productId,
+                            userData as Map<String, dynamic>,
+                            userFavorites.contains(productId),
+                            offer['name'],
                           );
+
+                          // Refresh userFavorites
+                          setState(() {
+                            userFavorites = userData!['favorites'] ?? [];
+                          });
                         },
                       );
                     },
+                  );
+                },
+              ),
+            ),
+            // Left gradient and button
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                width: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color(0xFFFFE0B6),
+                      Color(0x80FFE0B6),
+                      Color(0x00FFE0B6),
+                    ],
+                  ),
+                ),
+                child: GestureDetector(
+                  onLongPress: _startScrollingLeft,
+                  onLongPressUp: _stopScrolling,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_back_ios),
+                      color: Color(0xFF462521),
+                      onPressed: _scrollLeft,
+                    ),
                   ),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward_ios),
-                onPressed: _scrollRight,
+            ),
+            // Right gradient and button
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                width: 50,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerRight,
+                    end: Alignment.centerLeft,
+                    colors: [
+                      Color(0xFFFFE0B6),
+                      Color(0x80FFE0B6),
+                      Color(0x00FFE0B6),
+                    ],
+                  ),
+                ),
+                child: GestureDetector(
+                  onLongPress: _startScrollingRight,
+                  onLongPressUp: _stopScrolling,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward_ios),
+                      color: Color(0xFF462521),
+                      onPressed: _scrollRight,
+                    ),
+                  ),
+                ),
               ),
-            ],
-          ),
+            ),
+          ]),
         ],
       ),
     );
@@ -754,11 +844,18 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
   final CollectionReference _usersCollection =
       FirebaseFirestore.instance.collection('users');
   Map<String, dynamic>? userData;
+  Timer? _scrollTimer;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -770,6 +867,31 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
         userData = data;
       });
     }
+  }
+
+  void _startScrollingLeft() {
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      _scrollController.animateTo(
+        _scrollController.offset - 100, // Adjust the scroll step
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+    });
+  }
+
+  void _startScrollingRight() {
+    _scrollTimer = Timer.periodic(const Duration(milliseconds: 100), (_) {
+      _scrollController.animateTo(
+        _scrollController.offset + 100, // Adjust the scroll step
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.linear,
+      );
+    });
+  }
+
+  void _stopScrolling() {
+    _scrollTimer?.cancel();
+    _scrollTimer = null;
   }
 
   void _scrollLeft() {
@@ -854,78 +976,136 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
             ),
           ),
           SizedBox(height: 10),
-          Row(
+          Stack(
             children: [
-              IconButton(
-                icon: Icon(Icons.arrow_back_ios),
-                onPressed: _scrollLeft,
-              ),
-              Expanded(
-                child: SizedBox(
-                  height: 265,
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('products')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Color(0xFFDC345E)),
-                            backgroundColor: Color(0xFFFF7171),
-                            strokeWidth: 5.0,
-                          ),
-                        );
-                      }
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'No donuts found.',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFC7A889),
-                            ),
-                          ),
-                        );
-                      }
-
-                      final donuts = snapshot.data!.docs;
-                      final images = [
-                        "assets/front_donut/fdonut8.png",
-                        "assets/front_donut/fdonut7.png",
-                        "assets/front_donut/fdonut6.png",
-                        "assets/front_donut/fdonut21.png",
-                        "assets/front_donut/fdonut22.png",
-                      ];
-
-                      return ListView.builder(
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: donuts.length,
-                        itemBuilder: (context, index) {
-                          final donut = donuts[index];
-                          final productId = donut.id;
-                          final isFavorited = userFavorites.contains(productId);
-                          final image = images[index % images.length];
-
-                          return DonutSelectionWidget(
-                            productId: productId,
-                            image: donut['image'] ?? "",
-                            title: donut['name'],
-                            newPrice: '₱${donut['price'].toStringAsFixed(2)}',
-                            description: donut['description'],
-                          );
-                        },
+              // Donut selection list with margin
+              SizedBox(
+                height: 265,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('products')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                          backgroundColor: Color(0xFFFF7171),
+                          strokeWidth: 5.0,
+                        ),
                       );
-                    },
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No donuts found.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFFC7A889),
+                          ),
+                        ),
+                      );
+                    }
+
+                    final donuts = snapshot.data!.docs;
+
+                    return ListView.builder(
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: donuts.length + 2,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          // left padding
+                          return const SizedBox(width: 50);
+                        }
+                        if (index == donuts.length + 1) {
+                          // right padding
+                          return const SizedBox(width: 32);
+                        }
+
+                        final donut = donuts[index - 1];
+                        final productId = donut.id;
+
+                        return DonutSelectionWidget(
+                          productId: productId,
+                          image: donut['image'] ?? "",
+                          title: donut['name'],
+                          newPrice: '₱${donut['price'].toStringAsFixed(2)}',
+                          description: donut['description'],
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              // Left gradient and button
+              Positioned(
+                left: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 50,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        Color(0xFFFFE0B6),
+                        Color(0x80FFE0B6),
+                        Color(0x00FFE0B6),
+                      ],
+                    ),
+                  ),
+                  child: SizedBox(
+                    height: 50,
+                    child: GestureDetector(
+                      onLongPress: _startScrollingLeft,
+                      onLongPressUp: _stopScrolling,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: IconButton(
+                          icon: Icon(Icons.arrow_back_ios),
+                          color: Color(0xFF462521),
+                          onPressed: _scrollLeft,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              IconButton(
-                icon: Icon(Icons.arrow_forward_ios),
-                onPressed: _scrollRight,
+              // Right gradient and button
+              Positioned(
+                right: 0,
+                top: 0,
+                bottom: 0,
+                child: Container(
+                  width: 50,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.centerRight,
+                      end: Alignment.centerLeft,
+                      colors: [
+                        Color(0xFFFFE0B6),
+                        Color(0x80FFE0B6),
+                        Color(0x00FFE0B6),
+                      ],
+                    ),
+                  ),
+                  child: GestureDetector(
+                    onLongPress: _startScrollingRight,
+                    onLongPressUp: _stopScrolling,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_forward_ios),
+                        color: Color(0xFF462521),
+                        onPressed: _scrollRight,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

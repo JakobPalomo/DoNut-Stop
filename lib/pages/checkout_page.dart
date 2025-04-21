@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/components/buttons.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
@@ -21,6 +22,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
   double totalAmount = 0.0;
   String fullName = "";
   String userAddress = "";
+  String userContactNo = "";
   String selectedPaymentMethod = "Cash on Delivery";
   bool isLoading = true; // Initially set to true
 
@@ -57,6 +59,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         await fetchCartItems(data["id"]);
         fullName = "${data["first_name"]} ${data["last_name"]}";
         userAddress = data["address"];
+        userContactNo = data["contact_no"];
       }
     } catch (e) {
       print("Error initializing user data: $e");
@@ -342,369 +345,420 @@ class _CheckoutPageState extends State<CheckoutPage> {
                 ),
               )
             : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // User Details
-                    Container(
-                      margin: EdgeInsets.only(left: 20, top: 20),
-                      child: Text(
-                        fullName,
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Color(0xFF462521),
-                        ),
-                        softWrap: true,
-                      ),
-                    ),
-                    SizedBox(height: 5),
-                    Container(
-                      margin: EdgeInsets.only(left: 20),
-                      child: Text(
-                        userAddress,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF462521),
-                        ),
-                        softWrap: true,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    // Items Header
-                    Container(
-                      margin: EdgeInsets.only(left: 20, top: 20),
-                      child: Text(
-                        "Items",
-                        style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF462521),
-                        ),
-                        softWrap: true,
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // Items List
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: cartItems.length,
-                      itemBuilder: (context, index) {
-                        final item = cartItems[index];
-                        return Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          padding: EdgeInsets.all(15),
+                child: Container(
+                  width: double.infinity,
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    constraints: BoxConstraints(maxWidth: 800),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // User Details
+                        Container(
+                          margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                          padding: EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
+                            color: Color(0xFFFFEEE1),
+                            borderRadius: BorderRadius.circular(20),
                             boxShadow: [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.1),
                                 blurRadius: 10,
-                                offset: Offset(0, 5),
+                                offset: const Offset(0, 3),
                               ),
                             ],
                           ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Donut Image and Details
-                              Row(
+                              Padding(
+                                padding: const EdgeInsets.all(2),
+                                child: Icon(
+                                  Icons.location_on,
+                                  size: 25,
+                                  color: Color(0xFF462521),
+                                ),
+                              ),
+                              SizedBox(width: 10),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  // Donut Image
-                                  Container(
-                                    width: 60,
-                                    height: 60,
-                                    margin: EdgeInsets.only(right: 10),
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: NetworkImage(item['image']),
-                                        fit: BoxFit.cover,
-                                      ),
+                                  Text(
+                                    fullName,
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF462521),
                                     ),
+                                    softWrap: true,
                                   ),
-                                  // Donut Name and Quantity
-                                  Column(
+                                  Text(
+                                    userAddress,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF5C5B5B),
+                                    ),
+                                    softWrap: true,
+                                  ),
+                                  Text(
+                                    userContactNo,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w500,
+                                      color: Color(0xFF5C5B5B),
+                                    ),
+                                    softWrap: true,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        // Items Header
+                        Container(
+                          margin: EdgeInsets.only(left: 20, top: 15),
+                          child: Text(
+                            "Items",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontFamily: 'Inter',
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF462521),
+                            ),
+                            softWrap: true,
+                          ),
+                        ),
+                        // Items List
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: cartItems.length,
+                          itemBuilder: (context, index) {
+                            final item = cartItems[index];
+                            return Container(
+                              margin: EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 8),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Color(0xFFFFEEE1),
+                                borderRadius: BorderRadius.circular(20),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Row(children: [
+                                // Donut Image
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: item['image'] != null &&
+                                            item['image'].isNotEmpty &&
+                                            item['image']
+                                                .startsWith('data:image/')
+                                        ? Image.memory(
+                                            base64Decode(
+                                                item['image'].split(',').last),
+                                            fit: BoxFit.contain,
+                                          )
+                                        : Image.asset(
+                                            item['image'] != null &&
+                                                    item['image'].isNotEmpty
+                                                ? item['image']
+                                                : 'assets/front_donut/fdonut1.png',
+                                            fit: BoxFit.contain,
+                                          ),
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                // Donut Name and Price
+                                Column(
+                                    mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         item['name'],
                                         style: TextStyle(
-                                          fontSize: 18,
+                                          fontFamily: 'Inter',
+                                          fontSize: 16,
                                           fontWeight: FontWeight.w600,
                                           color: Color(0xFF462521),
                                         ),
                                       ),
                                       Text(
-                                        "Quantity",
+                                        '₱${item['price'].toStringAsFixed(2)}',
                                         style: TextStyle(
+                                          fontFamily: 'Inter',
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w400,
+                                          fontWeight: FontWeight.w800,
                                           color: Color(0xFF462521),
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              // Price
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text(
-                                    "₱${item['price'].toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w400,
-                                      color: Color(0xFF462521),
+                                    ]),
+                                Spacer(),
+                                Container(
+                                  padding: EdgeInsets.only(right: 10),
+                                  child: RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: "Qty: ",
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            color: Color(0xFF462521),
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: '${item['quantity']}',
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            color: Color(0xFF462521),
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                  Text(
-                                    "${item['quantity']}x",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF462521),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 20),
-                    // Payment Method Section
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: Offset(0, -5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Payment Method",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF462521),
-                            ),
-                          ),
-                          SizedBox(height: 5),
-                          Text(
-                            "*We don't accept card payments",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontStyle: FontStyle.italic,
-                              color: Color(0xFF462521),
-                            ),
-                          ),
-                          Row(
+                                ),
+                              ]),
+                            );
+                          },
+                        ),
+                        // Payment Method Section
+                        Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Radio<String>(
-                                value: "Cash on Delivery",
-                                groupValue: selectedPaymentMethod,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymentMethod = value!;
-                                  });
-                                },
-                              ),
-                              Text(
-                                "Cash on Delivery",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Radio<String>(
-                                value: "GCash",
-                                groupValue: selectedPaymentMethod,
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPaymentMethod = value!;
-                                  });
-                                },
-                              ),
-                              Text(
-                                "GCash",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    // Order Summary Section
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: Offset(0, -5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Order Summary",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF462521),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          // Order Subtotal
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Order Subtotal",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                              Text(
-                                "₱${totalAmount.toStringAsFixed(2)}",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          // Shipping
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Shipping",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                              Text(
-                                "₱30.00",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 5),
-                          // Payment Method
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
+                              Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Color(0xFF462521)),
+                              SizedBox(height: 10),
                               Text(
                                 "Payment Method",
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                              Text(
-                                selectedPaymentMethod,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 10),
-                          Divider(color: Colors.grey),
-                          // Order Total
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Order Total",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF462521),
-                                ),
-                              ),
-                              Text(
-                                "₱${(totalAmount + 30).toStringAsFixed(2)}",
-                                style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 25,
+                                  fontFamily: 'Inter',
                                   fontWeight: FontWeight.w800,
                                   color: Color(0xFF462521),
                                 ),
                               ),
+                              SizedBox(height: 5),
+                              Text(
+                                "Note: We don't accept card payments yet.",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontFamily: 'Inter',
+                                  fontStyle: FontStyle.italic,
+                                  color: Color(0xFF462521),
+                                ),
+                              ),
+                              SizedBox(height: 5),
+                              Row(
+                                children: [
+                                  Radio<String>(
+                                    value: "Cash on Delivery",
+                                    groupValue: selectedPaymentMethod,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedPaymentMethod = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    "Cash on Delivery",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Radio<String>(
+                                    value: "GCash",
+                                    groupValue: selectedPaymentMethod,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedPaymentMethod = value!;
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    "GCash",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Inter',
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          SizedBox(height: 20),
-                          // Place Order Button
-                          Center(
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                print(
-                                    "Order placed with $selectedPaymentMethod");
-                                await placeOrder();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 50, vertical: 15),
-                                backgroundColor: Color(0xFFDC345E),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                              ),
-                              child: Text(
-                                "Place Order",
+                        ),
+                        // Order Summary Section
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Divider(
+                                  height: 1,
+                                  thickness: 1,
+                                  color: Color(0xFF462521)),
+                              SizedBox(height: 10),
+                              Text(
+                                "Order Summary",
                                 style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white,
+                                  fontSize: 25,
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF462521),
                                 ),
                               ),
-                            ),
+                              SizedBox(height: 10),
+                              // Order Subtotal
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Order Subtotal",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                  Text(
+                                    "₱${totalAmount.toStringAsFixed(2)}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              // Shipping
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Shipping",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                  Text(
+                                    "₱30.00",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 5),
+                              // Payment Method
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Payment Method",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                  Text(
+                                    selectedPaymentMethod,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 10),
+                              // Order Total
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Order Total",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF462521),
+                                    ),
+                                  ),
+                                  Text(
+                                    "₱${(totalAmount + 30).toStringAsFixed(2)}",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFFE23F61),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                              // Place Order Button
+                              Center(
+                                child: GradientButton(
+                                  text: "Place Order",
+                                  onPressed: () async {
+                                    print(
+                                        "Order placed with $selectedPaymentMethod");
+                                    await placeOrder();
+                                  },
+                                ),
+                              )
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
       ),
