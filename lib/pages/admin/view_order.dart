@@ -203,7 +203,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
               child: Center(
                 child: Container(
                   constraints: BoxConstraints(maxWidth: 800),
-                  padding: EdgeInsets.fromLTRB(20, 50, 20, 10),
+                  padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -213,7 +213,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                           fontSize: 25,
                           color: Color(0xFF462521),
                           fontFamily: 'Inter',
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       SizedBox(height: 10),
@@ -296,7 +296,7 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
                           fontSize: 25,
                           color: Color(0xFF462521),
                           fontFamily: 'Inter',
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w800,
                         ),
                       ),
                       const SizedBox(height: 10),
