@@ -11,6 +11,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert'; // For Base64 encoding
+import 'package:toastification/toastification.dart';
 
 class AddEditProductPage extends StatefulWidget {
   final bool isEditing;
@@ -64,6 +65,13 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
         'modified_by': _auth.currentUser?.uid,
       });
       _resetFormAndNavigate();
+      toastification.show(
+        context: context,
+        title: Text('Product created'),
+        description: Text('${nameController.text} has been created.'),
+        type: ToastificationType.success,
+        autoCloseDuration: const Duration(seconds: 4),
+      );
     }
   }
 
@@ -78,6 +86,13 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
       'modified_by': _auth.currentUser?.uid,
     });
     _resetFormAndNavigate();
+    toastification.show(
+      context: context,
+      title: Text('Product updated'),
+      description: Text('$newName has been updated.'),
+      type: ToastificationType.success,
+      autoCloseDuration: const Duration(seconds: 4),
+    );
   }
 
   void _resetFormAndNavigate() {
@@ -345,6 +360,7 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
     String? Function(String?)? validator,
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
+    int? maxLines,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -391,6 +407,7 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
             validator: validator,
             keyboardType: keyboardType,
             inputFormatters: inputFormatters,
+            maxLines: maxLines, // Use the maxLines parameter
           ),
         ],
       ),
@@ -436,6 +453,7 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
               true,
               descriptionController,
               validator: _validateRequiredField,
+              maxLines: 5,
             ),
             const SizedBox(height: 20),
             Wrap(

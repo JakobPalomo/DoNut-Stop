@@ -226,236 +226,224 @@ class _MyFavoritesPageState extends State<MyFavoritesPage> {
                                         productSnapshot.data!.docs;
 
                                     return Wrap(
-                                      spacing: 5,
-                                      runSpacing: 15,
+                                      spacing: 20,
+                                      runSpacing: 20,
                                       children: favoriteProducts.map((product) {
                                         return SizedBox(
                                           width: 240,
-                                          height: 350,
+                                          height: 360,
                                           child: SingleChildScrollView(
-                                            child: Container(
-                                              margin:
-                                                  EdgeInsets.only(right: 20),
-                                              child: MouseRegion(
-                                                cursor:
-                                                    SystemMouseCursors.click,
-                                                child: Material(
-                                                  color: Colors.transparent,
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      print(
-                                                          "Navigating to ProductPage with:");
-                                                      print(
-                                                          "Image: ${product['image']}\nTitle: ${product['name']}\nDescription: ${product['description']}\nNew Price: ₱${product['price'].toStringAsFixed(2)}");
-                                                      Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              ProductPage(
-                                                            productId:
-                                                                product.id,
-                                                            image: product[
-                                                                'image'],
-                                                            title:
-                                                                product['name'],
-                                                            description: product[
-                                                                'description'],
-                                                            newPrice:
-                                                                '₱${product['price'].toStringAsFixed(2)}',
-                                                            isFavInitial:
-                                                                userFavorites
-                                                                    .contains(
-                                                                        product
-                                                                            .id),
-                                                          ),
+                                            child: MouseRegion(
+                                              cursor: SystemMouseCursors.click,
+                                              child: Material(
+                                                color: Colors.transparent,
+                                                child: InkWell(
+                                                  onTap: () {
+                                                    print(
+                                                        "Navigating to ProductPage with:");
+                                                    print(
+                                                        "Image: ${product['image']}\nTitle: ${product['name']}\nDescription: ${product['description']}\nNew Price: ₱${product['price'].toStringAsFixed(2)}");
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            ProductPage(
+                                                          productId: product.id,
+                                                          image:
+                                                              product['image'],
+                                                          title:
+                                                              product['name'],
+                                                          description: product[
+                                                              'description'],
+                                                          newPrice:
+                                                              '₱${product['price'].toStringAsFixed(2)}',
+                                                          isFavInitial:
+                                                              userFavorites
+                                                                  .contains(
+                                                                      product
+                                                                          .id),
                                                         ),
-                                                      );
-                                                    },
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                    splashColor: Colors.brown
-                                                        .withOpacity(0.2),
-                                                    child: Ink(
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            Color(0xFFFFEEE1),
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(16),
                                                       ),
-                                                      child: Column(
-                                                        children: [
-                                                          Stack(
-                                                            children: [
-                                                              Container(
+                                                    );
+                                                  },
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                  splashColor: Colors.brown
+                                                      .withOpacity(0.2),
+                                                  child: Ink(
+                                                    decoration: BoxDecoration(
+                                                      color: Color(0xFFFFEEE1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              16),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Stack(
+                                                          children: [
+                                                            Container(
+                                                              padding:
+                                                                  EdgeInsets
+                                                                      .fromLTRB(
+                                                                          10,
+                                                                          40,
+                                                                          10,
+                                                                          0),
+                                                              child: ClipRRect(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .circular(
+                                                                            10),
+                                                                child: product['image'] !=
+                                                                            null &&
+                                                                        product['image']
+                                                                            .isNotEmpty &&
+                                                                        product['image'].startsWith(
+                                                                            'data:image/')
+                                                                    ? Image
+                                                                        .memory(
+                                                                        base64Decode(product['image']
+                                                                            .split(',')
+                                                                            .last),
+                                                                        width:
+                                                                            180,
+                                                                        height:
+                                                                            180,
+                                                                        fit: BoxFit
+                                                                            .contain,
+                                                                      )
+                                                                    : Image
+                                                                        .asset(
+                                                                        product['image'] != null &&
+                                                                                product['image'].isNotEmpty
+                                                                            ? product['image']
+                                                                            : 'assets/front_donut/fdonut1.png',
+                                                                        width:
+                                                                            180,
+                                                                        height:
+                                                                            180,
+                                                                        fit: BoxFit
+                                                                            .contain,
+                                                                      ),
+                                                              ),
+                                                            ),
+                                                            Positioned(
+                                                              top: 10,
+                                                              left: 0,
+                                                              child: IconButton(
+                                                                icon: Icon(
+                                                                  Icons
+                                                                      .favorite,
+                                                                  color: Color(
+                                                                      0xFFCA2E55),
+                                                                ),
+                                                                onPressed:
+                                                                    () async {
+                                                                  await toggleFavoriteStatus(
+                                                                    userData![
+                                                                        'id'],
+                                                                    product.id,
+                                                                    userData as Map<
+                                                                        String,
+                                                                        dynamic>,
+                                                                    userFavorites
+                                                                        .contains(
+                                                                            product.id),
+                                                                    product[
+                                                                        'name'],
+                                                                  );
+                                                                  setState(() {
+                                                                    userFavorites =
+                                                                        userData!['favorites'] ??
+                                                                            [];
+                                                                  });
+                                                                },
                                                                 padding:
                                                                     EdgeInsets
-                                                                        .fromLTRB(
-                                                                            10,
-                                                                            40,
-                                                                            10,
-                                                                            0),
-                                                                child:
-                                                                    ClipRRect(
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                              10),
-                                                                  child: product['image'] !=
-                                                                              null &&
-                                                                          product['image']
-                                                                              .isNotEmpty &&
-                                                                          product['image'].startsWith(
-                                                                              'data:image/')
-                                                                      ? Image
-                                                                          .memory(
-                                                                          base64Decode(product['image']
-                                                                              .split(',')
-                                                                              .last),
-                                                                          width:
-                                                                              180,
-                                                                          height:
-                                                                              180,
-                                                                          fit: BoxFit
-                                                                              .contain,
-                                                                        )
-                                                                      : Image
-                                                                          .asset(
-                                                                          product['image'] != null && product['image'].isNotEmpty
-                                                                              ? product['image']
-                                                                              : 'assets/front_donut/fdonut1.png',
-                                                                          width:
-                                                                              180,
-                                                                          height:
-                                                                              180,
-                                                                          fit: BoxFit
-                                                                              .contain,
-                                                                        ),
+                                                                        .all(5),
+                                                                constraints:
+                                                                    BoxConstraints(),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        SizedBox(width: 12),
+                                                        Container(
+                                                          padding: EdgeInsets
+                                                              .fromLTRB(20, 30,
+                                                                  20, 10),
+                                                          child: Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .start,
+                                                            children: [
+                                                              Text(
+                                                                product['name'],
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  fontSize: 16,
+                                                                  color: Color(
+                                                                      0xFF462521),
+                                                                ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                              Text(
+                                                                product[
+                                                                    'description'],
+                                                                maxLines: 2,
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                                style:
+                                                                    TextStyle(
+                                                                  fontFamily:
+                                                                      'Inter',
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w400,
+                                                                  fontSize: 12,
+                                                                  color: Color(
+                                                                      0xFF665A49),
                                                                 ),
                                                               ),
-                                                              Positioned(
-                                                                top: 10,
-                                                                left: 0,
-                                                                child:
-                                                                    IconButton(
-                                                                  icon: Icon(
-                                                                    Icons
-                                                                        .favorite,
-                                                                    color: Color(
-                                                                        0xFFCA2E55),
+                                                              SizedBox(
+                                                                  height: 10),
+                                                              Row(
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .end,
+                                                                children: [
+                                                                  SizedBox(
+                                                                      width:
+                                                                          10),
+                                                                  Text(
+                                                                    '₱${product['price'].toStringAsFixed(2)}',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontFamily:
+                                                                          'Inter',
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w700,
+                                                                      fontSize:
+                                                                          22,
+                                                                      color: Colors
+                                                                          .black,
+                                                                    ),
                                                                   ),
-                                                                  onPressed:
-                                                                      () async {
-                                                                    await toggleFavoriteStatus(
-                                                                      userData![
-                                                                          'id'],
-                                                                      product
-                                                                          .id,
-                                                                      userData as Map<
-                                                                          String,
-                                                                          dynamic>,
-                                                                      userFavorites
-                                                                          .contains(
-                                                                              product.id),
-                                                                      product[
-                                                                          'name'],
-                                                                    );
-                                                                    setState(
-                                                                        () {
-                                                                      userFavorites =
-                                                                          userData!['favorites'] ??
-                                                                              [];
-                                                                    });
-                                                                  },
-                                                                  padding:
-                                                                      EdgeInsets
-                                                                          .all(
-                                                                              5),
-                                                                  constraints:
-                                                                      BoxConstraints(),
-                                                                ),
+                                                                ],
                                                               ),
                                                             ],
                                                           ),
-                                                          SizedBox(width: 12),
-                                                          Container(
-                                                            padding: EdgeInsets
-                                                                .fromLTRB(20,
-                                                                    30, 20, 20),
-                                                            child: Column(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
-                                                              children: [
-                                                                Text(
-                                                                  product[
-                                                                      'name'],
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontFamily:
-                                                                        'Inter',
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w700,
-                                                                    fontSize:
-                                                                        16,
-                                                                    color: Color(
-                                                                        0xFF462521),
-                                                                  ),
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                ),
-                                                                Text(
-                                                                  product[
-                                                                      'description'],
-                                                                  maxLines: 3,
-                                                                  overflow:
-                                                                      TextOverflow
-                                                                          .ellipsis,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontFamily:
-                                                                        'Inter',
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w400,
-                                                                    fontSize:
-                                                                        12,
-                                                                    color: Color(
-                                                                        0xFF665A49),
-                                                                  ),
-                                                                ),
-                                                                Row(
-                                                                  mainAxisAlignment:
-                                                                      MainAxisAlignment
-                                                                          .end,
-                                                                  children: [
-                                                                    SizedBox(
-                                                                        width:
-                                                                            10),
-                                                                    Text(
-                                                                      '₱${product['price'].toStringAsFixed(2)}',
-                                                                      style:
-                                                                          TextStyle(
-                                                                        fontFamily:
-                                                                            'Inter',
-                                                                        fontWeight:
-                                                                            FontWeight.w700,
-                                                                        fontSize:
-                                                                            22,
-                                                                        color: Colors
-                                                                            .black,
-                                                                      ),
-                                                                    ),
-                                                                  ],
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ),

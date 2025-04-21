@@ -299,7 +299,7 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                   ),
                   SizedBox(width: 12),
                   Container(
-                    padding: EdgeInsets.fromLTRB(20, 20, 20, 20),
+                    padding: EdgeInsets.fromLTRB(20, 20, 20, 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -324,6 +324,7 @@ class _OfferSelectionWidgetState extends State<OfferSelectionWidget> {
                             color: Color(0xFF665A49),
                           ),
                         ),
+                        SizedBox(height: 10),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
