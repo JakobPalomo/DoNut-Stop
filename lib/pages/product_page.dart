@@ -6,6 +6,7 @@ import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:toastification/toastification.dart';
 
 class ProductPage extends StatefulWidget {
   final String productId; // Add productId parameter
@@ -98,14 +99,23 @@ class _ProductPageState extends State<ProductPage> {
           'quantity': quantity,
         });
         print("Product added to the cart.");
+        toastification.show(
+          context: context,
+          title: Text('Product added to cart'),
+          description:
+              Text('$quantity ${widget.title} has been added to your cart.'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
       }
     } catch (e) {
       print("Error adding product to cart: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to add product to cart."),
-          backgroundColor: Colors.red,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('Error adding to cart'),
+        description: Text('Failed to add product to cart. Please try again.'),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     }
   }
@@ -124,6 +134,14 @@ class _ProductPageState extends State<ProductPage> {
         setState(() {
           isFav = false;
         });
+        toastification.show(
+          context: context,
+          title: Text('Product removed from favorites'),
+          description:
+              Text('${widget.title} has been removed from your favorites.'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
       } else {
         // Add to favorites
         favorites.add(productId);
@@ -132,14 +150,24 @@ class _ProductPageState extends State<ProductPage> {
         setState(() {
           isFav = true;
         });
+        toastification.show(
+          context: context,
+          title: Text('Product added to favorites'),
+          description:
+              Text('${widget.title} has been added to your favorites.'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
       }
     } catch (e) {
       print("Error toggling favorite status: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to update favorites."),
-          backgroundColor: Colors.red,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('Error toggling favorite status'),
+        description:
+            Text('Failed to update favorite status. Please try again.'),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     }
   }
@@ -147,7 +175,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Product Page Module",
+      title: "Product Page",
       debugShowCheckedModeBanner: false, // Remove debug ribbon
       theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFFFFE0B6),
@@ -349,13 +377,14 @@ class _ProductPageState extends State<ProductPage> {
                                           userId, widget.productId, quantity);
                                     } catch (e) {
                                       print("Error adding to cart: $e");
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        SnackBar(
-                                          content: Text(
-                                              "Failed to add product to cart."),
-                                          backgroundColor: Colors.red,
-                                        ),
+                                      toastification.show(
+                                        context: context,
+                                        title: Text('Error adding to cart'),
+                                        description: Text(
+                                            'Failed to add product to cart. Please try again.'),
+                                        type: ToastificationType.error,
+                                        autoCloseDuration:
+                                            const Duration(seconds: 4),
                                       );
                                     }
                                   },

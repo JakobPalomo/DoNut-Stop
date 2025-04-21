@@ -430,7 +430,8 @@ Future<void> logout(BuildContext context) async {
     toastification.show(
       context: context,
       title: Text('Error logging out'),
-      description: Text('An error occurred while logging out.'),
+      description:
+          Text('An error occurred while logging out. Please try again.'),
       type: ToastificationType.error,
       autoCloseDuration: const Duration(seconds: 4),
     );

@@ -473,16 +473,16 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                                               onPressed: () {
                                                 _deleteUser(row['id']);
                                                 Navigator.of(context).pop();
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  const SnackBar(
-                                                    content: Text(
-                                                        "User deleted successfully."),
-                                                    backgroundColor:
-                                                        Colors.green,
-                                                    duration:
-                                                        Duration(seconds: 2),
-                                                  ),
+                                                toastification.show(
+                                                  context: context,
+                                                  title: Text('User deleted'),
+                                                  description: Text(
+                                                      'User ${row['username']}has been deleted.'),
+                                                  type: ToastificationType
+                                                      .success,
+                                                  autoCloseDuration:
+                                                      const Duration(
+                                                          seconds: 4),
                                                 );
                                               },
                                             ),

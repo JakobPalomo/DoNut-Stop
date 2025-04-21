@@ -166,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
         });
         toastification.show(
           context: context,
-          title: Text('Error'),
+          title: Text('Error logging in'),
           description: Text('An unexpected error occurred.'),
           type: ToastificationType.error,
           autoCloseDuration: const Duration(seconds: 4),

@@ -453,11 +453,12 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("User data updated successfully!"),
-          backgroundColor: Colors.green,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('User profile updated'),
+        description: Text('Your profile has been updated successfully.'),
+        type: ToastificationType.success,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     } catch (e) {
       // Reset the controller values to the original user data
@@ -471,11 +472,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
       // Show error message
       print("Error updating Firestore data: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(errorMessage),
-          backgroundColor: Colors.red,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('Error updating profile'),
+        description: Text(errorMessage),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     }
   }

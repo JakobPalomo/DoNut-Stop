@@ -214,20 +214,22 @@ class _ViewEditUserPageState extends State<ViewEditUserPage> {
       }
 
       // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("User data updated successfully!"),
-          backgroundColor: Colors.green,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('User updated'),
+        description: Text('User data has been successfully updated.'),
+        type: ToastificationType.success,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     } catch (e) {
       // Handle errors
       print("Error updating Firestore data: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Failed to update user data."),
-          backgroundColor: Colors.red,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('Update failed'),
+        description: Text('Failed to update user data. Please try again.'),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     }
   }

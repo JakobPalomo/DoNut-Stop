@@ -312,9 +312,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
       print("Error placing order: $e");
       toastification.show(
         context: context,
-        title: Text('Error'),
-        description: Text('Failed to fetch user data.'),
+        title: Text('Error placing order'),
+        description: Text('Failed to place your order. Please try again.'),
         type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     }
   }

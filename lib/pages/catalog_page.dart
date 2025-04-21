@@ -502,7 +502,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
   Map<String, dynamic>? userData;
 
   Future<void> toggleFavoriteStatus(String userId, String productId,
-      Map<String, dynamic> userData, bool isFav) async {
+      Map<String, dynamic> userData, bool isFav, String name) async {
     try {
       DocumentReference userRef =
           FirebaseFirestore.instance.collection('users').doc(userId);
@@ -513,11 +513,25 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
         favorites.remove(productId);
         await userRef.update({'favorites': favorites});
         print("Product removed from favorites.");
+        toastification.show(
+          context: context,
+          title: Text('Product removed from favorites'),
+          description: Text('$name has been removed from your favorites.'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
       } else {
         // Add to favorites
         favorites.add(productId);
         await userRef.update({'favorites': favorites});
         print("Product added to favorites.");
+        toastification.show(
+          context: context,
+          title: Text('Product added to favorites'),
+          description: Text('$name has been added to your favorites.'),
+          type: ToastificationType.success,
+          autoCloseDuration: const Duration(seconds: 4),
+        );
       }
 
       // Refresh user data
@@ -529,11 +543,13 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
       });
     } catch (e) {
       print("Error toggling favorite status: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Failed to update favorites."),
-          backgroundColor: Colors.red,
-        ),
+      toastification.show(
+        context: context,
+        title: Text('Error toggling favorite status'),
+        description:
+            Text('Failed to update favorite status. Please try again.'),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
       );
     }
   }
@@ -698,6 +714,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                                 productId,
                                 userData as Map<String, dynamic>,
                                 userFavorites.contains(productId),
+                                offer['name'],
                               );
 
                               // Refresh userFavorites

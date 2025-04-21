@@ -4,6 +4,7 @@ import 'package:itelec_quiz_one/components/buttons.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:itelec_quiz_one/pages/admin/add_edit_products.dart';
 import 'dart:convert'; // For Base64 encoding
+import 'package:toastification/toastification.dart';
 
 class ManageProductsPage extends StatefulWidget {
   const ManageProductsPage({super.key});
@@ -310,16 +311,17 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                                                 onPressed: () {
                                                   _deleteProduct(productId);
                                                   Navigator.of(context).pop();
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text(
-                                                          "Product deleted successfully."),
-                                                      backgroundColor:
-                                                          Colors.green,
-                                                      duration:
-                                                          Duration(seconds: 2),
-                                                    ),
+                                                  toastification.show(
+                                                    context: context,
+                                                    title:
+                                                        Text('Product deleted'),
+                                                    description: Text(
+                                                        '$productName has been deleted.'),
+                                                    type: ToastificationType
+                                                        .success,
+                                                    autoCloseDuration:
+                                                        const Duration(
+                                                            seconds: 4),
                                                   );
                                                 },
                                               ),
