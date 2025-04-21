@@ -186,12 +186,13 @@ class _ProductPageState extends State<ProductPage> {
         appBar: AppBarWithBackAndTitle(
           backgroundColor: Colors.transparent,
           onBackPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => CatalogPage(),
-              ),
-            );
+            Navigator.pop(context);
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (context) => CatalogPage(),
+            //   ),
+            // );
           },
           trailingWidget: Container(
             padding: EdgeInsets.only(left: 10),
