@@ -29,17 +29,38 @@ class TransactionPage extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFFFFE0B6),
+          backgroundColor: Color(0xFFEDC690), // Background color
           elevation: 0,
-          iconTheme: const IconThemeData(color: Color(0xFF462521)),
-          title: const Text(
-            "Transaction",
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontWeight: FontWeight.w700,
-              fontSize: 20,
-              color: Color(0xFF462521),
-            ),
+          scrolledUnderElevation: 0,
+          title: Row(
+            children: [
+              // Square Logo on the Left
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  image: DecorationImage(
+                    image: AssetImage("assets/mini_logo.png"),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  padding: EdgeInsets.only(left: 10),
+                  child: Text(
+                    "Transaction",
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 20,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF462521),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         drawer: UserDrawer(),
