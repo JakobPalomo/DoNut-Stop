@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:itelec_quiz_one/components/buttons.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:intl/intl.dart';
 
 class TransactionPage extends StatelessWidget {
   final String accountName;
@@ -97,6 +98,7 @@ class TransactionPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.symmetric(horizontal: 20),
+                constraints: BoxConstraints(maxWidth: 400), // Limit the width of the box
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
@@ -121,50 +123,105 @@ class TransactionPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Text(
-                      "Account Name: $accountName",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Color(0xFF665A49),
+                    GridView(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        childAspectRatio: 4,
                       ),
-                    ),
-                    Text(
-                      "Amount Paid: ₱${amountPaid.toStringAsFixed(2)}",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Color(0xFF665A49),
-                      ),
-                    ),
-                    Text(
-                      "Orders: $orders",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Color(0xFF665A49),
-                      ),
-                    ),
-                    Text(
-                      "Ref. No.: $refNo",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Color(0xFFE23F61),
-                      ),
-                    ),
-                    Text(
-                      dateTime,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                        color: Color(0xFF665A49),
-                      ),
+                      children: [
+                        Text(
+                          "Account Name:",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          accountName,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          "Amount Paid:",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          "₱${amountPaid.toStringAsFixed(2)}",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          "Orders:",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          orders,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          "Ref. No.:",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFFE23F61),
+                          ),
+                        ),
+                        Text(
+                          refNo,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFFE23F61),
+                          ),
+                        ),
+                        Text(
+                          "Date & Time:",
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                        Text(
+                          DateFormat('d MMMM yyyy h:mm a').format(DateTime.parse(dateTime)),
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF665A49),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
