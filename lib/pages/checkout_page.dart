@@ -8,6 +8,7 @@ import 'dart:math';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/my_orders_page.dart';
+import 'package:itelec_quiz_one/pages/transaction_page.dart';
 import 'package:toastification/toastification.dart';
 
 class CheckoutPage extends StatefulWidget {
@@ -750,6 +751,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                     print(
                                         "Order placed with $selectedPaymentMethod");
                                     await placeOrder();
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => TransactionPage(
+                                          accountName: fullName,
+                                          amountPaid: totalAmount + 30,
+                                          orders: cartItems.map((item) => item['name']).join(', '),
+                                          refNo: "OR${DateFormat('yyyyMMdd').format(DateTime.now())}${DateFormat('HHmm').format(DateTime.now())}${(Random().nextInt(900) + 100).toString()}",
+                                          dateTime: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+                                        ),
+                                      ),
+                                    );
                                   },
                                 ),
                               )
