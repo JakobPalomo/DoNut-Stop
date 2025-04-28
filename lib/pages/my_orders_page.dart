@@ -22,6 +22,7 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
   bool isLoading = true;
   String userId = '';
   List<Map<String, dynamic>> userOrders = [];
+  Map<String, dynamic>? userData;
 
   final List<Map<String, dynamic>> orderStatuses = [
     {
@@ -143,7 +144,13 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
       setState(() {
         userId = uid;
       });
+
+      // Fetch user data
+      userData = await _findUserById(uid);
+
+      // Fetch user orders
       await fetchUserOrders(uid, _ordersCollection);
+
       setState(() {
         isLoading = false;
       });
@@ -264,328 +271,457 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+
     return Scaffold(
       appBar: AppBarWithMenuAndTitle(title: "My Orders"),
       drawer: UserDrawer(),
-      body: isLoading
+      body: userId == null
           ? Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
-                backgroundColor: Color(0xFFFF7171),
-                strokeWidth: 5.0,
+              child: Text(
+                "No authenticated user found.",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFC7A889),
+                ),
               ),
             )
-          : Container(
-              color: Color(0xFFFFE1B7),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, 5),
-                      child: Text(
-                        "Order History",
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 30,
-                          fontWeight: FontWeight.w800,
-                          color: Color(0xFF462521),
-                        ),
+          : StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('orders')
+                  .where('user_id', isEqualTo: userId)
+                  .orderBy('datetime_purchased', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor:
+                          AlwaysStoppedAnimation<Color>(Color(0xFFDC345E)),
+                      backgroundColor: Color(0xFFFF7171),
+                      strokeWidth: 5.0,
+                    ),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No orders found.",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFFC7A889),
                       ),
                     ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: userOrders.length,
-                      itemBuilder: (context, orderIndex) {
-                        final order = userOrders[orderIndex];
-                        return Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical:
-                                  8), // hover/ripple is only visible in the margin
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFFEEE1),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                // Handle view action
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        ViewOrderPage(order: order),
-                                  ),
-                                );
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              splashColor: Colors.brown
-                                  .withOpacity(0.2), // Ripple effect color
-                              child: Column(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        20, 20, 20, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        RichText(
-                                          text: TextSpan(
-                                            text: 'Ref. No. ',
-                                            style: TextStyle(
-                                              fontFamily: 'Inter',
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                              color: Color(0xFF462521),
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: order['ref_no'],
-                                                style: TextStyle(
-                                                  fontFamily: 'Inter',
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w900,
-                                                  color: Color(0xFFCA2E55),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        SizedBox(width: 10),
-                                        Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: orderStatuses.firstWhere(
-                                              (status) =>
-                                                  status['value'] ==
-                                                  order['order_status'],
-                                              orElse: () => {
-                                                "label": "Unknown",
-                                                "value": -1,
-                                                "color": Colors.grey[400],
-                                              },
-                                            )['color'],
-                                            borderRadius:
-                                                BorderRadius.circular(20),
-                                          ),
-                                          child: Text(
-                                            orderStatuses.firstWhere(
-                                              (status) =>
-                                                  status['value'] ==
-                                                  order['order_status'],
-                                              orElse: () => {
-                                                "label": "Unknown",
-                                                "value": -1,
-                                                "color": Colors.grey[400],
-                                              },
-                                            )['label'],
-                                            style: TextStyle(
-                                              fontFamily: 'Inter',
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w600,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Column(
-                                    children: [
-                                      ListView.builder(
-                                        shrinkWrap: true,
-                                        physics: NeverScrollableScrollPhysics(),
-                                        itemCount:
-                                            order["products_ordered"].length,
-                                        itemBuilder: (context, itemIndex) {
-                                          final item = order["products_ordered"]
-                                              [itemIndex];
-                                          // Add a divider between items, but not after the last item
-                                          bool showDivider = itemIndex <
-                                              order["products_ordered"].length -
-                                                  1;
+                  );
+                }
 
-                                          return Column(
-                                            children: [
-                                              Container(
-                                                margin: EdgeInsets.symmetric(
-                                                    horizontal: 16,
-                                                    vertical: 8),
-                                                child: Row(children: [
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            16),
-                                                    child: SizedBox(
-                                                      width: 80,
-                                                      height: 80,
-                                                      child: item['image'] !=
-                                                                  null &&
-                                                              item['image']
-                                                                  .isNotEmpty &&
-                                                              item['image']
-                                                                  .startsWith(
-                                                                      'data:image/')
-                                                          ? Image.memory(
-                                                              base64Decode(
-                                                                  item['image']
-                                                                      .split(
-                                                                          ',')
-                                                                      .last),
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                            )
-                                                          : Image.asset(
-                                                              item['image'] !=
-                                                                          null &&
-                                                                      item['image']
-                                                                          .isNotEmpty
-                                                                  ? item[
-                                                                      'image']
-                                                                  : 'assets/front_donut/fdonut1.png',
-                                                              fit: BoxFit
-                                                                  .contain,
-                                                            ),
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 10),
-                                                  Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Text(
-                                                          item['name'],
-                                                          style: TextStyle(
-                                                            fontFamily: 'Inter',
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            color: Color(
-                                                                0xFF462521),
-                                                          ),
-                                                        ),
-                                                        Text(
-                                                          '₱${item['price'].toStringAsFixed(2)}',
-                                                          style: TextStyle(
-                                                            fontFamily: 'Inter',
-                                                            fontSize: 16,
-                                                            fontWeight:
-                                                                FontWeight.w800,
-                                                            color: Color(
-                                                                0xFF462521),
-                                                          ),
-                                                        ),
-                                                      ]),
-                                                  Spacer(),
-                                                  Container(
-                                                    padding: EdgeInsets.only(
-                                                        right: 10),
-                                                    child: RichText(
-                                                      text: TextSpan(
-                                                        children: [
-                                                          TextSpan(
-                                                            text: "Qty: ",
-                                                            style: TextStyle(
-                                                              fontFamily:
-                                                                  'Inter',
-                                                              fontSize: 14,
-                                                              color: Color(
-                                                                  0xFF462521),
-                                                            ),
-                                                          ),
-                                                          TextSpan(
-                                                            text:
-                                                                '${item['quantity']}',
-                                                            style: TextStyle(
-                                                              fontFamily:
-                                                                  'Inter',
-                                                              fontSize: 14,
-                                                              color: Color(
-                                                                  0xFF462521),
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ]),
-                                              ),
-                                              if (showDivider)
-                                                Divider(
-                                                    height: 1,
-                                                    thickness: 1,
-                                                    indent: 16,
-                                                    endIndent: 16,
-                                                    color: Color.fromARGB(
-                                                        255, 187, 167, 154)),
-                                            ],
-                                          );
-                                        },
+                final orders = snapshot.data!.docs;
+
+                return Container(
+                  color: Color(0xFFFFE1B7),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.fromLTRB(16, 16, 16, 5),
+                          child: Text(
+                            "Order History",
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 30,
+                              fontWeight: FontWeight.w800,
+                              color: Color(0xFF462521),
+                            ),
+                          ),
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: orders.length,
+                          itemBuilder: (context, orderIndex) {
+                            final orderDoc = orders[orderIndex];
+                            final orderData =
+                                orderDoc.data() as Map<String, dynamic>;
+
+                            return StreamBuilder<QuerySnapshot>(
+                              stream: orderDoc.reference
+                                  .collection('products_ordered')
+                                  .snapshots(),
+                              builder: (context, productsSnapshot) {
+                                if (productsSnapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Color(0xFFDC345E)),
+                                      backgroundColor: Color(0xFFFF7171),
+                                      strokeWidth: 5.0,
+                                    ),
+                                  );
+                                }
+
+                                if (!productsSnapshot.hasData ||
+                                    productsSnapshot.data!.docs.isEmpty) {
+                                  return SizedBox(); // Skip rendering if no products
+                                }
+
+                                final productsOrdered = productsSnapshot
+                                    .data!.docs
+                                    .map((productDoc) => productDoc.data()
+                                        as Map<String, dynamic>)
+                                    .toList();
+
+                                return Container(
+                                  margin: EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFFFFEEE1),
+                                    borderRadius: BorderRadius.circular(20),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 3),
                                       ),
                                     ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        20, 0, 20, 20),
-                                    child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                      onTap: () {
+                                        // Handle view action
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => ViewOrderPage(
+                                              order: {
+                                                'id': orderDoc.id,
+                                                'ref_no': orderData['ref_no'],
+                                                'order_status':
+                                                    orderData['order_status'],
+                                                'total_amount':
+                                                    orderData['total_amount'],
+                                                'shipping_fee':
+                                                    orderData['shipping_fee'],
+                                                "datetime_purchased": orderData[
+                                                            'datetime_purchased']
+                                                        is Timestamp
+                                                    ? DateFormat(
+                                                            "yyyy-MM-dd'T'HH:mm:ss")
+                                                        .format(orderData[
+                                                                'datetime_purchased']
+                                                            .toDate())
+                                                    : "2024-01-10T10:30:00",
+                                                'products_ordered':
+                                                    productsOrdered,
+                                                'user_data': userData,
+                                              },
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      borderRadius: BorderRadius.circular(20),
+                                      splashColor:
+                                          Colors.brown.withOpacity(0.2),
+                                      child: Column(
                                         children: [
-                                          RichText(
-                                            text: TextSpan(
-                                              text: 'Total:  ',
-                                              style: TextStyle(
-                                                fontFamily: 'Inter',
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: Color(0xFF462521),
-                                              ),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                20, 20, 20, 0),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
-                                                TextSpan(
-                                                  text:
-                                                      '₱${order['total_amount']?.toStringAsFixed(2) ?? '0.00'}',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Inter',
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w900,
-                                                    color: Color(0xFF462521),
+                                                RichText(
+                                                  text: TextSpan(
+                                                    text: 'Ref. No. ',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Color(0xFF462521),
+                                                    ),
+                                                    children: [
+                                                      TextSpan(
+                                                        text:
+                                                            orderData['ref_no'],
+                                                        style: TextStyle(
+                                                          fontFamily: 'Inter',
+                                                          fontSize: 14,
+                                                          fontWeight:
+                                                              FontWeight.w900,
+                                                          color:
+                                                              Color(0xFFCA2E55),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                                SizedBox(width: 10),
+                                                Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      horizontal: 12,
+                                                      vertical: 2),
+                                                  decoration: BoxDecoration(
+                                                    color: orderStatuses
+                                                        .firstWhere(
+                                                      (status) =>
+                                                          status['value'] ==
+                                                          orderData[
+                                                              'order_status'],
+                                                      orElse: () => {
+                                                        "label": "Unknown",
+                                                        "value": -1,
+                                                        "color":
+                                                            Colors.grey[400],
+                                                      },
+                                                    )['color'],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                  child: Text(
+                                                    orderStatuses.firstWhere(
+                                                      (status) =>
+                                                          status['value'] ==
+                                                          orderData[
+                                                              'order_status'],
+                                                      orElse: () => {
+                                                        "label": "Unknown",
+                                                        "value": -1,
+                                                        "color":
+                                                            Colors.grey[400],
+                                                      },
+                                                    )['label'],
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      color: Colors.black,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
                                             ),
+                                          ),
+                                          Column(
+                                            children: [
+                                              ListView.builder(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    NeverScrollableScrollPhysics(),
+                                                itemCount:
+                                                    productsOrdered.length,
+                                                itemBuilder:
+                                                    (context, itemIndex) {
+                                                  final item = productsOrdered[
+                                                      itemIndex];
+                                                  bool showDivider = itemIndex <
+                                                      productsOrdered.length -
+                                                          1;
+
+                                                  return Column(
+                                                    children: [
+                                                      Container(
+                                                        margin: EdgeInsets
+                                                            .symmetric(
+                                                                horizontal: 16,
+                                                                vertical: 8),
+                                                        child: Row(children: [
+                                                          ClipRRect(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        16),
+                                                            child: SizedBox(
+                                                              width: 80,
+                                                              height: 80,
+                                                              child: item['image'] !=
+                                                                          null &&
+                                                                      item['image']
+                                                                          .isNotEmpty &&
+                                                                      item['image']
+                                                                          .startsWith(
+                                                                              'data:image/')
+                                                                  ? Image
+                                                                      .memory(
+                                                                      base64Decode(item[
+                                                                              'image']
+                                                                          .split(
+                                                                              ',')
+                                                                          .last),
+                                                                      fit: BoxFit
+                                                                          .contain,
+                                                                    )
+                                                                  : Image.asset(
+                                                                      item['image'] != null &&
+                                                                              item['image'].isNotEmpty
+                                                                          ? item['image']
+                                                                          : 'assets/front_donut/fdonut1.png',
+                                                                      fit: BoxFit
+                                                                          .contain,
+                                                                    ),
+                                                            ),
+                                                          ),
+                                                          SizedBox(width: 10),
+                                                          Column(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Text(
+                                                                  item['name'],
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    color: Color(
+                                                                        0xFF462521),
+                                                                  ),
+                                                                ),
+                                                                Text(
+                                                                  '₱${item['price'].toStringAsFixed(2)}',
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontFamily:
+                                                                        'Inter',
+                                                                    fontSize:
+                                                                        16,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w800,
+                                                                    color: Color(
+                                                                        0xFF462521),
+                                                                  ),
+                                                                ),
+                                                              ]),
+                                                          Spacer(),
+                                                          Container(
+                                                            padding:
+                                                                EdgeInsets.only(
+                                                                    right: 10),
+                                                            child: RichText(
+                                                              text: TextSpan(
+                                                                children: [
+                                                                  TextSpan(
+                                                                    text:
+                                                                        "Qty: ",
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontFamily:
+                                                                          'Inter',
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Color(
+                                                                          0xFF462521),
+                                                                    ),
+                                                                  ),
+                                                                  TextSpan(
+                                                                    text:
+                                                                        '${item['quantity']}',
+                                                                    style:
+                                                                        TextStyle(
+                                                                      fontFamily:
+                                                                          'Inter',
+                                                                      fontSize:
+                                                                          14,
+                                                                      color: Color(
+                                                                          0xFF462521),
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .bold,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ]),
+                                                      ),
+                                                      if (showDivider)
+                                                        Divider(
+                                                            height: 1,
+                                                            thickness: 1,
+                                                            indent: 16,
+                                                            endIndent: 16,
+                                                            color:
+                                                                Color.fromARGB(
+                                                                    255,
+                                                                    187,
+                                                                    167,
+                                                                    154)),
+                                                    ],
+                                                  );
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                20, 0, 20, 20),
+                                            child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.end,
+                                                children: [
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      text: 'Total:  ',
+                                                      style: TextStyle(
+                                                        fontFamily: 'Inter',
+                                                        fontSize: 14,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        color:
+                                                            Color(0xFF462521),
+                                                      ),
+                                                      children: [
+                                                        TextSpan(
+                                                          text:
+                                                              '₱${orderData['total_amount']?.toStringAsFixed(2) ?? '0.00'}',
+                                                          style: TextStyle(
+                                                            fontFamily: 'Inter',
+                                                            fontSize: 16,
+                                                            fontWeight:
+                                                                FontWeight.w900,
+                                                            color: Color(
+                                                                0xFF462521),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  )
+                                                ]),
                                           )
-                                        ]),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ), // Bottom padding
-                    SizedBox(height: 20),
-                  ],
-                ),
-              ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
+                        SizedBox(height: 20), // Bottom padding
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
     );
   }
