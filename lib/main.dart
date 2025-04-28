@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:firebase_core/firebase_core.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
+import 'package:itelec_quiz_one/pages/admin/manage_products.dart';
 import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
 import 'package:itelec_quiz_one/pages/catalog_page.dart';
 import 'package:itelec_quiz_one/pages/login_page.dart';
@@ -8,7 +11,10 @@ import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/registration_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
 import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:itelec_quiz_one/pages/transaction_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/rendering.dart';
+import 'package:itelec_quiz_one/utils/auth_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure plugin initialization
@@ -27,7 +33,7 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-
+  //debugPaintSizeEnabled = true;
   runApp(const MyApp());
 }
 
@@ -47,6 +53,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    checkIfLoggedIn(context); // Check if user is logged in
     _checkRememberMe(context); // Check remember me on app start
     return MaterialApp(
       title: "DoNut Stop",
@@ -381,15 +388,22 @@ class BtnFieldSection extends StatelessWidget {
                 ),
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ManageUsersPage()),
-                );
-              },
-              child: Text("Manage Users"),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //           builder: (context) => TransactionPage(
+            //                 accountName: "Ira Customer",
+            //                 amountPaid: 150.00,
+            //                 orders: "somehting",
+            //                 refNo: "123456789",
+            //                 dateTime: "April 28, 2025, 10:27 AM",
+            //               )),
+            //     );
+            //   },
+            //   child: Text("Transaction Page"),
+            // ),
           ],
         ),
       ),
