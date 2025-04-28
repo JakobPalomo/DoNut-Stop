@@ -65,16 +65,4 @@ Future<void> registerUserGoogle({
     'is_deleted': false,
     'favorites': [],
   });
-
-  // Add location as a subcollection
-  await _firestore.collection('users').doc(uid).collection('locations').add({
-    'state_province': state,
-    'city_municipality': city,
-    'barangay': barangay,
-    'zip': zip,
-    'house_no_building_street': streetName,
-    'main_location': true,
-    'created_at': Timestamp.now(),
-    'modified_at': Timestamp.now(),
-  });
 }

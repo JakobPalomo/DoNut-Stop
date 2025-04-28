@@ -5,6 +5,7 @@ class CustomOutlinedButton extends StatelessWidget {
   final Color bgColor;
   final Color textColor;
   final VoidCallback onPressed;
+  final bool isEnabled;
 
   const CustomOutlinedButton({
     super.key,
@@ -12,12 +13,13 @@ class CustomOutlinedButton extends StatelessWidget {
     required this.bgColor,
     required this.textColor,
     required this.onPressed,
+    this.isEnabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: isEnabled ? onPressed : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
         shadowColor: Colors.transparent,
@@ -45,27 +47,35 @@ class CustomOutlinedButton extends StatelessWidget {
 
 class GradientButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
+  final bool isEnabled;
 
   const GradientButton({
     super.key,
     required this.text,
     required this.onPressed,
+    this.isEnabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        gradient: isEnabled
+            ? const LinearGradient(
+                colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : const LinearGradient(
+                colors: [Color(0xFF93494C), Color(0xFF822E43)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
         borderRadius: BorderRadius.circular(20),
       ),
       child: ElevatedButton(
-        onPressed: onPressed,
+        onPressed: isEnabled ? onPressed : null,
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -77,11 +87,10 @@ class GradientButton extends StatelessWidget {
         ),
         child: Text(
           text,
-          style: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-            color: Colors.white,
-          ),
+          style: TextStyle(
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.w700,
+              color: Colors.white),
         ),
       ),
     );

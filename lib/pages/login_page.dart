@@ -27,6 +27,8 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   String? _errorText; // Add a variable to store error messages
+  final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('users');
 
   @override
   void initState() {
@@ -189,6 +191,10 @@ class _LoginPageState extends State<LoginPage> {
           streetName: "",
           uid: user.uid,
         );
+
+        // Show the address dialog
+        await showAddressDialog(
+            context, user.uid, user.email!.split('@').first, _usersCollection);
       }
 
       // Retrieve the role from Firestore
@@ -722,4 +728,343 @@ class _MyCheckboxState extends State<MyCheckbox> {
       ],
     );
   }
+}
+
+Future<void> showAddressDialog(BuildContext context, String userId,
+    String initialUsername, CollectionReference usersCollection) async {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController usernameController =
+      TextEditingController(text: initialUsername);
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController barangayController = TextEditingController();
+  final TextEditingController zipController = TextEditingController();
+  final TextEditingController streetNameController = TextEditingController();
+
+  bool isSaving = false; // To track the save operation
+
+  await showDialog(
+    context: context,
+    barrierDismissible: false, // Prevent dismissing the dialog without saving
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            titlePadding: const EdgeInsets.all(0),
+            actionsAlignment: MainAxisAlignment.center,
+            title: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFFCA2E55),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: const Text(
+                "Complete your details",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter',
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            content: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      "Please enter your username and address to complete registration of your account.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    // Username Field
+                    _buildTextField(
+                      "Username",
+                      "Your username",
+                      true,
+                      usernameController,
+                      validator: _validateRequiredField,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9_-]')),
+                        LengthLimitingTextInputFormatter(50),
+                      ],
+                    ),
+                    // State/Province Field
+                    _buildTextField(
+                      "State/Province",
+                      "Your state/province",
+                      true,
+                      stateController,
+                      validator: _validateRequiredField,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(255),
+                      ],
+                    ),
+                    // City/Municipality Field
+                    _buildTextField(
+                      "City/Municipality",
+                      "Your city/municipality",
+                      true,
+                      cityController,
+                      validator: _validateRequiredField,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(255),
+                      ],
+                    ),
+                    // Barangay Field
+                    _buildTextField(
+                      "Barangay",
+                      "Your barangay",
+                      true,
+                      barangayController,
+                      validator: _validateRequiredField,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(255),
+                      ],
+                    ),
+                    // Street Name Field
+                    _buildTextField(
+                      "House No/Bldg./Street",
+                      "Your house no./bldg./street",
+                      true,
+                      streetNameController,
+                      validator: _validateRequiredField,
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(255),
+                      ],
+                    ),
+                    // ZIP Code Field
+                    _buildTextField(
+                      "ZIP Code",
+                      "Your ZIP code",
+                      true,
+                      zipController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'ZIP Code is required';
+                        }
+                        if (!RegExp(r'^\d+$').hasMatch(value)) {
+                          return 'Enter a valid ZIP Code (numbers only)';
+                        }
+                        if (value.length > 4) {
+                          return 'ZIP Code must be a maximum of 4 digits';
+                        }
+                        return null;
+                      },
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(4),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              GradientButton(
+                text: isSaving ? "Saving..." : "Save",
+                isEnabled: !isSaving,
+                onPressed: isSaving
+                    ? null
+                    : () async {
+                        if (_formKey.currentState!.validate()) {
+                          setState(() {
+                            isSaving = true;
+                          });
+
+                          try {
+                            // Log the start of the save operation
+                            print("Starting save operation...");
+
+                            // Validate unique username
+                            print("Validating unique username...");
+                            final usernameError = await _validateUniqueUsername(
+                                usernameController.text,
+                                usersCollection,
+                                initialUsername);
+                            if (usernameError != null) {
+                              print(
+                                  "Username validation failed: $usernameError");
+                              // Show error manually
+                              toastification.show(
+                                context: context,
+                                title: Text('Username taken'),
+                                description: Text(
+                                    'The username ${usernameController.text} is already taken.'),
+                                type: ToastificationType.error,
+                                autoCloseDuration: const Duration(seconds: 4),
+                              );
+                              setState(() {
+                                isSaving = false;
+                              });
+                              return;
+                            }
+                            print("Username validation passed.");
+
+                            // Update the user's main document in the 'users' collection
+                            print("Updating main user document...");
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(userId)
+                                .update({
+                              'username': usernameController.text,
+                            });
+                            print("Main user document updated successfully.");
+
+                            // Add the address to the 'locations' subcollection
+                            print(
+                                "Adding address to 'locations' subcollection...");
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(userId)
+                                .collection('locations')
+                                .add({
+                              'state_province': stateController.text,
+                              'city_municipality': cityController.text,
+                              'barangay': barangayController.text,
+                              'house_no_building_street':
+                                  streetNameController.text,
+                              'zip': int.tryParse(zipController.text) ?? 0,
+                              'main_location': true,
+                              'created_at': Timestamp.now(),
+                              'modified_at': Timestamp.now(),
+                            });
+                            print(
+                                "Address added to 'locations' subcollection successfully.");
+
+                            Navigator.of(context).pop(); // Close the dialog
+                          } catch (e) {
+                            print("Error saving details: $e");
+                            toastification.show(
+                              context: context,
+                              title: Text('Error'),
+                              description: Text(
+                                  'An error occurred while saving your details.'),
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+                          } finally {
+                            setState(() {
+                              isSaving = false;
+                            });
+                            print("Save operation completed.");
+                          }
+                        } else {
+                          print("Form validation failed.");
+                        }
+                      },
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
+}
+
+Widget _buildTextField(
+  String label,
+  String hint,
+  bool isRequired,
+  TextEditingController? controller, {
+  String? Function(String?)? validator,
+  TextInputType? keyboardType,
+  List<TextInputFormatter>? inputFormatters,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 12),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        RichText(
+          text: TextSpan(
+            text: label,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.bold,
+            ),
+            children: isRequired
+                ? [
+                    TextSpan(
+                      text: ' *',
+                      style: TextStyle(color: Color(0xFFEC2023)),
+                    ),
+                  ]
+                : [],
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextFormField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.black26),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Color(0xFFCA2E55), width: 2.0),
+            ),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          cursorColor: Color(0xFFCA2E55),
+          style: TextStyle(fontFamily: 'Inter', color: Colors.black),
+          validator: validator,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
+        ),
+      ],
+    ),
+  );
+}
+
+String? _validateRequiredField(String? value) {
+  if (value == null || value.isEmpty) {
+    return 'This field is required';
+  }
+  return null;
+}
+
+Future<String?> _validateUniqueUsername(String? value,
+    CollectionReference usersCollection, String currentUsername) async {
+  if (value == null || value.isEmpty) {
+    return 'Username is required';
+  }
+
+  // If the username is the same as the current username, skip validation
+  if (value == currentUsername) {
+    return null; // Username is valid
+  }
+
+  // Query Firestore to check if the username exists
+  final querySnapshot =
+      await usersCollection.where('username', isEqualTo: value).get();
+
+  // Check if the username exists
+  if (querySnapshot.docs.isNotEmpty) {
+    return 'Username is already taken';
+  }
+
+  return null; // Username is unique
 }

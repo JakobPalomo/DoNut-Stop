@@ -984,7 +984,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               _buildTextField(
                                 "Contact Number",
                                 "Your contact number",
-                                true,
+                                false,
                                 contactNoController,
                                 validator: _validateContactNo,
                                 keyboardType: TextInputType.text,

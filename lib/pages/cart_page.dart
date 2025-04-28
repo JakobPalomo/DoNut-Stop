@@ -477,15 +477,17 @@ class _CartPageState extends State<CartPage> {
                         // Checkout Button
                         GradientButton(
                           text: "Checkout",
-                          onPressed: () {
-                            // Handle checkout logic here
-                            print("Proceeding to checkout...");
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CheckoutPage()),
-                            );
-                          },
+                          isEnabled: cartItems.isNotEmpty,
+                          onPressed: cartItems.isNotEmpty
+                              ? () {
+                                  print("Proceeding to checkout...");
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CheckoutPage()),
+                                  );
+                                }
+                              : null,
                         )
                       ],
                     ),
