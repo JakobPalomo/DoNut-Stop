@@ -266,6 +266,7 @@ class TransactionPage extends StatelessWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 100),
                       ],
                     ),
                   ),

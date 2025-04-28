@@ -183,6 +183,7 @@ class _ProductPageState extends State<ProductPage> {
       ),
       home: Scaffold(
         backgroundColor: Color(0xFFFFE0B6), // Background color
+        extendBodyBehindAppBar: true,
         appBar: AppBarWithBackAndTitle(
           backgroundColor: Colors.transparent,
           onBackPressed: () {
@@ -238,35 +239,40 @@ class _ProductPageState extends State<ProductPage> {
             },
           ),
         ),
-        body: Column(
-          children: [
+        body: CustomScrollView(
+          slivers: [
             // Donut Image Section
-            Container(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: widget.image.isNotEmpty &&
-                        widget.image.startsWith('data:image/')
-                    ? Image.memory(
-                        base64Decode(widget.image.split(',').last),
-                        fit: BoxFit.contain,
-                        width: 330,
-                        height: 330,
-                      )
-                    : Image.asset(
-                        width: 330,
-                        height: 330,
-                        widget.image.isNotEmpty
-                            ? widget.image
-                            : 'assets/front_donut/fdonut1.png',
-                        fit: BoxFit.contain,
-                      ),
+            SliverToBoxAdapter(
+              child: Container(
+                padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(20),
+                  child: widget.image.isNotEmpty &&
+                          widget.image.startsWith('data:image/')
+                      ? Image.memory(
+                          base64Decode(widget.image.split(',').last),
+                          fit: BoxFit.contain,
+                          width: 330,
+                          height: 330,
+                        )
+                      : Image.asset(
+                          width: 330,
+                          height: 330,
+                          widget.image.isNotEmpty
+                              ? widget.image
+                              : 'assets/front_donut/fdonut1.png',
+                          fit: BoxFit.contain,
+                        ),
+                ),
               ),
             ),
-            SizedBox(height: 20),
+            SliverToBoxAdapter(
+              child: SizedBox(height: 20),
+            ),
 
             // Product Details Section
-            Expanded(
+            SliverFillRemaining(
+              hasScrollBody: false,
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
@@ -277,7 +283,6 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                 ),
                 child: Center(
-                  // Ensure maxWidth applies correctly
                   child: Container(
                     constraints: BoxConstraints(maxWidth: 800),
                     padding: EdgeInsets.all(20),
@@ -336,31 +341,32 @@ class _ProductPageState extends State<ProductPage> {
 
                         // Quantity Selector
                         SizedBox(
-                            width: double.infinity,
-                            child: Wrap(
-                              alignment: WrapAlignment.start,
-                              crossAxisAlignment: WrapCrossAlignment.center,
-                              spacing: 20,
-                              runSpacing: 5,
-                              children: [
-                                Text(
-                                  "Quantity",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.black,
-                                  ),
+                          width: double.infinity,
+                          child: Wrap(
+                            alignment: WrapAlignment.start,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            spacing: 20,
+                            runSpacing: 5,
+                            children: [
+                              Text(
+                                "Quantity",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.black,
                                 ),
-                                QuantitySelector(
-                                  quantity: quantity,
-                                  onQuantityChanged: (newQuantity) {
-                                    setState(() {
-                                      quantity = newQuantity;
-                                    });
-                                  },
-                                ),
-                              ],
-                            )),
+                              ),
+                              QuantitySelector(
+                                quantity: quantity,
+                                onQuantityChanged: (newQuantity) {
+                                  setState(() {
+                                    quantity = newQuantity;
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: 20),
 
                         // Price & Add to Cart Button
