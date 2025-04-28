@@ -33,6 +33,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
   final List<Map<String, dynamic>> paymentMethods = [
     {'value': 1, 'label': 'Cash on Delivery'},
     {'value': 2, 'label': 'GCash'},
+    {'value': 3, 'label': 'Credit Card'},
   ];
 
   void _updateOrderStatus(String id, int newOrderStatus) async {
@@ -323,7 +324,9 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 23),
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _ordersCollection.snapshots(),
+                  stream: _ordersCollection
+                      .orderBy('datetime_purchased', descending: true)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -383,7 +386,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                           : 'No address available';
                       final paymentMethodString = paymentMethods.firstWhere(
                         (method) => method['value'] == data['payment_method'],
-                        orElse: () => {'label': 'Unknown'},
+                        orElse: () => {'label': 'Cash on Delivery'},
                       )['label'];
 
                       // Combine orders data with products_ordered
@@ -451,7 +454,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                           data: orders,
                           columns: columns,
                           filters: filters,
-                          rowsPerPage: 10,
+                          rowsPerPage: 14,
                           searchQuery: _searchController.text,
                           dropdowns: dropdowns,
                           onRoleChanged: (row, newRole) {

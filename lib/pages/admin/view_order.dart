@@ -36,7 +36,8 @@ class _ViewOrderPageState extends State<ViewOrderPage> {
 
   final List<Map<String, dynamic>> paymentMethods = [
     {"label": "Cash on Delivery", "value": 1},
-    {"label": "Credit Card", "value": 2},
+    {"label": "GCash", "value": 2},
+    {"label": "Credit Card", "value": 3},
   ];
 
   @override

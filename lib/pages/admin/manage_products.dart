@@ -78,7 +78,9 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               sliver: StreamBuilder<QuerySnapshot>(
-                stream: _productsCollection.snapshots(),
+                stream: _productsCollection
+                    .orderBy('created_at', descending: true)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return SliverFillRemaining(

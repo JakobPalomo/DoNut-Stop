@@ -35,7 +35,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   final List<Map<String, dynamic>> paymentMethods = [
     {"label": "Cash on Delivery", "value": 1},
-    {"label": "Credit Card", "value": 2},
+    {"label": "GCash", "value": 2},
+    {"label": "Credit Card", "value": 3},
   ];
 
   @override
@@ -186,6 +187,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
       // Extract the zip code as a number
       int zipCode = int.tryParse(userAddress.split(', ')[4]) ?? 0;
 
+      // Resolve the payment method
+      final paymentMethod = paymentMethods.firstWhere(
+            (option) => option['label'] == selectedPaymentMethod,
+            orElse: () => {'label': 'Unknown'},
+          )['value'] ??
+          1;
+
       // Create the order document
       DocumentReference orderRef =
           await FirebaseFirestore.instance.collection('orders').add({
@@ -193,11 +201,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         'total_amount': totalPrice,
         'shipping_fee': 30.0,
         'user_id': userId,
-        'payment_method': paymentMethods.firstWhere(
-              (option) => option['value'] == selectedPaymentMethod,
-              orElse: () => {'label': 'Unknown'},
-            )['label'] ??
-            'Cash on Delivery',
+        'payment_method': paymentMethod,
         'datetime_purchased': datetimePurchased,
         'order_status': 1, // Default to "For Delivery"
         'delivery_location': {

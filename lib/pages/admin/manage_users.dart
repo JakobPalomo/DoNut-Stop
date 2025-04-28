@@ -246,7 +246,9 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 23),
                 child: StreamBuilder<QuerySnapshot>(
-                  stream: _usersCollection.snapshots(),
+                  stream: _usersCollection
+                      .orderBy('created_at', descending: true)
+                      .snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -375,7 +377,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                           data: users,
                           columns: columns,
                           filters: filters,
-                          rowsPerPage: 10,
+                          rowsPerPage: 14,
                           searchQuery: _searchController.text,
                           dropdowns: dropdowns,
                           onRoleChanged: (row, newRole) {
