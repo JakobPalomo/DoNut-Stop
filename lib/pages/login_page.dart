@@ -417,40 +417,40 @@ class _LoginPageState extends State<LoginPage> {
                               spacing: 20,
                               runSpacing: 10,
                               children: [
-                                ElevatedButton.icon(
-                                  style: ElevatedButton.styleFrom(
-                                    elevation: 0,
-                                    shadowColor: Colors.transparent,
-                                    iconSize: 22,
-                                    backgroundColor: Colors.white,
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(15)),
-                                    side:
-                                        BorderSide(color: Colors.grey.shade300),
-                                    padding: EdgeInsets.symmetric(
-                                        vertical: 18, horizontal: 20),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => CatalogPage()),
-                                    );
-                                  },
-                                  icon: Icon(FontAwesomeIcons.facebook,
-                                      color: Color(0xFF1877F2)),
-                                  label: Text(
-                                    "Facebook",
-                                    style: TextStyle(
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 16,
-                                      color: Color(0xFF686868),
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
+                                // ElevatedButton.icon(
+                                //   style: ElevatedButton.styleFrom(
+                                //     elevation: 0,
+                                //     shadowColor: Colors.transparent,
+                                //     iconSize: 22,
+                                //     backgroundColor: Colors.white,
+                                //     shape: RoundedRectangleBorder(
+                                //         borderRadius:
+                                //             BorderRadius.circular(15)),
+                                //     side:
+                                //         BorderSide(color: Colors.grey.shade300),
+                                //     padding: EdgeInsets.symmetric(
+                                //         vertical: 18, horizontal: 20),
+                                //   ),
+                                //   onPressed: () {
+                                //     Navigator.push(
+                                //       context,
+                                //       MaterialPageRoute(
+                                //           builder: (context) => CatalogPage()),
+                                //     );
+                                //   },
+                                //   icon: Icon(FontAwesomeIcons.facebook,
+                                //       color: Color(0xFF1877F2)),
+                                //   label: Text(
+                                //     "Facebook",
+                                //     style: TextStyle(
+                                //       fontFamily: 'Inter',
+                                //       fontWeight: FontWeight.w500,
+                                //       fontSize: 16,
+                                //       color: Color(0xFF686868),
+                                //     ),
+                                //     overflow: TextOverflow.ellipsis,
+                                //   ),
+                                // ),
                                 ElevatedButton.icon(
                                   style: ElevatedButton.styleFrom(
                                     elevation: 0,
@@ -568,8 +568,8 @@ class _LoginPageState extends State<LoginPage> {
               hintText: hint,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: Colors.white), // Default border color
+                borderSide: BorderSide(
+                    color: Color(0xFFBDBDBD), width: 1), // Default border color
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -578,8 +578,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide:
-                    BorderSide(color: Colors.white), // Normal border color
+                borderSide: BorderSide(
+                    color: Color(0xFFBDBDBD), width: 1), // Normal border color
               ),
               filled: true,
               fillColor: Colors.white,
@@ -702,19 +702,32 @@ class _MyCheckboxState extends State<MyCheckbox> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Checkbox(
-          value: _isChecked, // Bind to the state variable
-          onChanged: (value) {
-            setState(() {
-              _isChecked = value!; // Update the state on change
-              _saveRememberMeState(_isChecked); // Save the state persistently
-            });
-          },
-          activeColor: Color(0xFFCA2E55), // Color when active
-          checkColor: Color(0xFFCA2E55), // Checkmark color
-          fillColor: MaterialStateProperty.all(Colors.white), // Box color
-          side: BorderSide.none, // Remove outline
+        Container(
+          width: 25,
+          height: 25,
+          decoration: BoxDecoration(
+            color: _isChecked ? Color(0xFFCA2E55) : Colors.white,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color: Color(0xFFBDBDBD), // Border color
+              width: 1,
+            ),
+          ),
+          child: Checkbox(
+            value: _isChecked,
+            onChanged: (value) {
+              setState(() {
+                _isChecked = value!;
+                _saveRememberMeState(_isChecked);
+              });
+            },
+            checkColor: Colors.white,
+            fillColor: MaterialStateProperty.all(Colors.transparent),
+            side: BorderSide.none,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
         ),
+        SizedBox(width: 10),
         Text(
           "Remember me",
           style: TextStyle(
