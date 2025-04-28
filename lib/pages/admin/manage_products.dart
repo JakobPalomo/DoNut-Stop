@@ -14,11 +14,18 @@ class ManageProductsPage extends StatefulWidget {
 }
 
 class _ManageProductsPageState extends State<ManageProductsPage> {
+  final ScrollController _scrollController = ScrollController();
   final CollectionReference _productsCollection =
       FirebaseFirestore.instance.collection('products');
 
   void _deleteProduct(String id) async {
     await _productsCollection.doc(id).delete();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -33,6 +40,7 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
         appBar: AppBarWithMenuAndTitle(title: "Manage Products"),
         drawer: AdminDrawer(),
         body: CustomScrollView(
+          controller: _scrollController,
           slivers: [
             // Sliver for Title and Add Product Button
             SliverToBoxAdapter(
@@ -343,6 +351,35 @@ class _ManageProductsPageState extends State<ManageProductsPage> {
                     ),
                   );
                 },
+              ),
+            ),
+
+            // Silver for Button
+            SliverToBoxAdapter(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                width: double.infinity,
+                alignment: Alignment.center,
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 20,
+                  runSpacing: 10,
+                  children: [
+                    // Back to Top Button
+                    CustomOutlinedButton(
+                      text: "Back to Top",
+                      bgColor: Colors.white,
+                      textColor: const Color(0xFFCA2E55),
+                      onPressed: () {
+                        _scrollController.animateTo(
+                          0,
+                          duration: Duration(milliseconds: 500),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

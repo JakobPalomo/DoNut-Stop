@@ -377,7 +377,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                           data: users,
                           columns: columns,
                           filters: filters,
-                          rowsPerPage: 14,
+                          rowsPerPage: 12,
                           searchQuery: _searchController.text,
                           dropdowns: dropdowns,
                           onRoleChanged: (row, newRole) {

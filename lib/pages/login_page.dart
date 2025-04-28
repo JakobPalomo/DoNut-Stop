@@ -347,7 +347,9 @@ class _LoginPageState extends State<LoginPage> {
                                   children: [
                                     MyCheckbox(),
                                     TextButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        _showForgotPasswordDialog(context);
+                                      },
                                       child: Text(
                                         "Forgot password?",
                                         style: TextStyle(
@@ -369,7 +371,9 @@ class _LoginPageState extends State<LoginPage> {
                                   children: [
                                     MyCheckbox(),
                                     TextButton(
-                                      onPressed: () {},
+                                      onPressed: () {
+                                        _showForgotPasswordDialog(context);
+                                      },
                                       child: Text(
                                         "Forgot password?",
                                         style: TextStyle(
@@ -1080,4 +1084,178 @@ Future<String?> _validateUniqueUsername(String? value,
   }
 
   return null; // Username is unique
+}
+
+Future<void> _showForgotPasswordDialog(context) async {
+  final emailController = TextEditingController();
+
+  return showDialog<void>(
+    context: context,
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            titlePadding: const EdgeInsets.all(0),
+            actionsAlignment: MainAxisAlignment.center,
+            title: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFFCA2E55),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: const Text(
+                "Forgot Password",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Inter',
+                  color: Colors.white,
+                ),
+              ),
+            ),
+            content: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 15, 20, 5),
+              child: SizedBox(
+                height: 80,
+                child: Column(
+                  children: [
+                    const Text(
+                      "Enter your email address to receive a password reset link.",
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Inter',
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(
+                        hintText: "Enter your email",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(color: Colors.black26),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                              color: Color(0xFFCA2E55), width: 2.0),
+                        ),
+                        filled: true,
+                        fillColor: Colors.white,
+                      ),
+                      cursorColor: const Color(0xFFCA2E55),
+                      style: const TextStyle(
+                          fontFamily: 'Inter', color: Colors.black),
+                      inputFormatters: [LengthLimitingTextInputFormatter(255)],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              CustomOutlinedButton(
+                text: "Cancel",
+                bgColor: Colors.white,
+                textColor: const Color(0xFFCA2E55),
+                onPressed: () => Navigator.of(context).pop(), // Close dialog
+              ),
+              const SizedBox(width: 10),
+              GradientButton(
+                text: "Submit",
+                onPressed: () async {
+                  final email = emailController.text.trim();
+                  if (email.isEmpty) {
+                    toastification.show(
+                      context: context,
+                      title: Text('Error'),
+                      description: Text('Email address is required.'),
+                      type: ToastificationType.error,
+                      autoCloseDuration: const Duration(seconds: 4),
+                    );
+                    return;
+                  }
+
+                  try {
+                    // Check if the email exists and its provider(s)
+                    final methods = await FirebaseAuth.instance
+                        .fetchSignInMethodsForEmail(email);
+
+                    if (methods.isEmpty) {
+                      // No account exists for this email
+                      toastification.show(
+                        context: context,
+                        title: Text('Error'),
+                        description: Text('No user found with this email.'),
+                        type: ToastificationType.error,
+                        autoCloseDuration: const Duration(seconds: 4),
+                      );
+                      return;
+                    }
+
+                    if (methods.contains('google.com') && methods.length == 1) {
+                      // Account is linked only to Google
+                      toastification.show(
+                        context: context,
+                        title: Text('Google Account'),
+                        description: Text(
+                            'This account is linked to Google. Please sign in using Google.'),
+                        type: ToastificationType.info,
+                        autoCloseDuration: const Duration(seconds: 4),
+                      );
+                      return;
+                    }
+
+                    // Send password reset email for email/password accounts
+                    await FirebaseAuth.instance
+                        .sendPasswordResetEmail(email: email);
+
+                    toastification.show(
+                      context: context,
+                      title: Text('Success'),
+                      description:
+                          Text('Password reset link has been sent to $email.'),
+                      type: ToastificationType.success,
+                      autoCloseDuration: const Duration(seconds: 4),
+                    );
+
+                    Navigator.of(context).pop(); // Close the dialog
+                  } on FirebaseAuthException catch (e) {
+                    String errorMessage;
+                    if (e.code == 'user-not-found') {
+                      errorMessage = 'No user found with this email.';
+                    } else {
+                      errorMessage = 'Failed to send reset link. Try again.';
+                    }
+
+                    toastification.show(
+                      context: context,
+                      title: Text('Error'),
+                      description: Text(errorMessage),
+                      type: ToastificationType.error,
+                      autoCloseDuration: const Duration(seconds: 4),
+                    );
+                  } catch (e) {
+                    print("Error sending password reset email: $e");
+                    toastification.show(
+                      context: context,
+                      title: Text('Error'),
+                      description: Text('An unexpected error occurred.'),
+                      type: ToastificationType.error,
+                      autoCloseDuration: const Duration(seconds: 4),
+                    );
+                  }
+                },
+              ),
+            ],
+          );
+        },
+      );
+    },
+  );
 }
