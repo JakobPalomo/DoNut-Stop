@@ -18,10 +18,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
 
-class AppBarWithSearchAndCart extends StatelessWidget
+class AppBarWithSearchAndCart extends StatefulWidget
     implements PreferredSizeWidget {
-  const AppBarWithSearchAndCart({super.key});
+  final TextEditingController controller;
+  final Function(String) onChanged;
+  final Function(String) onSubmitted;
+  const AppBarWithSearchAndCart(
+      {required this.controller,
+      required this.onChanged,
+      required this.onSubmitted,
+      super.key});
 
+  @override
+  State<AppBarWithSearchAndCart> createState() =>
+      _AppBarWithSearchAndCartState();
+
+  @override
+  Size get preferredSize => const Size.fromHeight(56.0);
+}
+
+class _AppBarWithSearchAndCartState extends State<AppBarWithSearchAndCart> {
   @override
   Size get preferredSize => Size.fromHeight(56.0);
 
@@ -52,6 +68,13 @@ class AppBarWithSearchAndCart extends StatelessWidget
             child: SizedBox(
               height: 38,
               child: TextField(
+                controller: widget.controller,
+                onChanged: (value) {
+                  widget.onChanged(value);
+                },
+                onSubmitted: (value) {
+                  widget.onChanged(value);
+                },
                 cursorColor: Colors.white,
                 style: TextStyle(
                   fontFamily: 'Inter',

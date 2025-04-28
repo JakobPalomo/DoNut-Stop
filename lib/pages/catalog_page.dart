@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:itelec_quiz_one/pages/all_donuts.dart';
 import 'package:itelec_quiz_one/pages/product_page.dart';
 import 'package:itelec_quiz_one/pages/cart_page.dart';
 import 'package:itelec_quiz_one/pages/product_management_page.dart';
@@ -23,11 +24,24 @@ class CatalogPage extends StatefulWidget {
 
 class _CatalogPageState extends State<CatalogPage> {
   String? username;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
   @override
   void initState() {
     super.initState();
     _loadUsername();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text.trim().toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUsername() async {
@@ -64,13 +78,27 @@ class _CatalogPageState extends State<CatalogPage> {
         scaffoldBackgroundColor: const Color(0xFFFFE0B6),
       ),
       home: Scaffold(
-        appBar: AppBarWithSearchAndCart(),
+        appBar: AppBarWithSearchAndCart(
+          controller: _searchController,
+          onChanged: (value) {
+            setState(() {
+              print("Search query: $value");
+              _searchQuery = value.trim().toLowerCase();
+            });
+          },
+          onSubmitted: (value) {
+            setState(() {
+              print("Search submitted: $value");
+              _searchQuery = value.trim().toLowerCase();
+            });
+          },
+        ),
         drawer: UserDrawer(),
         body: SingleChildScrollView(
           child: Column(
             children: [
               Padding(
-                padding: EdgeInsets.fromLTRB(35, 35, 35, 25),
+                padding: EdgeInsets.fromLTRB(50, 35, 50, 25),
                 child: Container(
                   width: double.infinity,
                   child: Column(
@@ -100,8 +128,9 @@ class _CatalogPageState extends State<CatalogPage> {
                   ),
                 ),
               ),
-              const CatalogPageTodaysOffers(),
-              const CatalogPageDonuts(),
+              CatalogPageTodaysOffers(
+                  searchQuery: _searchQuery), // Pass search query
+              CatalogPageDonuts(searchQuery: _searchQuery), // Pass search query
               const SizedBox(height: 30),
             ],
           ),
@@ -112,12 +141,26 @@ class _CatalogPageState extends State<CatalogPage> {
 }
 
 class ToggleChipsRow extends StatefulWidget {
+  final List<String> chips;
+  final Function(String) onChipSelected; // Callback for chip selection
+
+  const ToggleChipsRow(
+      {required this.chips, required this.onChipSelected, super.key});
+
   @override
   _ToggleChipsRowState createState() => _ToggleChipsRowState();
 }
 
 class _ToggleChipsRowState extends State<ToggleChipsRow> {
-  String selectedChip = "Strawberry"; // Default selected chip
+  String selectedChip = "";
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      selectedChip = widget.chips.first; // Default to the first chip
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,22 +168,10 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
       scrollDirection: Axis.horizontal,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-        child: Row(
-          children: [
-            SizedBox(width: 35),
-            _buildChip("Strawberry"),
-            SizedBox(width: 8),
-            _buildChip("Chocolate"),
-            SizedBox(width: 8),
-            _buildChip("Matcha"),
-            SizedBox(width: 8),
-            _buildChip("Cotton Candy"),
-            SizedBox(width: 8),
-            _buildChip("Glazed"),
-            SizedBox(width: 8),
-            _buildChip("Ube"),
-            SizedBox(width: 35),
-          ],
+        child: Wrap(
+          spacing: 8, // Space between chips
+          runSpacing: 8, // Space between rows of chips
+          children: widget.chips.map((chip) => _buildChip(chip)).toList(),
         ),
       ),
     );
@@ -156,9 +187,16 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
         child: InkWell(
           onTap: () {
             setState(() {
-              selectedChip = label;
+              // If the chip is already selected, deselect it
+              if (isSelected) {
+                selectedChip = "";
+                widget.onChipSelected("");
+              } else {
+                selectedChip = label;
+                widget.onChipSelected(label);
+              }
             });
-            debugPrint("Selected Today's Offers: $label");
+            debugPrint("Selected Chip: $selectedChip");
           },
           borderRadius: BorderRadius.circular(20), // Circle ripple
           splashColor: Colors.white.withOpacity(0.3), // White ripple effect
@@ -172,10 +210,11 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
               child: Text(
                 label,
                 style: TextStyle(
-                    fontFamily: 'Inter',
-                    color: isSelected ? Colors.white : Color(0xFF665A49),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500),
+                  fontFamily: 'Inter',
+                  color: isSelected ? Colors.white : Color(0xFF665A49),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ),
@@ -491,7 +530,9 @@ class DonutSelectionWidget extends StatelessWidget {
 }
 
 class CatalogPageTodaysOffers extends StatefulWidget {
-  const CatalogPageTodaysOffers({super.key});
+  final String searchQuery;
+
+  const CatalogPageTodaysOffers({super.key, required this.searchQuery});
 
   @override
   _CatalogPageTodaysOffersState createState() =>
@@ -636,7 +677,7 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
+            padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
             child: Container(
               width: double.infinity,
               child: Wrap(
@@ -651,30 +692,6 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
                       color: Colors.black,
-                    ),
-                  ),
-                  Material(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    child: InkWell(
-                      onTap: () {
-                        debugPrint("See More clicked");
-                      },
-                      borderRadius: BorderRadius.circular(20),
-                      splashColor: Colors.white.withOpacity(0.3),
-                      child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        child: Text(
-                          "See More",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xFFCA2E55),
-                          ),
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -715,7 +732,15 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
                     );
                   }
 
-                  final offers = snapshot.data!.docs;
+                  final offers = snapshot.data!.docs.where((doc) {
+                    final name = doc['name'].toString().toLowerCase();
+                    final description =
+                        doc['description'].toString().toLowerCase();
+                    final price = doc['price'].toString().toLowerCase();
+                    return name.contains(widget.searchQuery) ||
+                        description.contains(widget.searchQuery) ||
+                        price.contains(widget.searchQuery);
+                  }).toList();
 
                   return ListView.builder(
                     controller: _scrollController,
@@ -833,7 +858,9 @@ class _CatalogPageTodaysOffersState extends State<CatalogPageTodaysOffers> {
 }
 
 class CatalogPageDonuts extends StatefulWidget {
-  const CatalogPageDonuts({super.key});
+  final String searchQuery;
+
+  const CatalogPageDonuts({super.key, required this.searchQuery});
 
   @override
   _CatalogPageDonutsState createState() => _CatalogPageDonutsState();
@@ -845,6 +872,7 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
       FirebaseFirestore.instance.collection('users');
   Map<String, dynamic>? userData;
   Timer? _scrollTimer;
+  String selectedChip = ""; // Track the selected chip
 
   @override
   void initState() {
@@ -910,6 +938,12 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
     );
   }
 
+  void _onChipSelected(String chip) {
+    setState(() {
+      selectedChip = chip;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     if (userData == null) {
@@ -930,7 +964,7 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(35, 0, 35, 0),
+            padding: const EdgeInsets.fromLTRB(50, 0, 50, 0),
             child: Container(
               width: double.infinity,
               child: Wrap(
@@ -947,12 +981,19 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                       color: Colors.black,
                     ),
                   ),
+                  // See More
                   Material(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.circular(8),
                     child: InkWell(
                       onTap: () {
                         debugPrint("See More clicked");
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AllDonutsPage(),
+                          ),
+                        );
                       },
                       borderRadius: BorderRadius.circular(20),
                       splashColor: Colors.white.withOpacity(0.3),
@@ -975,10 +1016,24 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
               ),
             ),
           ),
-          SizedBox(height: 10),
+          // Chips
+          Padding(
+            padding: const EdgeInsets.fromLTRB(50, 5, 50, 5),
+            child: ToggleChipsRow(
+              chips: [
+                "Strawberry",
+                "Chocolate",
+                "Matcha",
+                "Cotton Candy",
+                "Glaze",
+                "Ube"
+              ],
+              onChipSelected: _onChipSelected,
+            ),
+          ),
+          // Donut selection list with margin
           Stack(
             children: [
-              // Donut selection list with margin
               SizedBox(
                 height: 265,
                 child: StreamBuilder<QuerySnapshot>(
@@ -1009,7 +1064,23 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                       );
                     }
 
-                    final donuts = snapshot.data!.docs;
+                    final donuts = snapshot.data!.docs.where((doc) {
+                      final name = doc['name'].toString().toLowerCase();
+                      final description =
+                          doc['description'].toString().toLowerCase();
+                      final price = doc['price'].toString().toLowerCase();
+
+                      // Filter by search query and selected chip
+                      final matchesSearchQuery =
+                          name.contains(widget.searchQuery) ||
+                              description.contains(widget.searchQuery) ||
+                              price.contains(widget.searchQuery);
+
+                      final matchesChip = selectedChip.isEmpty ||
+                          name.contains(selectedChip.toLowerCase());
+
+                      return matchesSearchQuery && matchesChip;
+                    }).toList();
 
                     return ListView.builder(
                       controller: _scrollController,
@@ -1108,6 +1179,61 @@ class _CatalogPageDonutsState extends State<CatalogPageDonuts> {
                 ),
               ),
             ],
+          ),
+          SizedBox(height: 20),
+
+          // Buttons
+          Padding(
+            padding: EdgeInsets.fromLTRB(35, 0, 35, 0),
+            child: Container(
+              width: double.infinity,
+              alignment: Alignment.center,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 20,
+                runSpacing: 10,
+                children: [
+                  // More Donuts Button
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AllDonutsPage(),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 18, horizontal: 30),
+                      ),
+                      child: Text(
+                        "More Donuts",
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

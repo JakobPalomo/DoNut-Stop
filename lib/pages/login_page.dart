@@ -342,7 +342,7 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   },
                                   icon: Icon(FontAwesomeIcons.facebook,
-                                      color: Colors.blue),
+                                      color: Color(0xFF1877F2)),
                                   label: Text(
                                     "Facebook",
                                     style: TextStyle(
@@ -375,8 +375,10 @@ class _LoginPageState extends State<LoginPage> {
                                           builder: (context) => CatalogPage()),
                                     );
                                   },
-                                  icon: Icon(FontAwesomeIcons.google,
-                                      color: Colors.red),
+                                  icon: Image.asset(
+                                    "assets/icons/google.png",
+                                    height: 22,
+                                  ),
                                   label: Text(
                                     "Google",
                                     style: TextStyle(
