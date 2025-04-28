@@ -37,13 +37,34 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      print("Post-frame callback executed");
+      await Future.delayed(Duration.zero, () async {
+        await _checkLoginStatus(context);
+        await _checkRememberMe(context);
+      });
+    });
+  }
+
   Future<void> _checkRememberMe(BuildContext context) async {
+    print("Checking Remember Me...");
     final prefs = await SharedPreferences.getInstance();
     final isRemembered = prefs.getBool('rememberMe') ?? false;
+    print("Remember Me: $isRemembered");
     if (isRemembered) {
+      print("Navigating to CatalogPage...");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => CatalogPage()),
@@ -51,74 +72,89 @@ class MyApp extends StatelessWidget {
     }
   }
 
+  Future<void> _checkLoginStatus(BuildContext context) async {
+    print("Checking Login Status...");
+    await checkIfLoggedIn(context); // Call the checkIfLoggedIn function
+    print("Login Status Checked");
+  }
+
   @override
   Widget build(BuildContext context) {
-    checkIfLoggedIn(context); // Check if user is logged in
-    _checkRememberMe(context); // Check remember me on app start
     return MaterialApp(
       title: "DoNut Stop",
-      debugShowCheckedModeBanner: false, // Remove debug ribbon
-      home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFEDC690), // Background color
-          elevation: 0,
-          scrolledUnderElevation: 0,
-          title: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  image: DecorationImage(
-                    image: AssetImage("assets/mini_logo.png"),
-                    fit: BoxFit.contain,
+      debugShowCheckedModeBanner: false,
+      home: Builder(
+        builder: (context) {
+          // Call navigation logic here
+          WidgetsBinding.instance.addPostFrameCallback((_) async {
+            print("Post-frame callback executed");
+            await _checkLoginStatus(context);
+            await _checkRememberMe(context);
+          });
+
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Color(0xFFEDC690),
+              elevation: 0,
+              scrolledUnderElevation: 0,
+              title: Row(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      image: DecorationImage(
+                        image: AssetImage("assets/mini_logo.png"),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
+                  Expanded(
+                    child: Container(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Text(
+                        "Home",
+                        style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: Color(0xFF462521)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            drawer: GuestDrawer(),
+            body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color.fromRGBO(255, 225, 183, 1.0),
+                    Color.fromRGBO(255, 225, 183, 1.0),
+                    Colors.white,
+                  ],
                 ),
               ),
-              Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Text(
-                    "Home",
-                    style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 20,
-                        fontWeight: FontWeight.w800,
-                        color: Color(0xFF462521)),
-                  ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    RightPink(),
+                    MidDonut(),
+                    TxtCenter(),
+                    BtnFieldSection(),
+                    SizedBox(height: 30),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-        drawer: GuestDrawer(),
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color.fromRGBO(255, 225, 183, 1.0),
-                Color.fromRGBO(255, 225, 183, 1.0),
-                Colors.white, // Deep Yellow/Orange
-              ],
             ),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                RightPink(),
-                MidDonut(),
-                TxtCenter(),
-                BtnFieldSection(),
-                SizedBox(height: 30),
-              ],
-            ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }

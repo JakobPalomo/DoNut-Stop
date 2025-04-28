@@ -8,9 +8,12 @@ import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
 Future<void> checkIfLoggedIn(BuildContext context) async {
   final user = FirebaseAuth.instance.currentUser;
   final prefs = await SharedPreferences.getInstance();
-  final role = prefs.getInt('role'); // Retrieve role from shared preferences
+  final role = prefs.getInt('role');
+  print('checkIfLoggedIn User: $user');
+  print('checkIfLoggedIn Role: $role');
 
   if (user != null && role != null) {
+    print('checkIfLoggedIn User is logged in with role');
     final userDoc = await FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -18,12 +21,14 @@ Future<void> checkIfLoggedIn(BuildContext context) async {
 
     if (userDoc.exists) {
       if (role == 3) {
+        print("Navigating to ManageOrdersPage...");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => ManageOrdersPage()),
         );
         return;
       } else if (role == 1) {
+        print("Navigating to CatalogPage...");
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => CatalogPage()),
@@ -31,11 +36,6 @@ Future<void> checkIfLoggedIn(BuildContext context) async {
         return;
       }
     }
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => CatalogPage()),
-    );
   }
 }
 
