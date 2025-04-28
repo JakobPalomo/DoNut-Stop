@@ -13,6 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
 import 'package:itelec_quiz_one/utils/auth_utils.dart';
 import 'package:itelec_quiz_one/main.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -108,7 +109,7 @@ class _LoginPageState extends State<LoginPage> {
         if (e.code == 'user-not-found') {
           errorMessage = 'No user found for that email.';
         } else if (e.code == 'wrong-password') {
-          errorMessage = 'Wrong password provided.';
+          errorMessage = 'Wrong password provided or sign in with Google.';
         } else {
           errorMessage = 'Invalid credentials.';
         }
@@ -138,6 +139,96 @@ class _LoginPageState extends State<LoginPage> {
           autoCloseDuration: const Duration(seconds: 4),
         );
       }
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User canceled the sign-in
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      final User? user = userCredential.user;
+
+      if (user == null) {
+        throw Exception("Google sign-in failed.");
+      }
+
+      // Check if the user already exists in Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        // Register the user in Firestore if they don't exist
+        await registerUserGoogle(
+          firstName: user.displayName?.split(' ').first ?? '',
+          lastName: user.displayName?.split(' ').last ?? '',
+          username: user.email!.split('@').first,
+          email: user.email!,
+          state: "",
+          city: "",
+          barangay: "",
+          zip: 0,
+          streetName: "",
+          uid: user.uid,
+        );
+      }
+
+      // Retrieve the role from Firestore
+      final role = userDoc.exists ? userDoc['role'] : 1; // Default role is 1
+      final username = userDoc.exists ? userDoc['username'] : user.email;
+
+      // Save the username in SharedPreferences for session-wide access
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('username', username);
+      await prefs.setInt('role', role);
+
+      toastification.show(
+        context: context,
+        title: Text('Login Successful'),
+        description: Text('Welcome back!'),
+        type: ToastificationType.success,
+        autoCloseDuration: const Duration(seconds: 4),
+      );
+
+      // Navigate based on role
+      if (role == 2 || role == 3) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => CatalogPage()),
+        );
+      }
+    } catch (e) {
+      print("Error during Google sign-in: $e");
+      toastification.show(
+        context: context,
+        title: Text('Login Failed'),
+        description: Text('An error occurred during Google sign-in.'),
+        type: ToastificationType.error,
+        autoCloseDuration: const Duration(seconds: 4),
+      );
     }
   }
 
@@ -368,13 +459,7 @@ class _LoginPageState extends State<LoginPage> {
                                     padding: EdgeInsets.symmetric(
                                         vertical: 18, horizontal: 20),
                                   ),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => CatalogPage()),
-                                    );
-                                  },
+                                  onPressed: _signInWithGoogle,
                                   icon: Image.asset(
                                     "assets/icons/google.png",
                                     height: 22,

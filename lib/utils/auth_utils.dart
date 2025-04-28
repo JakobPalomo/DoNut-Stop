@@ -38,3 +38,43 @@ Future<void> checkIfLoggedIn(BuildContext context) async {
     );
   }
 }
+
+Future<void> registerUserGoogle({
+  required String firstName,
+  required String lastName,
+  required String username,
+  required String email,
+  required String state,
+  required String city,
+  required String barangay,
+  required int zip,
+  required String streetName,
+  required String uid,
+}) async {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Add user document
+  await _firestore.collection('users').doc(uid).set({
+    'first_name': firstName,
+    'last_name': lastName,
+    'username': username,
+    'email': email,
+    'role': 1,
+    'created_at': Timestamp.now(),
+    'modified_at': Timestamp.now(),
+    'is_deleted': false,
+    'favorites': [],
+  });
+
+  // Add location as a subcollection
+  await _firestore.collection('users').doc(uid).collection('locations').add({
+    'state_province': state,
+    'city_municipality': city,
+    'barangay': barangay,
+    'zip': zip,
+    'house_no_building_street': streetName,
+    'main_location': true,
+    'created_at': Timestamp.now(),
+    'modified_at': Timestamp.now(),
+  });
+}
