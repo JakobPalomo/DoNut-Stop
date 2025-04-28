@@ -77,75 +77,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
     }
   }
 
-  Future<void> fetchUserAddress() async {
-    try {
-      String userId = "O5XpBhLgOGTHaLn5Oub9hRrwEhq1";
-
-      // Fetch the user's location document from the locations subcollection
-      QuerySnapshot locationSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('locations')
-          .get();
-
-      if (locationSnapshot.docs.isNotEmpty) {
-        var locationData =
-            locationSnapshot.docs.first.data() as Map<String, dynamic>;
-
-        String stateProvince = locationData['state_province']?.toString() ??
-            "Unknown State/Province";
-        String cityMunicipality =
-            locationData['city_municipality']?.toString() ??
-                "Unknown City/Municipality";
-        String barangay =
-            locationData['barangay']?.toString() ?? "Unknown Barangay";
-        String houseNoBuildingStreet =
-            locationData['house_no_building_street']?.toString() ??
-                "Unknown Address";
-        String zip = locationData['zip']?.toString() ?? "Unknown ZIP";
-
-        setState(() {
-          userAddress =
-              "$houseNoBuildingStreet, $barangay, $cityMunicipality, $stateProvince, $zip";
-        });
-      } else {
-        print("No location data found for userId=$userId");
-      }
-    } catch (e) {
-      print("Error fetching user address: $e");
-    }
-  }
-
-  Future<void> fetchUserName() async {
-    try {
-      String userId =
-          "EVotCwhDcQPJnn43wdypHtHES1M2"; // Replace with dynamic userId if needed
-
-      // Fetch the user's document from the users collection
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .get();
-
-      if (userSnapshot.exists) {
-        var userData = userSnapshot.data() as Map<String, dynamic>;
-
-        String firstName =
-            userData['first_name']?.toString() ?? "Unknown First Name";
-        String lastName =
-            userData['last_name']?.toString() ?? "Unknown Last Name";
-
-        setState(() {
-          fullName = "$firstName $lastName";
-        });
-      } else {
-        print("No user data found for userId=$userId");
-      }
-    } catch (e) {
-      print("Error fetching user name: $e");
-    }
-  }
-
   Future<void> fetchCartItems(String userId) async {
     try {
       setState(() {
@@ -171,7 +102,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
         int quantity =
             (cartDoc.data() as Map<String, dynamic>)['quantity'] ?? 1;
 
-// Fetch product details from the donuts collection
+        // Fetch product details from the donuts collection
         DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
             .collection('products')
             .doc(productId)
@@ -183,7 +114,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
           productData['subtotal'] = (productData['price'] ?? 0) * quantity;
           items.add(productData);
 
-// Calculate total amount
+          // Calculate total amount
           total += productData['subtotal'];
         }
       }
@@ -289,6 +220,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
         });
       }
 
+      // Prepare data for TransactionPage
+      String ordersSummary = cartItems
+          .map((item) => "${item['quantity']} ${item['name']}")
+          .join(', ');
+
       // Clear the cart
       await clearCart(userId);
 
@@ -306,10 +242,19 @@ class _CheckoutPageState extends State<CheckoutPage> {
         type: ToastificationType.success,
         autoCloseDuration: const Duration(seconds: 4),
       );
+
+      // Navigate to TransactionPage
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => MyOrdersPage(),
+          builder: (context) => TransactionPage(
+            accountName: fullName,
+            amountPaid: totalPrice,
+            orders: ordersSummary,
+            refNo: refNo,
+            dateTime: DateFormat('MMMM d, yyyy, h:mm a')
+                .format(datetimePurchased.toDate()),
+          ),
         ),
       );
     } catch (e) {
@@ -547,9 +492,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Divider(
-                                  height: 1,
-                                  thickness: 1,
-                                  color: Color(0xFF462521)),
+                                height: 1,
+                                thickness: 1,
+                                color: Color(0xFF462521),
+                              ),
                               SizedBox(height: 10),
                               Text(
                                 "Payment Method",
@@ -571,11 +517,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                 ),
                               ),
                               SizedBox(height: 5),
+                              // Cash on Delivery Option
                               Row(
                                 children: [
                                   Radio<String>(
                                     value: "Cash on Delivery",
                                     groupValue: selectedPaymentMethod,
+                                    activeColor: Color(0xFFE23F61),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedPaymentMethod = value!;
@@ -591,13 +539,24 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       color: Color(0xFF462521),
                                     ),
                                   ),
+                                  Spacer(),
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 2),
+                                    child: Image.asset(
+                                      'assets/icons/cash_on_delivery.png',
+                                      width: 28,
+                                      height: 28,
+                                    ),
+                                  ),
                                 ],
                               ),
+                              // GCash Option
                               Row(
                                 children: [
                                   Radio<String>(
                                     value: "GCash",
                                     groupValue: selectedPaymentMethod,
+                                    activeColor: Color(0xFFE23F61),
                                     onChanged: (value) {
                                       setState(() {
                                         selectedPaymentMethod = value!;
@@ -612,6 +571,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       fontFamily: 'Inter',
                                       color: Color(0xFF462521),
                                     ),
+                                  ),
+                                  Spacer(),
+                                  Image.asset(
+                                    'assets/icons/gcash.png',
+                                    width: 30,
+                                    height: 30,
                                   ),
                                 ],
                               ),
@@ -744,28 +709,17 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ),
                               SizedBox(height: 20),
                               // Place Order Button
-                              Center(
+                              SizedBox(
+                                width: double.infinity,
                                 child: GradientButton(
                                   text: "Place Order",
                                   onPressed: () async {
                                     print(
                                         "Order placed with $selectedPaymentMethod");
                                     await placeOrder();
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => TransactionPage(
-                                          accountName: fullName,
-                                          amountPaid: totalAmount + 30,
-                                          orders: cartItems.map((item) => item['name']).join(', '),
-                                          refNo: "OR${DateFormat('yyyyMMdd').format(DateTime.now())}${DateFormat('HHmm').format(DateTime.now())}${(Random().nextInt(900) + 100).toString()}",
-                                          dateTime: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
-                                        ),
-                                      ),
-                                    );
                                   },
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),

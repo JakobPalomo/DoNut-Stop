@@ -14,6 +14,8 @@ import 'package:itelec_quiz_one/pages/admin/manage_orders.dart'; // Corrected pa
 import 'package:itelec_quiz_one/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
 
 class AppBarWithSearchAndCart extends StatelessWidget
@@ -80,10 +82,54 @@ class AppBarWithSearchAndCart extends StatelessWidget
         // Cart Icon
         Container(
           padding: EdgeInsets.only(left: 10),
-          child: IconButton(
-            icon: Icon(Icons.shopping_cart, color: Color(0xFF2F090B)),
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (context) => CartPage())),
+          child: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('users')
+                .doc(FirebaseAuth.instance.currentUser?.uid)
+                .collection('cart')
+                .snapshots(),
+            builder: (context, snapshot) {
+              int cartItemCount = 0;
+              if (snapshot.hasData) {
+                cartItemCount = snapshot.data!.docs.length;
+              }
+
+              return Stack(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 10),
+                    child: IconButton(
+                      icon: Icon(Icons.shopping_cart, color: Color(0xFF2F090B)),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CartPage()),
+                      ),
+                    ),
+                  ),
+                  if (cartItemCount > 0)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: 3, horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: Color(0xFFCA2E55),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '$cartItemCount',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ),
       ]),
