@@ -64,11 +64,19 @@ class _MyAppState extends State<MyApp> {
     final isRemembered = prefs.getBool('rememberMe') ?? false;
     print("Remember Me: $isRemembered");
     if (isRemembered) {
-      print("Navigating to CatalogPage...");
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => CatalogPage()),
-      );
+      print("Navigating based on user role...");
+      final userRole = prefs.getInt('role') ?? 0; // Assuming role is saved as an integer
+      if (userRole == 3) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ManageOrdersPage()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => CatalogPage()),
+        );
+      }
     }
   }
 

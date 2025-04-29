@@ -202,7 +202,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                               ? () => _sortData(col['column'], col['type'])
                               : null,
                           child: SizedBox(
-                            width: col['width'], // Apply column width
+                            width: col['width'] +20, // Apply column width
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -388,7 +388,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                             }
 
                             return SizedBox(
-                              width: col['width'],
+                              width: col['width'] + 20, // Increase the column width by 20 to avoid overflow
                               child: content,
                             );
                           }).toList(),
