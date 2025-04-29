@@ -122,201 +122,204 @@ class _AddEditProductPageState extends State<AddEditProductPage> {
           );
         },
       ),
-      body: Column(
-        children: [
+      body: CustomScrollView(
+        slivers: [
           // Donut Image Section
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Stack(
-              children: [
-                if (_webImage != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.memory(
-                        _webImage!,
-                        width: double.infinity,
-                        height: 260,
-                        fit: BoxFit.contain,
+          SliverToBoxAdapter(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Stack(
+                children: [
+                  if (_webImage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.memory(
+                          _webImage!,
+                          width: double.infinity,
+                          height: 260,
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                  )
-                else if (_selectedImage != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: Image.file(
-                        _selectedImage!,
-                        width: double.infinity,
-                        height: 260,
-                        fit: BoxFit.contain,
+                    )
+                  else if (_selectedImage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.file(
+                          _selectedImage!,
+                          width: double.infinity,
+                          height: 260,
+                          fit: BoxFit.contain,
+                        ),
                       ),
-                    ),
-                  )
-                else if (widget.isEditing)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
-                      child: widget.product['image'] != null &&
-                              widget.product['image']!.isNotEmpty &&
-                              widget.product['image']!.startsWith('data:image/')
-                          ? Image.memory(
-                              base64Decode(
-                                  widget.product['image']!.split(',').last),
+                    )
+                  else if (widget.isEditing)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: widget.product['image'] != null &&
+                                widget.product['image']!.isNotEmpty &&
+                                widget.product['image']!
+                                    .startsWith('data:image/')
+                            ? Image.memory(
+                                base64Decode(
+                                    widget.product['image']!.split(',').last),
+                                width: double.infinity,
+                                height: 260,
+                                fit: BoxFit.contain,
+                              )
+                            : Image.asset(
+                                widget.product['image'] != null &&
+                                        widget.product['image']!.isNotEmpty
+                                    ? widget.product['image']!
+                                    : 'assets/front_donut/fdonut1.png',
+                                width: double.infinity,
+                                height: 260,
+                                fit: BoxFit.contain,
+                              ),
+                      ),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 80),
+                      child: Column(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.asset(
+                              'assets/icons/no_image.png',
                               width: double.infinity,
-                              height: 260,
-                              fit: BoxFit.contain,
-                            )
-                          : Image.asset(
-                              widget.product['image'] != null &&
-                                      widget.product['image']!.isNotEmpty
-                                  ? widget.product['image']!
-                                  : 'assets/front_donut/fdonut1.png',
-                              width: double.infinity,
-                              height: 260,
+                              height: 100,
                               fit: BoxFit.contain,
                             ),
-                    ),
-                  )
-                else
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 80),
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.asset(
-                            'assets/icons/no_image.png',
-                            width: double.infinity,
-                            height: 100,
-                            fit: BoxFit.contain,
                           ),
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          "Add an image of the product",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFC7A889),
+                          SizedBox(height: 10),
+                          Text(
+                            "Add an image of the product",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFC7A889),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                // Floating Action Button for Upload Image
-                Positioned(
-                  bottom: 20,
-                  right: 0,
-                  child: Material(
-                    color: Colors.transparent,
-                    shape: CircleBorder(),
-                    child: InkWell(
-                      splashColor: Colors.white.withOpacity(0.5),
-                      onTap: () async {
-                        final ImagePicker picker = ImagePicker();
-                        final XFile? pickedFile = await picker.pickImage(
-                          source: ImageSource.gallery,
-                          imageQuality: 70, // Compress the image
-                        );
+                  // Floating Action Button for Upload Image
+                  Positioned(
+                    bottom: 20,
+                    right: 0,
+                    child: Material(
+                      color: Colors.transparent,
+                      shape: CircleBorder(),
+                      child: InkWell(
+                        splashColor: Colors.white.withOpacity(0.5),
+                        onTap: () async {
+                          final ImagePicker picker = ImagePicker();
+                          final XFile? pickedFile = await picker.pickImage(
+                            source: ImageSource.gallery,
+                            imageQuality: 70, // Compress the image
+                          );
 
-                        if (pickedFile != null) {
-                          if (kIsWeb) {
-                            // For web, read the image as bytes
-                            final Uint8List webImage =
-                                await pickedFile.readAsBytes();
-                            final int imageSize = webImage.lengthInBytes;
+                          if (pickedFile != null) {
+                            if (kIsWeb) {
+                              // For web, read the image as bytes
+                              final Uint8List webImage =
+                                  await pickedFile.readAsBytes();
+                              final int imageSize = webImage.lengthInBytes;
 
-                            if (imageSize > 300 * 1024) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    "Image size exceeds 300KB",
-                                    style: TextStyle(color: Colors.white),
+                              if (imageSize > 300 * 1024) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      "Image size exceeds 300KB",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 3),
                                   ),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 3),
-                                ),
-                              );
-                              return;
+                                );
+                                return;
+                              }
+
+                              // Add the appropriate prefix for Base64
+                              final String base64Image =
+                                  "data:image/${pickedFile.name.split('.').last};base64," +
+                                      base64Encode(webImage);
+
+                              setState(() {
+                                _webImage = webImage;
+                                _selectedImage = null; // Clear mobile image
+                                _base64Image =
+                                    base64Image; // Store Base64 string with prefix
+                              });
+                              print("Web image selected and encoded to Base64");
+                            } else {
+                              // For mobile, read the image file
+                              final File imageFile = File(pickedFile.path);
+                              final int imageSize = await imageFile.length();
+
+                              if (imageSize > 300 * 1024) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      "Image size exceeds 300KB",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    backgroundColor: Colors.red,
+                                    duration: Duration(seconds: 3),
+                                  ),
+                                );
+                                return;
+                              }
+
+                              final Uint8List imageBytes =
+                                  await imageFile.readAsBytes();
+                              // Add the appropriate prefix for Base64
+                              final String base64Image =
+                                  "data:image/${pickedFile.name.split('.').last};base64," +
+                                      base64Encode(imageBytes);
+
+                              setState(() {
+                                _selectedImage = imageFile;
+                                _webImage = null; // Clear web image
+                                _base64Image =
+                                    base64Image; // Store Base64 string with prefix
+                              });
+                              print(
+                                  "Mobile image selected and encoded to Base64");
                             }
-
-                            // Add the appropriate prefix for Base64
-                            final String base64Image =
-                                "data:image/${pickedFile.name.split('.').last};base64," +
-                                    base64Encode(webImage);
-
-                            setState(() {
-                              _webImage = webImage;
-                              _selectedImage = null; // Clear mobile image
-                              _base64Image =
-                                  base64Image; // Store Base64 string with prefix
-                            });
-                            print("Web image selected and encoded to Base64");
                           } else {
-                            // For mobile, read the image file
-                            final File imageFile = File(pickedFile.path);
-                            final int imageSize = await imageFile.length();
-
-                            if (imageSize > 300 * 1024) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    "Image size exceeds 300KB",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                  backgroundColor: Colors.red,
-                                  duration: Duration(seconds: 3),
-                                ),
-                              );
-                              return;
-                            }
-
-                            final Uint8List imageBytes =
-                                await imageFile.readAsBytes();
-                            // Add the appropriate prefix for Base64
-                            final String base64Image =
-                                "data:image/${pickedFile.name.split('.').last};base64," +
-                                    base64Encode(imageBytes);
-
-                            setState(() {
-                              _selectedImage = imageFile;
-                              _webImage = null; // Clear web image
-                              _base64Image =
-                                  base64Image; // Store Base64 string with prefix
-                            });
-                            print(
-                                "Mobile image selected and encoded to Base64");
+                            print("No image selected.");
                           }
-                        } else {
-                          print("No image selected.");
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(100),
-                      child: Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Color(0xFFCA2E55),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Icon(
-                          widget.isEditing ? Icons.edit : Icons.add,
-                          color: Colors.white,
-                          size: 25,
+                        },
+                        borderRadius: BorderRadius.circular(100),
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFCA2E55),
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: Icon(
+                            widget.isEditing ? Icons.edit : Icons.add,
+                            color: Colors.white,
+                            size: 25,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
           // Product Details Section
-          Expanded(
+          SliverToBoxAdapter(
             child: Container(
               width: double.infinity,
               decoration: BoxDecoration(
