@@ -120,13 +120,17 @@ class _ProfilePageState extends State<ProfilePage> {
       return 'Username is required';
     }
 
+    // Skip validation if the username hasn't changed
+    if (value == user['username']) {
+      return null; // Username is valid because it hasn't changed
+    }
+
     // Query Firestore to check if the username exists
     final querySnapshot =
         await _usersCollection.where('username', isEqualTo: value).get();
 
     // Check if the username exists and is not the current user's username
-    if (querySnapshot.docs.isNotEmpty &&
-        querySnapshot.docs.first.id != user['id']) {
+    if (querySnapshot.docs.isNotEmpty) {
       return 'Username is already taken';
     }
 
@@ -401,53 +405,67 @@ class _ProfilePageState extends State<ProfilePage> {
                 (location) => location['main_location'] == true,
                 orElse: () => <String, dynamic>{},
               );
+      print("Main location found: $mainLocation");
 
-      if (mainLocation.isNotEmpty && mainLocation['id'] != null) {
-        await _firestore
-            .collection('users')
-            .doc(user['id'])
-            .collection('locations')
-            .doc(mainLocation['id'])
-            .update({
-          'state_province': stateController.text,
-          'city_municipality': cityController.text,
-          'barangay': barangayController.text,
-          'house_no_building_street': streetController.text,
-          'zip': int.tryParse(zipCodeController.text) ?? 0,
-          'modified_at': Timestamp.now(),
-        });
+      if (mainLocation.isEmpty || mainLocation['id'] == null) {
+        print("No main location found or main location ID is null.");
+        throw Exception("Main location not found. Please set a main location.");
       }
+
+      final locationDocRef = _firestore
+          .collection('users')
+          .doc(user['id'])
+          .collection('locations')
+          .doc(mainLocation['id']);
+
+      final locationDoc = await locationDocRef.get();
+
+      if (!locationDoc.exists) {
+        print("Location document not found: ${mainLocation['id']}");
+        throw Exception("Main location document not found.");
+      }
+
+      // Proceed with the update
+      await locationDocRef.update({
+        'state_province': stateController.text,
+        'city_municipality': cityController.text,
+        'barangay': barangayController.text,
+        'house_no_building_street': streetController.text,
+        'zip': int.tryParse(zipCodeController.text) ?? 0,
+        'modified_at': Timestamp.now(),
+      });
 
       // Fetch the updated user data
-      final updatedUserDoc =
-          await _firestore.collection('users').doc(user['id']).get();
-      final updatedUserData = updatedUserDoc.data();
+      final updatedUserDoc = await _usersCollection.doc(currentUser.uid).get();
+      final updatedUserData = updatedUserDoc.data() as Map<String, dynamic>;
 
-      if (updatedUserData != null) {
-        // Fetch the updated locations subcollection
-        final updatedLocationsSnapshot = await _firestore
-            .collection('users')
-            .doc(user['id'])
-            .collection('locations')
-            .get();
+      // Fetch the updated locations subcollection
+      final updatedLocationsSnapshot = await _firestore
+          .collection('users')
+          .doc(user['id'])
+          .collection('locations')
+          .get();
 
-        final updatedLocations = updatedLocationsSnapshot.docs.map((doc) {
-          return {
-            ...doc.data(),
-            'id': doc.id,
-          };
-        }).toList();
+      final updatedLocations = updatedLocationsSnapshot.docs.map((doc) {
+        return {
+          ...doc.data(),
+          'id': doc.id,
+        };
+      }).toList();
 
-        // Update the user data in the state
-        setState(() {
-          user.clear();
-          user.addAll({
-            ...updatedUserData,
-            'locations': updatedLocations,
-          });
-          isEditing = false;
-        });
-      }
+      // Combine updated user data with locations
+      final updatedUser = {
+        ...updatedUserData,
+        'id': currentUser.uid,
+        'locations': updatedLocations,
+      };
+
+      // Update the user data in the state
+      setState(() {
+        user = updatedUser;
+        user['locations'] = updatedLocations;
+        isEditing = false;
+      });
 
       // Show success message
       toastification.show(
@@ -458,9 +476,6 @@ class _ProfilePageState extends State<ProfilePage> {
         autoCloseDuration: const Duration(seconds: 4),
       );
     } catch (e) {
-      // Reset the controller values to the original user data
-      // _resetUserData();
-
       // Extract the error message
       String errorMessage = e.toString();
       if (errorMessage.contains('] ')) {
@@ -1157,6 +1172,69 @@ class _ProfilePageState extends State<ProfilePage> {
                                     GradientButton(
                                       text: "Save",
                                       onPressed: () async {
+                                        // Identify the main location
+                                        final mainLocation = (user['locations']
+                                                as List)
+                                            .cast<Map<String, dynamic>>()
+                                            .firstWhere(
+                                              (location) =>
+                                                  location['main_location'] ==
+                                                  true,
+                                              orElse: () => <String, dynamic>{},
+                                            );
+
+                                        // Check if any field has changed
+                                        final hasChanges = firstNameController
+                                                    .text !=
+                                                (user['first_name'] ?? '') ||
+                                            lastNameController.text !=
+                                                (user['last_name'] ?? '') ||
+                                            usernameController.text !=
+                                                (user['username'] ?? '') ||
+                                            contactNoController.text !=
+                                                (user['contact_no']
+                                                        ?.toString() ??
+                                                    '') ||
+                                            emailController.text !=
+                                                (user['email'] ?? '') ||
+                                            stateController.text !=
+                                                (mainLocation[
+                                                        'state_province'] ??
+                                                    '') ||
+                                            cityController.text !=
+                                                (mainLocation[
+                                                        'city_municipality'] ??
+                                                    '') ||
+                                            barangayController.text !=
+                                                (mainLocation['barangay'] ??
+                                                    '') ||
+                                            streetController.text !=
+                                                (mainLocation[
+                                                        'house_no_building_street'] ??
+                                                    '') ||
+                                            zipCodeController.text !=
+                                                (mainLocation['zip']
+                                                        ?.toString() ??
+                                                    '');
+
+                                        if (!hasChanges) {
+                                          // No changes detected, exit editing mode
+                                          setState(() {
+                                            isEditing = false;
+                                          });
+                                          toastification.show(
+                                            context: context,
+                                            title: Text('No Changes'),
+                                            description: Text(
+                                                'No changes were made to your profile.'),
+                                            type: ToastificationType.info,
+                                            autoCloseDuration:
+                                                const Duration(seconds: 4),
+                                          );
+                                          return;
+                                        }
+
+                                        // Proceed with validation and saving if changes are detected
                                         if (_formKey.currentState!.validate()) {
                                           final usernameError =
                                               await _validateUniqueUsername(
