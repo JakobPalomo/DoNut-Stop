@@ -157,9 +157,9 @@ class _ToggleChipsRowState extends State<ToggleChipsRow> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      selectedChip = widget.chips.first; // Default to the first chip
-    });
+    // setState(() {
+    //   selectedChip = widget.chips.first;
+    // });
   }
 
   @override
@@ -427,7 +427,7 @@ class DonutSelectionWidget extends StatelessWidget {
                         productId: productId,
                         image: image,
                         title: title,
-                        description: "",
+                        description: description,
                         newPrice: newPrice,
                       ),
                     ),
@@ -498,7 +498,7 @@ class DonutSelectionWidget extends StatelessWidget {
                               productId: productId,
                               image: image,
                               title: title,
-                              description: "",
+                              description: description,
                               newPrice: newPrice,
                             ),
                           ),
