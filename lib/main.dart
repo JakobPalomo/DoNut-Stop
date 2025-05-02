@@ -65,7 +65,8 @@ class _MyAppState extends State<MyApp> {
     print("Remember Me: $isRemembered");
     if (isRemembered) {
       print("Navigating based on user role...");
-      final userRole = prefs.getInt('role') ?? 0; // Assuming role is saved as an integer
+      final userRole =
+          prefs.getInt('role') ?? 0; // Assuming role is saved as an integer
       if (userRole == 3) {
         Navigator.pushReplacement(
           context,

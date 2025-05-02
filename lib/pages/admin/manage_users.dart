@@ -199,9 +199,9 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
           children: [
             // Search Bar
             Container(
-              padding: EdgeInsets.fromLTRB(25, 20, 25, 16),
+              padding: EdgeInsets.fromLTRB(25.0, 20.0, 25.0, 16.0),
               child: SizedBox(
-                height: 42,
+                height: 42.0,
                 child: Theme(
                   data: Theme.of(context).copyWith(
                     focusColor: Color(0xFF684440),
@@ -222,18 +222,18 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                       fillColor: Colors.brown.shade800,
                       hintStyle: TextStyle(color: Colors.white70),
                       suffixIcon: Padding(
-                        padding: EdgeInsets.only(left: 15, right: 15),
+                        padding: EdgeInsets.only(left: 15.0, right: 15.0),
                         child: Icon(Icons.search, color: Colors.white),
                       ),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30.0),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+                      contentPadding: EdgeInsets.fromLTRB(20.0, 0.0, 20.0, 0.0),
                     ),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 16.0,
                     ),
                     cursorColor: Colors.white,
                   ),

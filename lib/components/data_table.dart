@@ -54,8 +54,13 @@ class _CustomDataTableState extends State<CustomDataTable> {
       } else {
         // Count rows matching the filter's value
         final column = widget.dropdowns[0]['row'];
-        filter['count'] =
-            widget.data.where((row) => row[column] == filter['value']).length;
+        filter['count'] = widget.data.where((row) {
+          final rowValue = row[column];
+          final filterValue = filter['value'];
+          return rowValue is num &&
+              filterValue is num &&
+              rowValue.toDouble() == filterValue.toDouble();
+        }).length;
       }
     }
   }
@@ -70,9 +75,13 @@ class _CustomDataTableState extends State<CustomDataTable> {
         final selectedFilter = widget.filters
             .firstWhere((filter) => filter['value'] == activeFilterValue);
         final column = widget.dropdowns[0]['row'];
-        filteredData = widget.data
-            .where((row) => row[column] == selectedFilter['value'])
-            .toList();
+        filteredData = widget.data.where((row) {
+          final rowValue = row[column];
+          final filterValue = selectedFilter['value'];
+          return rowValue is num &&
+              filterValue is num &&
+              rowValue.toDouble() == filterValue.toDouble();
+        }).toList();
       }
 
       // Apply search query
@@ -202,7 +211,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                               ? () => _sortData(col['column'], col['type'])
                               : null,
                           child: SizedBox(
-                            width: col['width'] +20, // Apply column width
+                            width: (col['width'] as int).toDouble() + 20,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -239,10 +248,11 @@ class _CustomDataTableState extends State<CustomDataTable> {
 
             // Fixed Actions Header
             SizedBox(
-              width: widget.columns.firstWhere(
+              width: (widget.columns.firstWhere(
                 (col) => col['type'] == 'actions',
                 orElse: () => {'width': 100}, // Default width if not found
-              )['width'], // Fixed width for actions column
+              )['width'] as int)
+                  .toDouble(),
               child: Container(
                 color: const Color(0xFFDC345E),
                 padding:
@@ -334,7 +344,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
                                 underline: SizedBox(),
                                 buttonStyleData: ButtonStyleData(
                                   height: 40,
-                                  width: col['width'] - 20 ?? 120,
+                                  width: (col['width'] as int).toDouble() -
+                                      20, // Ensure width is a double
                                   padding: EdgeInsets.fromLTRB(10, 0, 5, 0),
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(6),
@@ -344,7 +355,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
                                 ),
                                 dropdownStyleData: DropdownStyleData(
                                   maxHeight: 500,
-                                  width: col['width'] - 20 ?? 120,
+                                  width: (col['width'] as int).toDouble() -
+                                      20, // Ensure width is a double
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(6),
                                     color: Colors.white,
@@ -388,7 +400,8 @@ class _CustomDataTableState extends State<CustomDataTable> {
                             }
 
                             return SizedBox(
-                              width: col['width'] + 20, // Increase the column width by 20 to avoid overflow
+                              width: (col['width'] as int).toDouble() +
+                                  20, // Increase the column width by 20 to avoid overflow
                               child: content,
                             );
                           }).toList(),
@@ -400,10 +413,11 @@ class _CustomDataTableState extends State<CustomDataTable> {
 
                   // Fixed Actions Column
                   SizedBox(
-                    width: widget.columns.firstWhere(
+                    width: (widget.columns.firstWhere(
                       (col) => col['type'] == 'actions',
                       orElse: () => {'width': 130},
-                    )['width'],
+                    )['width'] as int)
+                        .toDouble(),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(
