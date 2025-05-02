@@ -895,99 +895,112 @@ Future<void> showAddressDialog(BuildContext context, String userId,
               ),
             ),
             actions: [
-              GradientButton(
-                text: isSaving ? "Saving..." : "Save",
-                isEnabled: !isSaving,
-                onPressed: isSaving
-                    ? null
-                    : () async {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            isSaving = true;
-                          });
+              Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    GradientButton(
+                      text: isSaving ? "Saving..." : "Save",
+                      isEnabled: !isSaving,
+                      onPressed: isSaving
+                          ? null
+                          : () async {
+                              if (_formKey.currentState!.validate()) {
+                                setState(() {
+                                  isSaving = true;
+                                });
 
-                          try {
-                            // Log the start of the save operation
-                            print("Starting save operation...");
+                                try {
+                                  // Log the start of the save operation
+                                  print("Starting save operation...");
 
-                            // Validate unique username
-                            print("Validating unique username...");
-                            final usernameError = await _validateUniqueUsername(
-                                usernameController.text,
-                                usersCollection,
-                                initialUsername);
-                            if (usernameError != null) {
-                              print(
-                                  "Username validation failed: $usernameError");
-                              // Show error manually
-                              toastification.show(
-                                context: context,
-                                title: Text('Username taken'),
-                                description: Text(
-                                    'The username ${usernameController.text} is already taken.'),
-                                type: ToastificationType.error,
-                                autoCloseDuration: const Duration(seconds: 4),
-                              );
-                              setState(() {
-                                isSaving = false;
-                              });
-                              return;
-                            }
-                            print("Username validation passed.");
+                                  // Validate unique username
+                                  print("Validating unique username...");
+                                  final usernameError =
+                                      await _validateUniqueUsername(
+                                          usernameController.text,
+                                          usersCollection,
+                                          initialUsername);
+                                  if (usernameError != null) {
+                                    print(
+                                        "Username validation failed: $usernameError");
+                                    // Show error manually
+                                    toastification.show(
+                                      context: context,
+                                      title: Text('Username taken'),
+                                      description: Text(
+                                          'The username ${usernameController.text} is already taken.'),
+                                      type: ToastificationType.error,
+                                      autoCloseDuration:
+                                          const Duration(seconds: 4),
+                                    );
+                                    setState(() {
+                                      isSaving = false;
+                                    });
+                                    return;
+                                  }
+                                  print("Username validation passed.");
 
-                            // Update the user's main document in the 'users' collection
-                            print("Updating main user document...");
-                            await FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(userId)
-                                .update({
-                              'username': usernameController.text,
-                            });
-                            print("Main user document updated successfully.");
+                                  // Update the user's main document in the 'users' collection
+                                  print("Updating main user document...");
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(userId)
+                                      .update({
+                                    'username': usernameController.text,
+                                  });
+                                  print(
+                                      "Main user document updated successfully.");
 
-                            // Add the address to the 'locations' subcollection
-                            print(
-                                "Adding address to 'locations' subcollection...");
-                            await FirebaseFirestore.instance
-                                .collection('users')
-                                .doc(userId)
-                                .collection('locations')
-                                .add({
-                              'state_province': stateController.text,
-                              'city_municipality': cityController.text,
-                              'barangay': barangayController.text,
-                              'house_no_building_street':
-                                  streetNameController.text,
-                              'zip': int.tryParse(zipController.text) ?? 0,
-                              'main_location': true,
-                              'created_at': Timestamp.now(),
-                              'modified_at': Timestamp.now(),
-                            });
-                            print(
-                                "Address added to 'locations' subcollection successfully.");
+                                  // Add the address to the 'locations' subcollection
+                                  print(
+                                      "Adding address to 'locations' subcollection...");
+                                  await FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc(userId)
+                                      .collection('locations')
+                                      .add({
+                                    'state_province': stateController.text,
+                                    'city_municipality': cityController.text,
+                                    'barangay': barangayController.text,
+                                    'house_no_building_street':
+                                        streetNameController.text,
+                                    'zip':
+                                        int.tryParse(zipController.text) ?? 0,
+                                    'main_location': true,
+                                    'created_at': Timestamp.now(),
+                                    'modified_at': Timestamp.now(),
+                                  });
+                                  print(
+                                      "Address added to 'locations' subcollection successfully.");
 
-                            Navigator.of(context).pop(); // Close the dialog
-                          } catch (e) {
-                            print("Error saving details: $e");
-                            toastification.show(
-                              context: context,
-                              title: Text('Error'),
-                              description: Text(
-                                  'An error occurred while saving your details.'),
-                              type: ToastificationType.error,
-                              autoCloseDuration: const Duration(seconds: 4),
-                            );
-                          } finally {
-                            setState(() {
-                              isSaving = false;
-                            });
-                            print("Save operation completed.");
-                          }
-                        } else {
-                          print("Form validation failed.");
-                        }
-                      },
-              ),
+                                  Navigator.of(context)
+                                      .pop(); // Close the dialog
+                                } catch (e) {
+                                  print("Error saving details: $e");
+                                  toastification.show(
+                                    context: context,
+                                    title: Text('Error'),
+                                    description: Text(
+                                        'An error occurred while saving your details.'),
+                                    type: ToastificationType.error,
+                                    autoCloseDuration:
+                                        const Duration(seconds: 4),
+                                  );
+                                } finally {
+                                  setState(() {
+                                    isSaving = false;
+                                  });
+                                  print("Save operation completed.");
+                                }
+                              } else {
+                                print("Form validation failed.");
+                              }
+                            },
+                    ),
+                  ])
             ],
           );
         },
@@ -1159,99 +1172,109 @@ Future<void> _showForgotPasswordDialog(context) async {
               ),
             ),
             actions: [
-              CustomOutlinedButton(
-                text: "Cancel",
-                bgColor: Colors.white,
-                textColor: const Color(0xFFCA2E55),
-                onPressed: () => Navigator.of(context).pop(), // Close dialog
-              ),
-              const SizedBox(width: 10),
-              GradientButton(
-                text: "Submit",
-                onPressed: () async {
-                  final email = emailController.text.trim();
-                  if (email.isEmpty) {
-                    toastification.show(
-                      context: context,
-                      title: Text('Error'),
-                      description: Text('Email address is required.'),
-                      type: ToastificationType.error,
-                      autoCloseDuration: const Duration(seconds: 4),
-                    );
-                    return;
-                  }
+              Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    CustomOutlinedButton(
+                      text: "Cancel",
+                      bgColor: Colors.white,
+                      textColor: const Color(0xFFCA2E55),
+                      onPressed: () =>
+                          Navigator.of(context).pop(), // Close dialog
+                    ),
+                    GradientButton(
+                      text: "Submit",
+                      onPressed: () async {
+                        final email = emailController.text.trim();
+                        if (email.isEmpty) {
+                          toastification.show(
+                            context: context,
+                            title: Text('Error'),
+                            description: Text('Email address is required.'),
+                            type: ToastificationType.error,
+                            autoCloseDuration: const Duration(seconds: 4),
+                          );
+                          return;
+                        }
 
-                  try {
-                    // Check if the email exists and its provider(s)
-                    final methods = await FirebaseAuth.instance
-                        .fetchSignInMethodsForEmail(email);
+                        try {
+                          // Check if the email exists and its provider(s)
+                          final methods = await FirebaseAuth.instance
+                              .fetchSignInMethodsForEmail(email);
 
-                    if (methods.isEmpty) {
-                      // No account exists for this email
-                      toastification.show(
-                        context: context,
-                        title: Text('Error'),
-                        description: Text('No user found with this email.'),
-                        type: ToastificationType.error,
-                        autoCloseDuration: const Duration(seconds: 4),
-                      );
-                      return;
-                    }
+                          if (methods.isEmpty) {
+                            // No account exists for this email
+                            toastification.show(
+                              context: context,
+                              title: Text('Error'),
+                              description:
+                                  Text('No user found with this email.'),
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+                            return;
+                          }
 
-                    if (methods.contains('google.com') && methods.length == 1) {
-                      // Account is linked only to Google
-                      toastification.show(
-                        context: context,
-                        title: Text('Google Account'),
-                        description: Text(
-                            'This account is linked to Google. Please sign in using Google.'),
-                        type: ToastificationType.info,
-                        autoCloseDuration: const Duration(seconds: 4),
-                      );
-                      return;
-                    }
+                          if (methods.contains('google.com') &&
+                              methods.length == 1) {
+                            // Account is linked only to Google
+                            toastification.show(
+                              context: context,
+                              title: Text('Google Account'),
+                              description: Text(
+                                  'This account is linked to Google. Please sign in using Google.'),
+                              type: ToastificationType.info,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+                            return;
+                          }
 
-                    // Send password reset email for email/password accounts
-                    await FirebaseAuth.instance
-                        .sendPasswordResetEmail(email: email);
+                          // Send password reset email for email/password accounts
+                          await FirebaseAuth.instance
+                              .sendPasswordResetEmail(email: email);
 
-                    toastification.show(
-                      context: context,
-                      title: Text('Success'),
-                      description:
-                          Text('Password reset link has been sent to $email.'),
-                      type: ToastificationType.success,
-                      autoCloseDuration: const Duration(seconds: 4),
-                    );
+                          toastification.show(
+                            context: context,
+                            title: Text('Success'),
+                            description: Text(
+                                'Password reset link has been sent to $email.'),
+                            type: ToastificationType.success,
+                            autoCloseDuration: const Duration(seconds: 4),
+                          );
 
-                    Navigator.of(context).pop(); // Close the dialog
-                  } on FirebaseAuthException catch (e) {
-                    String errorMessage;
-                    if (e.code == 'user-not-found') {
-                      errorMessage = 'No user found with this email.';
-                    } else {
-                      errorMessage = 'Failed to send reset link. Try again.';
-                    }
+                          Navigator.of(context).pop(); // Close the dialog
+                        } on FirebaseAuthException catch (e) {
+                          String errorMessage;
+                          if (e.code == 'user-not-found') {
+                            errorMessage = 'No user found with this email.';
+                          } else {
+                            errorMessage =
+                                'Failed to send reset link. Try again.';
+                          }
 
-                    toastification.show(
-                      context: context,
-                      title: Text('Error'),
-                      description: Text(errorMessage),
-                      type: ToastificationType.error,
-                      autoCloseDuration: const Duration(seconds: 4),
-                    );
-                  } catch (e) {
-                    print("Error sending password reset email: $e");
-                    toastification.show(
-                      context: context,
-                      title: Text('Error'),
-                      description: Text('An unexpected error occurred.'),
-                      type: ToastificationType.error,
-                      autoCloseDuration: const Duration(seconds: 4),
-                    );
-                  }
-                },
-              ),
+                          toastification.show(
+                            context: context,
+                            title: Text('Error'),
+                            description: Text(errorMessage),
+                            type: ToastificationType.error,
+                            autoCloseDuration: const Duration(seconds: 4),
+                          );
+                        } catch (e) {
+                          print("Error sending password reset email: $e");
+                          toastification.show(
+                            context: context,
+                            title: Text('Error'),
+                            description: Text('An unexpected error occurred.'),
+                            type: ToastificationType.error,
+                            autoCloseDuration: const Duration(seconds: 4),
+                          );
+                        }
+                      },
+                    ),
+                  ])
             ],
           );
         },

@@ -322,23 +322,29 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               actions: [
-                CustomOutlinedButton(
-                  text: "Cancel",
-                  bgColor: Colors.white,
-                  textColor: const Color(0xFFCA2E55),
-                  onPressed: () =>
-                      Navigator.of(context).pop(null), // Return null on cancel
-                ),
-                const SizedBox(width: 10),
-                GradientButton(
-                  text: "Submit",
-                  onPressed: () {
-                    final password = controller.text.trim();
-                    print("Password entered in dialog: $password");
-                    Navigator.of(context)
-                        .pop(password); // Return the entered password
-                  },
-                ),
+                Wrap(
+                    alignment: WrapAlignment.center,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      CustomOutlinedButton(
+                        text: "Cancel",
+                        bgColor: Colors.white,
+                        textColor: const Color(0xFFCA2E55),
+                        onPressed: () => Navigator.of(context)
+                            .pop(null), // Return null on cancel
+                      ),
+                      GradientButton(
+                        text: "Submit",
+                        onPressed: () {
+                          final password = controller.text.trim();
+                          print("Password entered in dialog: $password");
+                          Navigator.of(context)
+                              .pop(password); // Return the entered password
+                        },
+                      ),
+                    ])
               ],
             );
           },
@@ -1390,7 +1396,7 @@ class _ProfilePageState extends State<ProfilePage> {
               content: Form(
                 key: formKey,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 15, 20, 5),
+                  padding: const EdgeInsets.fromLTRB(10, 15, 10, 5),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -1445,90 +1451,101 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
               ),
               actions: [
-                CustomOutlinedButton(
-                  text: "Cancel",
-                  bgColor: Colors.white,
-                  textColor: const Color(0xFFCA2E55),
-                  onPressed: () => Navigator.of(context).pop(), // Close dialog
-                ),
-                const SizedBox(width: 10),
-                GradientButton(
-                  text: "Submit",
-                  onPressed: () async {
-                    if (formKey.currentState!.validate()) {
-                      final oldPassword = oldPasswordController.text.trim();
-                      final newPassword = newPasswordController.text.trim();
-                      final confirmPassword =
-                          confirmPasswordController.text.trim();
-                      debugPrint(
-                          "Old Password: $oldPassword, New Password: $newPassword, Confirm Password: $confirmPassword");
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 10,
+                  runSpacing: 10,
+                  children: [
+                    CustomOutlinedButton(
+                      text: "Cancel",
+                      bgColor: Colors.white,
+                      textColor: const Color(0xFFCA2E55),
+                      onPressed: () =>
+                          Navigator.of(context).pop(), // Close dialog
+                    ),
+                    GradientButton(
+                      text: "Submit",
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          final oldPassword = oldPasswordController.text.trim();
+                          final newPassword = newPasswordController.text.trim();
+                          final confirmPassword =
+                              confirmPasswordController.text.trim();
+                          debugPrint(
+                              "Old Password: $oldPassword, New Password: $newPassword, Confirm Password: $confirmPassword");
 
-                      if (newPassword != confirmPassword) {
-                        toastification.show(
-                          context: context,
-                          title: Text('Error'),
-                          description: Text('Passwords do not match.'),
-                          type: ToastificationType.error,
-                          autoCloseDuration: const Duration(seconds: 4),
-                        );
-                        return;
-                      }
+                          if (newPassword != confirmPassword) {
+                            toastification.show(
+                              context: context,
+                              title: Text('Error'),
+                              description: Text('Passwords do not match.'),
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+                            return;
+                          }
 
-                      try {
-                        // Reauthenticate the user with the old password
-                        final currentUser = FirebaseAuth.instance.currentUser;
-                        if (currentUser == null) {
-                          throw Exception("No authenticated user found.");
+                          try {
+                            // Reauthenticate the user with the old password
+                            final currentUser =
+                                FirebaseAuth.instance.currentUser;
+                            if (currentUser == null) {
+                              throw Exception("No authenticated user found.");
+                            }
+
+                            final credential = EmailAuthProvider.credential(
+                              email: currentUser.email!,
+                              password: oldPassword,
+                            );
+                            await currentUser
+                                .reauthenticateWithCredential(credential);
+
+                            // Update the password
+                            await currentUser.updatePassword(newPassword);
+
+                            toastification.show(
+                              context: context,
+                              title: Text('Success'),
+                              description:
+                                  Text('Password updated successfully.'),
+                              type: ToastificationType.success,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+
+                            Navigator.of(context).pop(); // Close the dialog
+                          } on FirebaseAuthException catch (e) {
+                            String errorMessage;
+                            if (e.code == 'wrong-password') {
+                              errorMessage = 'Incorrect old password.';
+                            } else {
+                              errorMessage =
+                                  e.message ?? 'Failed to update password.';
+                            }
+
+                            toastification.show(
+                              context: context,
+                              title: Text('Error'),
+                              description: Text(errorMessage),
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+                          } catch (e) {
+                            print("Error updating password: $e");
+                            toastification.show(
+                              context: context,
+                              title: Text('Error'),
+                              description:
+                                  Text('An unexpected error occurred.'),
+                              type: ToastificationType.error,
+                              autoCloseDuration: const Duration(seconds: 4),
+                            );
+                          }
                         }
-
-                        final credential = EmailAuthProvider.credential(
-                          email: currentUser.email!,
-                          password: oldPassword,
-                        );
-                        await currentUser
-                            .reauthenticateWithCredential(credential);
-
-                        // Update the password
-                        await currentUser.updatePassword(newPassword);
-
-                        toastification.show(
-                          context: context,
-                          title: Text('Success'),
-                          description: Text('Password updated successfully.'),
-                          type: ToastificationType.success,
-                          autoCloseDuration: const Duration(seconds: 4),
-                        );
-
-                        Navigator.of(context).pop(); // Close the dialog
-                      } on FirebaseAuthException catch (e) {
-                        String errorMessage;
-                        if (e.code == 'wrong-password') {
-                          errorMessage = 'Incorrect old password.';
-                        } else {
-                          errorMessage =
-                              e.message ?? 'Failed to update password.';
-                        }
-
-                        toastification.show(
-                          context: context,
-                          title: Text('Error'),
-                          description: Text(errorMessage),
-                          type: ToastificationType.error,
-                          autoCloseDuration: const Duration(seconds: 4),
-                        );
-                      } catch (e) {
-                        print("Error updating password: $e");
-                        toastification.show(
-                          context: context,
-                          title: Text('Error'),
-                          description: Text('An unexpected error occurred.'),
-                          type: ToastificationType.error,
-                          autoCloseDuration: const Duration(seconds: 4),
-                        );
-                      }
-                    }
-                  },
-                ),
+                      },
+                    ),
+                  ],
+                )
               ],
             );
           },

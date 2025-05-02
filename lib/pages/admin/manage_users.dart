@@ -461,33 +461,44 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                                             ),
                                           ),
                                           actions: [
-                                            CustomOutlinedButton(
-                                              text: "Cancel",
-                                              bgColor: Colors.white,
-                                              textColor: Color(0xFFCA2E55),
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                            ),
-                                            const SizedBox(width: 10),
-                                            GradientButton(
-                                              text: "Delete",
-                                              onPressed: () {
-                                                _deleteUser(row['id']);
-                                                Navigator.of(context).pop();
-                                                toastification.show(
-                                                  context: context,
-                                                  title: Text('User deleted'),
-                                                  description: Text(
-                                                      'User ${row['username']}has been deleted.'),
-                                                  type: ToastificationType
-                                                      .success,
-                                                  autoCloseDuration:
-                                                      const Duration(
-                                                          seconds: 4),
-                                                );
-                                              },
-                                            ),
+                                            Wrap(
+                                                alignment: WrapAlignment.center,
+                                                crossAxisAlignment:
+                                                    WrapCrossAlignment.center,
+                                                spacing: 10,
+                                                runSpacing: 10,
+                                                children: [
+                                                  CustomOutlinedButton(
+                                                    text: "Cancel",
+                                                    bgColor: Colors.white,
+                                                    textColor:
+                                                        Color(0xFFCA2E55),
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                  ),
+                                                  GradientButton(
+                                                    text: "Delete",
+                                                    onPressed: () {
+                                                      _deleteUser(row['id']);
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                      toastification.show(
+                                                        context: context,
+                                                        title: Text(
+                                                            'User deleted'),
+                                                        description: Text(
+                                                            'User ${row['username']}has been deleted.'),
+                                                        type: ToastificationType
+                                                            .success,
+                                                        autoCloseDuration:
+                                                            const Duration(
+                                                                seconds: 4),
+                                                      );
+                                                    },
+                                                  ),
+                                                ])
                                           ],
                                         );
                                       },
