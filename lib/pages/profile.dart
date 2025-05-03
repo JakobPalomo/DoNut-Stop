@@ -839,7 +839,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               )
                                             : Image.asset(
                                                 user['profile_path'] ??
-                                                    'transparent_pic.png',
+                                                    'assets/transparent_pic.png',
                                                 width: 180,
                                                 height: 180,
                                                 fit: BoxFit.cover,

@@ -487,7 +487,7 @@ class _ViewEditUserPageState extends State<ViewEditUserPage> {
                                                 )
                                               : Image.asset(
                                                   widget.user['profile_path'] ??
-                                                      'transparent_pic.png',
+                                                      'assets/transparent_pic.png',
                                                   width: 180,
                                                   height: 180,
                                                   fit: BoxFit.cover,

@@ -199,7 +199,7 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
       "column": "actions",
       "sortable": false,
       "type": "actions",
-      "width": 40,
+      "width": 48,
     },
   ];
   final List<Map<String, Object>> dropdowns = [
@@ -461,8 +461,9 @@ class _ManageOrdersPageState extends State<ManageOrdersPage> {
                             _updateOrderStatus(row['id'], newRole);
                           },
                           actionsBuilder: (row) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                            return Wrap(
+                              alignment: WrapAlignment.end,
+                              spacing: 0,
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.visibility,

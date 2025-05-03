@@ -418,6 +418,7 @@ class _CustomDataTableState extends State<CustomDataTable> {
                       orElse: () => {'width': 130},
                     )['width'] as int)
                         .toDouble(),
+                    height: 51,
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       decoration: BoxDecoration(

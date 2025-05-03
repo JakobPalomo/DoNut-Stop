@@ -160,7 +160,7 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
       "column": "actions",
       "sortable": false,
       "type": "actions",
-      "width": 120,
+      "width": 144,
     },
   ];
   final List<Map<String, Object>> dropdowns = [
@@ -384,8 +384,9 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
                             _updateUserRole(row['id'], newRole);
                           },
                           actionsBuilder: (row) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                            return Wrap(
+                              alignment: WrapAlignment.end,
+                              spacing: 0,
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.visibility,
