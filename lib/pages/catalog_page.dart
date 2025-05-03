@@ -2,15 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/pages/all_donuts.dart';
-import 'package:itelec_quiz_one/pages/product_page.dart';
-import 'package:itelec_quiz_one/pages/cart_page.dart';
-import 'package:itelec_quiz_one/pages/product_management_page.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/main.dart';
+import 'package:donut_stop/pages/all_donuts.dart';
+import 'package:donut_stop/pages/product_page.dart';
+import 'package:donut_stop/pages/cart_page.dart';
+import 'package:donut_stop/pages/product_management_page.dart';
+import 'package:donut_stop/components/user_drawers.dart';
+import 'package:donut_stop/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:toastification/toastification.dart';
-import 'package:itelec_quiz_one/pages/login_page.dart';
+import 'package:donut_stop/pages/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert'; // For Base64 encoding

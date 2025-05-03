@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/components/buttons.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
-import 'package:itelec_quiz_one/pages/checkout_page.dart';
+import 'package:donut_stop/components/buttons.dart';
+import 'package:donut_stop/components/user_drawers.dart';
+import 'package:donut_stop/pages/catalog_page.dart';
+import 'package:donut_stop/pages/checkout_page.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';

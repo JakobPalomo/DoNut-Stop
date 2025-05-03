@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:itelec_quiz_one/components/buttons.dart';
-import 'package:itelec_quiz_one/components/data_table.dart';
-import 'package:itelec_quiz_one/components/pagination.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:donut_stop/components/buttons.dart';
+import 'package:donut_stop/components/data_table.dart';
+import 'package:donut_stop/components/pagination.dart';
+import 'package:donut_stop/components/user_drawers.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/pages/admin/view_edit_user.dart';
+import 'package:donut_stop/pages/admin/view_edit_user.dart';
 import 'package:toastification/toastification.dart';
 
 class ManageUsersPage extends StatefulWidget {

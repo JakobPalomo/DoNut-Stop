@@ -1,4 +1,4 @@
-name: itelec_quiz_one
+name: donut_stop
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -49,6 +49,8 @@ dependencies:
 dev_dependencies:
     flutter_test:
         sdk: flutter
+    flutter_launcher_icons: ^0.14.3
+    flutter_native_splash: ^2.4.4
 
     # The "flutter_lints" package below contains a set of recommended lints to
     # encourage good coding practices. The lint set provided by the package is
@@ -147,3 +149,8 @@ flutter:
     #
     # For details regarding fonts from package dependencies,
     # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+    color: "#FFE0B5"
+    android_12:
+        color: "#FFE0B5"

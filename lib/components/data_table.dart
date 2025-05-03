@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itelec_quiz_one/components/pagination.dart';
+import 'package:donut_stop/components/pagination.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 
 class CustomDataTable extends StatefulWidget {

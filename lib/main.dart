@@ -2,19 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:firebase_core/firebase_core.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_products.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
-import 'package:itelec_quiz_one/pages/login_page.dart';
-import 'package:itelec_quiz_one/pages/product_page.dart';
-import 'package:itelec_quiz_one/pages/registration_page.dart';
-import 'package:itelec_quiz_one/pages/product_management_page.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/pages/transaction_page.dart';
+import 'package:donut_stop/pages/admin/manage_orders.dart';
+import 'package:donut_stop/pages/admin/manage_products.dart';
+import 'package:donut_stop/pages/admin/manage_users.dart';
+import 'package:donut_stop/pages/catalog_page.dart';
+import 'package:donut_stop/pages/login_page.dart';
+import 'package:donut_stop/pages/product_page.dart';
+import 'package:donut_stop/pages/registration_page.dart';
+import 'package:donut_stop/pages/product_management_page.dart';
+import 'package:donut_stop/components/user_drawers.dart';
+import 'package:donut_stop/pages/transaction_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/rendering.dart';
-import 'package:itelec_quiz_one/utils/auth_utils.dart';
+import 'package:donut_stop/utils/auth_utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure plugin initialization

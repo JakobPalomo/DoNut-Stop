@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:donut_stop/components/user_drawers.dart';
 import 'package:flutter/services.dart';
-import 'package:itelec_quiz_one/components/buttons.dart';
+import 'package:donut_stop/components/buttons.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/pages/registration_page.dart';
+import 'package:donut_stop/pages/registration_page.dart';
 import 'package:toastification/toastification.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';

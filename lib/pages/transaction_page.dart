@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/components/buttons.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
+import 'package:donut_stop/components/buttons.dart';
+import 'package:donut_stop/components/user_drawers.dart';
+import 'package:donut_stop/pages/catalog_page.dart';
 import 'package:intl/intl.dart';
-import 'package:itelec_quiz_one/pages/my_orders_page.dart';
+import 'package:donut_stop/pages/my_orders_page.dart';
 
 class TransactionPage extends StatelessWidget {
   final String accountName;

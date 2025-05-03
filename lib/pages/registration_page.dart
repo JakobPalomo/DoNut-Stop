@@ -1,12 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:itelec_quiz_one/pages/login_page.dart';
+import 'package:donut_stop/pages/login_page.dart';
 import '../models/userInformation.dart';
 import '../main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:donut_stop/components/user_drawers.dart';
 import 'package:toastification/toastification.dart';
 
 void main() {

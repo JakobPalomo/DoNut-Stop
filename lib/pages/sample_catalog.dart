@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/pages/product_page.dart';
+import 'package:donut_stop/components/user_drawers.dart';
+import 'package:donut_stop/pages/product_page.dart';
 
 class CatalogPage extends StatefulWidget {
   const CatalogPage({super.key});

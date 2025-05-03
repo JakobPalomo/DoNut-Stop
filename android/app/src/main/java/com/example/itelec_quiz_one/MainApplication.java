@@ -1,4 +1,4 @@
-package com.example.itelec_quiz_one;
+package com.example.donut_stop;
 
 import android.app.Application;
 import com.google.firebase.FirebaseApp;

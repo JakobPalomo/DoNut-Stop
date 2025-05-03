@@ -2,17 +2,17 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:itelec_quiz_one/components/buttons.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
-import 'package:itelec_quiz_one/pages/registration_page.dart';
+import 'package:donut_stop/components/buttons.dart';
+import 'package:donut_stop/pages/catalog_page.dart';
+import 'package:donut_stop/pages/registration_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:donut_stop/components/user_drawers.dart';
 import 'package:toastification/toastification.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_orders.dart';
-import 'package:itelec_quiz_one/utils/auth_utils.dart';
-import 'package:itelec_quiz_one/main.dart';
+import 'package:donut_stop/pages/admin/manage_orders.dart';
+import 'package:donut_stop/utils/auth_utils.dart';
+import 'package:donut_stop/main.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class LoginPage extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:itelec_quiz_one/components/buttons.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
-import 'package:itelec_quiz_one/pages/admin/add_edit_products.dart';
+import 'package:donut_stop/components/buttons.dart';
+import 'package:donut_stop/components/user_drawers.dart';
+import 'package:donut_stop/pages/admin/add_edit_products.dart';
 import 'dart:convert'; // For Base64 encoding
 import 'package:toastification/toastification.dart';
 

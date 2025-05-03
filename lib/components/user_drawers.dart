@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_products.dart';
-import 'package:itelec_quiz_one/pages/admin/manage_users.dart';
-import 'package:itelec_quiz_one/pages/catalog_page.dart';
-import 'package:itelec_quiz_one/pages/favorites.dart';
-import 'package:itelec_quiz_one/pages/product_page.dart';
-import 'package:itelec_quiz_one/pages/profile.dart';
-import 'package:itelec_quiz_one/pages/registration_page.dart';
-import 'package:itelec_quiz_one/pages/login_page.dart';
-import 'package:itelec_quiz_one/pages/cart_page.dart';
-import 'package:itelec_quiz_one/pages/product_management_page.dart';
-import 'package:itelec_quiz_one/pages/my_orders_page.dart'; // Add this import
-import 'package:itelec_quiz_one/pages/admin/manage_orders.dart'; // Corrected package name
-import 'package:itelec_quiz_one/main.dart';
+import 'package:donut_stop/pages/admin/manage_products.dart';
+import 'package:donut_stop/pages/admin/manage_users.dart';
+import 'package:donut_stop/pages/catalog_page.dart';
+import 'package:donut_stop/pages/favorites.dart';
+import 'package:donut_stop/pages/product_page.dart';
+import 'package:donut_stop/pages/profile.dart';
+import 'package:donut_stop/pages/registration_page.dart';
+import 'package:donut_stop/pages/login_page.dart';
+import 'package:donut_stop/pages/cart_page.dart';
+import 'package:donut_stop/pages/product_management_page.dart';
+import 'package:donut_stop/pages/my_orders_page.dart'; // Add this import
+import 'package:donut_stop/pages/admin/manage_orders.dart'; // Corrected package name
+import 'package:donut_stop/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';

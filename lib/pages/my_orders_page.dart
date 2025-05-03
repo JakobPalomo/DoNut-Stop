@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:itelec_quiz_one/components/user_drawers.dart';
+import 'package:donut_stop/components/user_drawers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:itelec_quiz_one/pages/admin/view_order.dart';
+import 'package:donut_stop/pages/admin/view_order.dart';
 
 class MyOrdersPage extends StatefulWidget {
   const MyOrdersPage({Key? key}) : super(key: key);
