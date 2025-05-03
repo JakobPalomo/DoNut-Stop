@@ -45,32 +45,40 @@ class TransactionPage extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const SizedBox(height: 100),
-                        const Icon(
-                          Icons.check_circle,
-                          color: Color(0xFFE23F61),
-                          size: 100,
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "Transaction Completed",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w800,
-                            fontSize: 35,
-                            color: Color(0xFF462521),
+                        Container(
+                          padding: const EdgeInsets.fromLTRB(16, 100, 16, 30),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                color: Color(0xFFE23F61),
+                                size: 100,
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                "Transaction Completed",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 35,
+                                  color: Color(0xFF462521),
+                                ),
+                              ),
+                              const Text(
+                                "Your donut is ready for delivery!",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color: Color(0xFF462521),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const Text(
-                          "Your donut is ready for delivery!",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontWeight: FontWeight.w700,
-                            fontSize: 14,
-                            color: Color(0xFF462521),
-                          ),
-                        ),
-                        const SizedBox(height: 30),
                         Container(
                           padding: const EdgeInsets.all(16),
                           margin: const EdgeInsets.symmetric(horizontal: 20),

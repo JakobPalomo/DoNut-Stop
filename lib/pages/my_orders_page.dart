@@ -591,7 +591,6 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                                                   WrapAlignment
                                                                       .spaceBetween,
                                                               spacing: 10,
-                                                              runSpacing: 10,
                                                               children: [
                                                                 Column(
                                                                   mainAxisAlignment:

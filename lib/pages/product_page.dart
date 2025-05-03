@@ -372,7 +372,6 @@ class _ProductPageState extends State<ProductPage> {
                         // Price & Add to Cart Button
                         SizedBox(
                           width: double.infinity,
-                          height: 50,
                           child: Wrap(
                             alignment: WrapAlignment.spaceBetween,
                             crossAxisAlignment: WrapCrossAlignment.center,

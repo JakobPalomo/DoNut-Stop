@@ -181,6 +181,142 @@ class _CartPageState extends State<CartPage> {
     isProcessingUpdates = false;
   }
 
+  // Product Image
+  Widget _buildProductImage(Map item) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: SizedBox(
+        width: 90,
+        height: 90,
+        child: item['image'] != null &&
+                item['image'].isNotEmpty &&
+                item['image'].startsWith('data:image/')
+            ? Image.memory(
+                base64Decode(item['image'].split(',').last),
+                fit: BoxFit.cover,
+              )
+            : Image.asset(
+                item['image'] != null && item['image'].isNotEmpty
+                    ? item['image']
+                    : 'assets/front_donut/fdonut1.png',
+                fit: BoxFit.cover,
+              ),
+      ),
+    );
+  }
+
+  // Main content (Product Name, Price)
+  Widget _buildNameAndPrice(Map item) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          item['name'] ?? 'Unknown Product',
+          style: TextStyle(
+            fontSize: 16,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF462521),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          '₱${item['price'].toStringAsFixed(2)}',
+          style: TextStyle(
+            fontSize: 17,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF462521),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Quantity Selector
+  Widget _buildQuantitySelector(Map item) {
+    return Row(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.black26,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SizedBox(
+            width: 38,
+            height: 38,
+            child: IconButton(
+              icon: Icon(Icons.remove, color: Colors.black26, size: 20),
+              onPressed: () {
+                if (item['quantity'] > 1) {
+                  setState(() {
+                    item['quantity']--;
+                    totalAmount -= item['price'];
+                  });
+
+                  print(
+                      "Queueing update for cart_id: ${item['cart_id']} with quantity: ${item['quantity']}");
+                  queueCartUpdate(
+                    userId,
+                    item['cart_id'],
+                    item['quantity'],
+                  );
+                }
+              },
+            ),
+          ),
+        ),
+        SizedBox(width: 15),
+        Text(
+          "${item['quantity']}",
+          style: TextStyle(
+            fontSize: 18,
+            fontFamily: 'Inter',
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        SizedBox(width: 15),
+        Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFFFF7171), Color(0xFFDC345E)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: SizedBox(
+            width: 38,
+            height: 38,
+            child: IconButton(
+              icon: Icon(Icons.add, color: Colors.white, size: 20),
+              onPressed: () {
+                setState(() {
+                  item['quantity']++;
+                  totalAmount += item['price'];
+                });
+
+                print(
+                    "Queueing update for cart_id: ${item['cart_id']} with quantity: ${item['quantity']}");
+                queueCartUpdate(
+                  userId,
+                  item['cart_id'],
+                  item['quantity'],
+                );
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -244,169 +380,72 @@ class _CartPageState extends State<CartPage> {
                       itemBuilder: (context, index) {
                         final item = cartItems[index];
                         return Container(
-                          margin:
-                              EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                          padding: const EdgeInsets.fromLTRB(5, 5, 20, 5),
-                          decoration: BoxDecoration(
-                            color: Color(0xFFFFEEE1),
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              // Product Image
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(16),
-                                child: SizedBox(
-                                  width: 90,
-                                  height: 90,
-                                  child: item['image'] != null &&
-                                          item['image'].isNotEmpty &&
-                                          item['image']
-                                              .startsWith('data:image/')
-                                      ? Image.memory(
-                                          base64Decode(
-                                              item['image'].split(',').last),
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.asset(
-                                          item['image'] != null &&
-                                                  item['image'].isNotEmpty
-                                              ? item['image']
-                                              : 'assets/front_donut/fdonut1.png',
-                                          fit: BoxFit.cover,
-                                        ),
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 8),
+                            padding: const EdgeInsets.fromLTRB(5, 5, 20, 5),
+                            decoration: BoxDecoration(
+                              color: Color(0xFFFFEEE1),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.1),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
                                 ),
-                              ),
-                              const SizedBox(width: 15),
-                              // Main content (Title, Subtitle)
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item['name'] ?? 'Unknown Product',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w600,
-                                        color: Color(0xFF462521),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '₱${item['price'].toStringAsFixed(2)}',
-                                      style: TextStyle(
-                                        fontSize: 17,
-                                        fontFamily: 'Inter',
-                                        fontWeight: FontWeight.w800,
-                                        color: Color(0xFF462521),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      border: Border.all(
-                                        color: Colors.black26,
-                                        width: 1,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: SizedBox(
-                                      width: 38,
-                                      height: 38,
-                                      child: IconButton(
-                                        icon: Icon(Icons.remove,
-                                            color: Colors.black26, size: 20),
-                                        onPressed: () {
-                                          if (item['quantity'] > 1) {
-                                            setState(() {
-                                              item['quantity']--;
-                                              totalAmount -= item['price'];
-                                            });
-
-                                            print(
-                                                "Queueing update for cart_id: ${item['cart_id']} with quantity: ${item['quantity']}");
-                                            queueCartUpdate(
-                                              userId,
-                                              item['cart_id'],
-                                              item['quantity'],
-                                            );
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 15),
-                                  Text(
-                                    "${item['quantity']}",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontFamily: 'Inter',
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  SizedBox(width: 15),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      gradient: const LinearGradient(
-                                        colors: [
-                                          Color(0xFFFF7171),
-                                          Color(0xFFDC345E)
+                              ],
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                // Product Image
+                                _buildProductImage(item),
+                                const SizedBox(width: 15),
+                                // Main Content Area
+                                Expanded(
+                                  child: LayoutBuilder(
+                                    builder: (context, constraints) {
+                                      bool isSmallScreen =
+                                          constraints.maxWidth < 300;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          // Top Row: Name + Price and Quantity
+                                          isSmallScreen
+                                              ? Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    _buildNameAndPrice(item),
+                                                    const SizedBox(height: 8),
+                                                    _buildQuantitySelector(
+                                                        item),
+                                                  ],
+                                                )
+                                              : Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    _buildNameAndPrice(item),
+                                                    _buildQuantitySelector(
+                                                        item),
+                                                  ],
+                                                ),
                                         ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: SizedBox(
-                                      width: 38,
-                                      height: 38,
-                                      child: IconButton(
-                                        icon: Icon(Icons.add,
-                                            color: Colors.white, size: 20),
-                                        onPressed: () {
-                                          setState(() {
-                                            item['quantity']++;
-                                            totalAmount += item['price'];
-                                          });
-
-                                          print(
-                                              "Queueing update for cart_id: ${item['cart_id']} with quantity: ${item['quantity']}");
-                                          queueCartUpdate(
-                                            userId,
-                                            item['cart_id'],
-                                            item['quantity'],
-                                          );
-                                        },
-                                      ),
-                                    ),
+                                      );
+                                    },
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
+                                ),
+                              ],
+                            ));
                       },
                     ),
                   ),
                   // Total and Checkout Button
                   Container(
+                    width: double.infinity,
                     padding: EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -418,77 +457,95 @@ class _CartPageState extends State<CartPage> {
                         ),
                       ],
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Wrap(
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.center,
+                      spacing: 20,
+                      runSpacing: 0,
+                      runAlignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        // Total Amount
-                        Expanded(
-                          child: Row(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Subtotal:",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF462521),
+                        Row(children: [
+                          // Total Amount and Shipping Fee
+                          Expanded(
+                            flex: 1,
+                            child: Wrap(
+                              direction: Axis.horizontal,
+                              alignment: WrapAlignment.spaceBetween,
+                              spacing: 5,
+                              runSpacing: 0,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Wrap(
+                                    direction: Axis.horizontal,
+                                    alignment: WrapAlignment.start,
+                                    spacing: 5,
+                                    runSpacing: 0,
+                                    crossAxisAlignment:
+                                        WrapCrossAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Subtotal:",
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF462521),
+                                        ),
+                                      ),
+                                      Text(
+                                        "₱${totalAmount.toStringAsFixed(2)}",
+                                        style: TextStyle(
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.w800,
+                                          color: Color(0xFF462521),
+                                        ),
+                                      ),
+                                    ]),
+                                Wrap(
+                                  direction: Axis.horizontal,
+                                  alignment: WrapAlignment.start,
+                                  spacing: 5,
+                                  runSpacing: 0,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Shipping:",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF462521),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    "₱${totalAmount.toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w800,
-                                      color: Color(0xFF462521),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Expanded(child: Container()),
-                              Row(
-                                children: [
-                                  Text(
-                                    "Shipping:",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF462521),
-                                    ),
-                                  ),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    "₱30.00",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF462521),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              SizedBox(width: 20),
-                            ],
+                                    Text(
+                                      "₱30.00",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: Color(0xFF462521),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        // Checkout Button
-                        GradientButton(
-                          text: "Checkout",
-                          isEnabled: cartItems.isNotEmpty,
-                          onPressed: cartItems.isNotEmpty
-                              ? () {
-                                  print("Proceeding to checkout...");
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CheckoutPage()),
-                                  );
-                                }
-                              : null,
-                        )
+                          SizedBox(width: 20),
+                          // Checkout Button
+                          GradientButton(
+                            text: "Checkout",
+                            isEnabled: cartItems.isNotEmpty,
+                            onPressed: cartItems.isNotEmpty
+                                ? () {
+                                    print("Proceeding to checkout...");
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CheckoutPage()),
+                                    );
+                                  }
+                                : null,
+                          )
+                        ]),
                       ],
                     ),
                   ),
