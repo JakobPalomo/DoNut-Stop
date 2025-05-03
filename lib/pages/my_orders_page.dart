@@ -429,13 +429,20 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                           Colors.brown.withOpacity(0.2),
                                       child: Column(
                                         children: [
-                                          Padding(
+                                          Container(
+                                            width: double.infinity,
                                             padding: const EdgeInsets.fromLTRB(
                                                 20, 20, 20, 0),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                            child: Wrap(
+                                              direction: Axis.horizontal,
+                                              alignment:
+                                                  WrapAlignment.spaceBetween,
+                                              crossAxisAlignment:
+                                                  WrapCrossAlignment.center,
+                                              runAlignment:
+                                                  WrapAlignment.spaceBetween,
+                                              spacing: 10,
+                                              runSpacing: 10,
                                               children: [
                                                 RichText(
                                                   text: TextSpan(
@@ -463,7 +470,6 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                                     ],
                                                   ),
                                                 ),
-                                                SizedBox(width: 10),
                                                 Container(
                                                   padding: EdgeInsets.symmetric(
                                                       horizontal: 12,
@@ -571,86 +577,106 @@ class _MyOrdersPageState extends State<MyOrdersPage> {
                                                             ),
                                                           ),
                                                           SizedBox(width: 10),
-                                                          Column(
-                                                              mainAxisAlignment:
-                                                                  MainAxisAlignment
-                                                                      .start,
+                                                          Expanded(
+                                                            child: Wrap(
+                                                              direction: Axis
+                                                                  .horizontal,
+                                                              alignment:
+                                                                  WrapAlignment
+                                                                      .spaceBetween,
                                                               crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .start,
+                                                                  WrapCrossAlignment
+                                                                      .center,
+                                                              runAlignment:
+                                                                  WrapAlignment
+                                                                      .spaceBetween,
+                                                              spacing: 10,
+                                                              runSpacing: 10,
                                                               children: [
-                                                                Text(
-                                                                  item['name'],
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontFamily:
-                                                                        'Inter',
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w600,
-                                                                    color: Color(
-                                                                        0xFF462521),
-                                                                  ),
+                                                                Column(
+                                                                  mainAxisAlignment:
+                                                                      MainAxisAlignment
+                                                                          .start,
+                                                                  crossAxisAlignment:
+                                                                      CrossAxisAlignment
+                                                                          .start,
+                                                                  children: [
+                                                                    Text(
+                                                                      item[
+                                                                          'name'],
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            'Inter',
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight.w600,
+                                                                        color: Color(
+                                                                            0xFF462521),
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      '₱${item['price'].toStringAsFixed(2)}',
+                                                                      style:
+                                                                          TextStyle(
+                                                                        fontFamily:
+                                                                            'Inter',
+                                                                        fontSize:
+                                                                            16,
+                                                                        fontWeight:
+                                                                            FontWeight.w800,
+                                                                        color: Color(
+                                                                            0xFF462521),
+                                                                      ),
+                                                                    ),
+                                                                  ],
                                                                 ),
-                                                                Text(
-                                                                  '₱${item['price'].toStringAsFixed(2)}',
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontFamily:
-                                                                        'Inter',
-                                                                    fontSize:
-                                                                        16,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w800,
-                                                                    color: Color(
-                                                                        0xFF462521),
-                                                                  ),
-                                                                ),
-                                                              ]),
-                                                          Spacer(),
-                                                          Container(
-                                                            padding:
-                                                                EdgeInsets.only(
-                                                                    right: 10),
-                                                            child: RichText(
-                                                              text: TextSpan(
-                                                                children: [
-                                                                  TextSpan(
+                                                                Container(
+                                                                  padding: EdgeInsets
+                                                                      .only(
+                                                                          right:
+                                                                              10),
+                                                                  child:
+                                                                      RichText(
                                                                     text:
-                                                                        "Qty: ",
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontFamily:
-                                                                          'Inter',
-                                                                      fontSize:
-                                                                          14,
-                                                                      color: Color(
-                                                                          0xFF462521),
+                                                                        TextSpan(
+                                                                      children: [
+                                                                        TextSpan(
+                                                                          text:
+                                                                              "Qty: ",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontFamily:
+                                                                                'Inter',
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Color(0xFF462521),
+                                                                          ),
+                                                                        ),
+                                                                        TextSpan(
+                                                                          text:
+                                                                              '${item['quantity']}',
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontFamily:
+                                                                                'Inter',
+                                                                            fontSize:
+                                                                                14,
+                                                                            color:
+                                                                                Color(0xFF462521),
+                                                                            fontWeight:
+                                                                                FontWeight.bold,
+                                                                          ),
+                                                                        ),
+                                                                      ],
                                                                     ),
                                                                   ),
-                                                                  TextSpan(
-                                                                    text:
-                                                                        '${item['quantity']}',
-                                                                    style:
-                                                                        TextStyle(
-                                                                      fontFamily:
-                                                                          'Inter',
-                                                                      fontSize:
-                                                                          14,
-                                                                      color: Color(
-                                                                          0xFF462521),
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .bold,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ),
+                                                          )
                                                         ]),
                                                       ),
                                                       if (showDivider)
